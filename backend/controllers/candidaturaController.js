@@ -78,6 +78,20 @@ const listarMinhasCandidaturas = async (req, res) => {
     try {
         const userId = req.userId;
 
+        // 1. Buscar primeiro o id do transportador (sua Frota) de forma isolada
+        const [transportadorRows] = await db.query(
+            'SELECT id FROM transportadores WHERE pessoa_id = ?',
+            [userId]
+        );
+
+        // Se este usuário logado não for um transportador válido, retorna vazio de forma limpa
+        if (transportadorRows.length === 0) {
+            return res.json({ data: [] });
+        }
+
+        const transportadorId = transportadorRows[0].id;
+
+        // 2. Query limpa e sem referências a motoristas vinculados
         const [rows] = await db.query(`
             SELECT 
                 c.*, 
@@ -86,25 +100,22 @@ const listarMinhasCandidaturas = async (req, res) => {
                 f.tipo_carga, 
                 f.valor_ofertado,
                 f.status as frete_status,
-                p_motorista.nome_razao_social as motorista_designado_nome,
                 p_embarcador.nome_razao_social as embarcador_nome
             FROM candidaturas c
             JOIN fretes f ON c.frete_id = f.id
             JOIN embarcadores e ON f.embarcador_id = e.id
             JOIN pessoas p_embarcador ON e.pessoa_id = p_embarcador.id
-            LEFT JOIN motoristas_vinculados mv ON c.motorista_vinculado_id = mv.id
-            LEFT JOIN pessoas p_motorista ON mv.pessoa_id = p_motorista.id
-            WHERE c.transportador_id = (SELECT id FROM transportadores WHERE pessoa_id = ?)
+            WHERE c.transportador_id = ?
             ORDER BY c.data_candidatura DESC
-        `, [userId]);
+        `, [transportadorId]);
         
-        res.json({ data: rows });
+        return res.json({ data: rows });
+
     } catch (error) {
         console.error('Erro ao listar minhas candidaturas:', error);
-        res.status(500).json({ error: 'Erro ao listar candidaturas' });
+        return res.status(500).json({ error: 'Erro ao listar candidaturas' });
     }
 };
-
 // =========================================================================
 // 4. CRIAR CANDIDATURA
 // =========================================================================

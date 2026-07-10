@@ -1,21 +1,35 @@
 // pages/DetalheFrete.jsx
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useAuth } from '../hooks/useAuth';
 import { api } from '../services/api';
 
 export default function DetalheFrete() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const { user } = useAuth();
     const [frete, setFrete] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [showConfirm, setShowConfirm] = useState(false);
     const [cancelando, setCancelando] = useState(false);
+    const [showCandidatura, setShowCandidatura] = useState(false);
+    const [candidaturaData, setCandidaturaData] = useState({
+        valor_lance: '',
+        mensagem: ''
+    });
+    const [enviandoCandidatura, setEnviandoCandidatura] = useState(false);
+    const [jaCandidatou, setJaCandidatou] = useState(false);
 
     const token = localStorage.getItem('token');
+    const isEmbarcador = user?.tipo === 'EMBARCADOR';
+    const isTransportador = ['FROTA', 'AUTONOMO'].includes(user?.tipo);
 
     useEffect(() => {
         carregarDetalhes();
+        if (isTransportador) {
+            verificarCandidatura();
+        }
     }, [id]);
 
     const carregarDetalhes = async () => {
@@ -33,6 +47,16 @@ export default function DetalheFrete() {
         }
     };
 
+    const verificarCandidatura = async () => {
+        try {
+            const response = await api.candidaturas.listarMinhas(token);
+            const jaCandidatou = response.data.some(c => c.frete_id === parseInt(id));
+            setJaCandidatou(jaCandidatou);
+        } catch (err) {
+            console.error('Erro ao verificar candidatura:', err);
+        }
+    };
+
     const handleCancelar = async () => {
         setCancelando(true);
         try {
@@ -43,6 +67,32 @@ export default function DetalheFrete() {
             console.error('Erro ao cancelar frete:', error);
             alert('Erro ao cancelar frete. Tente novamente.');
             setCancelando(false);
+        }
+    };
+
+    const handleEnviarCandidatura = async () => {
+        if (!candidaturaData.valor_lance || parseFloat(candidaturaData.valor_lance) <= 0) {
+            alert('Informe um valor de lance válido.');
+            return;
+        }
+
+        setEnviandoCandidatura(true);
+        try {
+            await api.candidaturas.criar({
+                frete_id: parseInt(id),
+                valor_lance: parseFloat(candidaturaData.valor_lance),
+                mensagem: candidaturaData.mensagem || ''
+            }, token);
+            
+            alert('Candidatura enviada com sucesso!');
+            setShowCandidatura(false);
+            setJaCandidatou(true);
+            navigate('/dashboard/frota/candidaturas');
+        } catch (error) {
+            console.error('Erro ao enviar candidatura:', error);
+            alert(error.message || 'Erro ao enviar candidatura. Tente novamente.');
+        } finally {
+            setEnviandoCandidatura(false);
         }
     };
 
@@ -88,7 +138,8 @@ export default function DetalheFrete() {
         });
     };
 
-    const podeCancelar = frete && ['AGUARDANDO', 'NEGOCIACAO'].includes(frete.status);
+    const podeCancelar = isEmbarcador && frete && ['AGUARDANDO', 'NEGOCIACAO'].includes(frete.status);
+    const podeCandidatar = isTransportador && frete && ['AGUARDANDO', 'NEGOCIACAO'].includes(frete.status) && !jaCandidatou;
 
     if (loading) {
         return (
@@ -103,10 +154,10 @@ export default function DetalheFrete() {
             <div className="detalhe-frete-error">
                 <p>{error || 'Frete não encontrado'}</p>
                 <button 
-                    onClick={() => navigate('/dashboard/embarcador/fretes')} 
+                    onClick={() => navigate(-1)} 
                     className="btn btn-primary"
                 >
-                    Voltar para Meus Fretes
+                    Voltar
                 </button>
             </div>
         );
@@ -118,7 +169,7 @@ export default function DetalheFrete() {
             <div className="detalhe-frete-header">
                 <button 
                     className="detalhe-frete-voltar"
-                    onClick={() => navigate('/dashboard/embarcador/fretes')}
+                    onClick={() => navigate(-1)}
                 >
                     ← Voltar
                 </button>
@@ -241,7 +292,19 @@ export default function DetalheFrete() {
                 </div>
             </div>
 
-            {/* BOTÃO DE CANCELAR */}
+            {/* BOTÃO DE CANDIDATAR (TRANSPORTADOR) */}
+            {podeCandidatar && (
+                <div className="detalhe-frete-actions">
+                    <button 
+                        className="btn btn-success"
+                        onClick={() => setShowCandidatura(true)}
+                    >
+                        Candidatar-se a este frete
+                    </button>
+                </div>
+            )}
+
+            {/* BOTÃO DE CANCELAR (EMBARCADOR) */}
             {podeCancelar && (
                 <div className="detalhe-frete-actions">
                     <button 
@@ -253,7 +316,63 @@ export default function DetalheFrete() {
                 </div>
             )}
 
-            {/* MODAL DE CONFIRMAÇÃO */}
+            {/* MODAL DE CANDIDATURA */}
+            {showCandidatura && (
+                <div className="modal-overlay" onClick={() => setShowCandidatura(false)}>
+                    <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+                        <h3>Candidatar-se ao Frete #{frete.id}</h3>
+                        <p>Informe o valor do seu lance e uma mensagem para o embarcador.</p>
+                        
+                        <div className="form-group">
+                            <label>Valor do Lance <span>*</span></label>
+                            <input
+                                type="number"
+                                step="0.01"
+                                value={candidaturaData.valor_lance}
+                                onChange={(e) => setCandidaturaData(prev => ({
+                                    ...prev,
+                                    valor_lance: e.target.value
+                                }))}
+                                placeholder="2500.00"
+                                className="form-input"
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label>Mensagem (opcional)</label>
+                            <textarea
+                                value={candidaturaData.mensagem}
+                                onChange={(e) => setCandidaturaData(prev => ({
+                                    ...prev,
+                                    mensagem: e.target.value
+                                }))}
+                                placeholder="Descreva sua disponibilidade e capacidade..."
+                                className="form-textarea"
+                                rows={3}
+                            />
+                        </div>
+
+                        <div className="modal-buttons">
+                            <button 
+                                className="modal-btn modal-btn-secondary"
+                                onClick={() => setShowCandidatura(false)}
+                                disabled={enviandoCandidatura}
+                            >
+                                Cancelar
+                            </button>
+                            <button 
+                                className="modal-btn modal-btn-primary"
+                                onClick={handleEnviarCandidatura}
+                                disabled={enviandoCandidatura}
+                            >
+                                {enviandoCandidatura ? 'Enviando...' : 'Enviar Candidatura'}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* MODAL DE CONFIRMAÇÃO DE CANCELAMENTO */}
             {showConfirm && (
                 <div className="modal-overlay" onClick={() => setShowConfirm(false)}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>

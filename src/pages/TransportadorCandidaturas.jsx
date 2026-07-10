@@ -13,9 +13,11 @@ export default function TransportadorCandidaturas() {
     const [error, setError] = useState(null);
     const [processando, setProcessando] = useState(null);
     const [showDesignar, setShowDesignar] = useState(null);
+    const [filtro, setFiltro] = useState('TODOS');
 
     const token = localStorage.getItem('token');
     const isFrota = user?.tipo === 'FROTA';
+    const userTipo = user?.tipo?.toLowerCase() || 'frota';
 
     useEffect(() => {
         carregarDados();
@@ -26,11 +28,9 @@ export default function TransportadorCandidaturas() {
         setError(null);
 
         try {
-            // Buscar candidaturas do transportador
             const response = await api.candidaturas.listarMinhas(token);
             setCandidaturas(response.data || []);
 
-            // Se for frota, buscar motoristas disponíveis
             if (isFrota) {
                 const motoristasResponse = await api.candidaturas.listarMotoristasDisponiveis(token);
                 setMotoristas(motoristasResponse || []);
@@ -111,6 +111,33 @@ export default function TransportadorCandidaturas() {
         return statusMap[status] || status;
     };
 
+    const extrairCidadeEstado = (endereco) => {
+        if (!endereco) return '-';
+        const partes = endereco.split('-');
+        if (partes.length >= 2) {
+            const ultimaParte = partes[partes.length - 1].trim();
+            const ufMatch = ultimaParte.match(/\b([A-Z]{2})\b/);
+            if (ufMatch) {
+                const cidade = partes[partes.length - 2].trim();
+                return `${cidade} - ${ufMatch[0]}`;
+            }
+            return ultimaParte;
+        }
+        return endereco.length > 30 ? endereco.substring(0, 30) + '...' : endereco;
+    };
+
+    const candidaturasFiltradas = filtro === 'TODOS' 
+        ? candidaturas 
+        : candidaturas.filter(c => c.status === filtro);
+
+    const statusOptions = [
+        { value: 'TODOS', label: 'Todos' },
+        { value: 'PENDENTE', label: 'Pendentes' },
+        { value: 'ACEITO', label: 'Aceitos' },
+        { value: 'RECUSADO', label: 'Recusados' },
+        { value: 'CANCELADO', label: 'Cancelados' }
+    ];
+
     if (loading) {
         return (
             <div className="candidaturas-loading">
@@ -132,138 +159,159 @@ export default function TransportadorCandidaturas() {
 
     return (
         <div className="candidaturas-transportador-container">
-            <div className="candidaturas-header">
+            <div className="page-header">
                 <h1>Minhas Candidaturas</h1>
-                <p>Acompanhe o status das suas candidaturas aos fretes</p>
+                <p className="subtitle">
+                    Acompanhe o status das suas candidaturas aos fretes
+                </p>
             </div>
 
-            {candidaturas.length === 0 ? (
+            <div className="candidaturas-filtros">
+                {statusOptions.map((status) => (
+                    <button
+                        key={status.value}
+                        className={`filtro-btn ${filtro === status.value ? 'active' : ''}`}
+                        onClick={() => setFiltro(status.value)}
+                    >
+                        {status.label}
+                    </button>
+                ))}
+            </div>
+
+            {candidaturasFiltradas.length === 0 ? (
                 <div className="candidaturas-vazio">
-                    <p>Você ainda não se candidatou a nenhum frete.</p>
+                    <p>Nenhuma candidatura encontrada.</p>
                     <p className="candidaturas-vazio-sub">
-                        Explore os fretes disponíveis e faça sua primeira candidatura!
+                        {filtro === 'TODOS' 
+                            ? 'Você ainda não se candidatou a nenhum frete.'
+                            : `Nenhuma candidatura com status "${filtro}".`}
                     </p>
+                    {/* BOTÃO CORRIGIDO */}
                     <button 
                         className="btn btn-primary"
-                        onClick={() => navigate('/dashboard/fretes-disponiveis')}
+                        onClick={() => navigate(`/dashboard/${userTipo}/buscar-fretes`)}
                     >
                         Ver fretes disponíveis
                     </button>
                 </div>
             ) : (
                 <div className="candidaturas-list">
-                    {candidaturas.map((candidatura) => (
-                        <div key={candidatura.id} className="card-candidatura-transportador">
-                            <div className="card-candidatura-header">
-                                <div>
-                                    <span className="card-candidatura-frete-id">
-                                        Frete #{candidatura.frete_id}
+                    {candidaturasFiltradas.map((candidatura) => {
+                        const origem = extrairCidadeEstado(candidatura.origem_endereco || candidatura.origem_cep);
+                        const destino = extrairCidadeEstado(candidatura.destino_endereco || candidatura.destino_cep);
+
+                        return (
+                            <div key={candidatura.id} className="card-candidatura-transportador">
+                                <div className="card-candidatura-header">
+                                    <div>
+                                        <span className="card-candidatura-frete-id">
+                                            Frete #{candidatura.frete_id}
+                                        </span>
+                                        <span className={`status-badge ${getStatusBadge(candidatura.status)}`}>
+                                            {getStatusTexto(candidatura.status)}
+                                        </span>
+                                    </div>
+                                    <span className="card-candidatura-valor">
+                                        {formatarMoeda(candidatura.valor_lance)}
                                     </span>
-                                    <span className={`status-badge ${getStatusBadge(candidatura.status)}`}>
-                                        {getStatusTexto(candidatura.status)}
-                                    </span>
                                 </div>
-                                <span className="card-candidatura-valor">
-                                    {formatarMoeda(candidatura.valor_lance)}
-                                </span>
-                            </div>
 
-                            <div className="card-candidatura-route">
-                                <span>📍 {candidatura.origem_cep || 'Origem'}</span>
-                                <span className="route-arrow">→</span>
-                                <span>📍 {candidatura.destino_cep || 'Destino'}</span>
-                            </div>
-
-                            <div className="card-candidatura-info">
-                                <div className="card-candidatura-info-item">
-                                    <span className="card-candidatura-info-label">Tipo de Carga</span>
-                                    <span className="card-candidatura-info-value">{candidatura.tipo_carga || '-'}</span>
+                                <div className="card-candidatura-route">
+                                    <span className="route-point-label">Origem</span>
+                                    <span className="route-point-value">{origem}</span>
+                                    <span className="route-arrow">→</span>
+                                    <span className="route-point-label">Destino</span>
+                                    <span className="route-point-value">{destino}</span>
                                 </div>
-                                <div className="card-candidatura-info-item">
-                                    <span className="card-candidatura-info-label">Valor Ofertado</span>
-                                    <span className="card-candidatura-info-value">{formatarMoeda(candidatura.valor_ofertado)}</span>
+
+                                <div className="card-candidatura-info">
+                                    <div className="card-candidatura-info-item">
+                                        <span className="card-candidatura-info-label">Tipo de Carga</span>
+                                        <span className="card-candidatura-info-value">{candidatura.tipo_carga || '-'}</span>
+                                    </div>
+                                    <div className="card-candidatura-info-item">
+                                        <span className="card-candidatura-info-label">Valor Ofertado</span>
+                                        <span className="card-candidatura-info-value">{formatarMoeda(candidatura.valor_ofertado)}</span>
+                                    </div>
+                                    <div className="card-candidatura-info-item">
+                                        <span className="card-candidatura-info-label">Data</span>
+                                        <span className="card-candidatura-info-value">{formatarData(candidatura.data_candidatura)}</span>
+                                    </div>
                                 </div>
-                                <div className="card-candidatura-info-item">
-                                    <span className="card-candidatura-info-label">Data</span>
-                                    <span className="card-candidatura-info-value">{formatarData(candidatura.data_candidatura)}</span>
-                                </div>
-                            </div>
 
-                            {/* MOTORISTA DESIGNADO (FROTA) */}
-                            {isFrota && candidatura.status === 'ACEITO' && (
-                                <div className="card-candidatura-motorista">
-                                    <span className="card-candidatura-motorista-label">Motorista Designado:</span>
-                                    <span className="card-candidatura-motorista-nome">
-                                        {candidatura.motorista_designado_nome || 'Nenhum motorista designado'}
-                                    </span>
+                                {isFrota && candidatura.status === 'ACEITO' && (
+                                    <div className="card-candidatura-motorista">
+                                        <span className="card-candidatura-motorista-label">Motorista Designado:</span>
+                                        <span className="card-candidatura-motorista-nome">
+                                            {candidatura.motorista_designado_nome || 'Nenhum motorista designado'}
+                                        </span>
 
-                                    {!candidatura.motorista_designado_nome && motoristas.length > 0 && (
-                                        <button 
-                                            className="btn btn-primary btn-sm"
-                                            onClick={() => setShowDesignar(showDesignar === candidatura.id ? null : candidatura.id)}
-                                            disabled={processando === candidatura.id}
-                                        >
-                                            {showDesignar === candidatura.id ? 'Fechar' : 'Designar Motorista'}
-                                        </button>
-                                    )}
-
-                                    {showDesignar === candidatura.id && (
-                                        <div className="card-candidatura-designar">
-                                            <h4>Selecione um motorista:</h4>
-                                            <select 
-                                                className="form-select"
-                                                onChange={(e) => {
-                                                    if (e.target.value) {
-                                                        handleDesignarMotorista(candidatura.id, parseInt(e.target.value));
-                                                    }
-                                                }}
+                                        {!candidatura.motorista_designado_nome && motoristas.length > 0 && (
+                                            <button 
+                                                className="btn btn-primary btn-sm"
+                                                onClick={() => setShowDesignar(showDesignar === candidatura.id ? null : candidatura.id)}
                                                 disabled={processando === candidatura.id}
                                             >
-                                                <option value="">Selecione...</option>
-                                                {motoristas.map((motorista) => (
-                                                    <option key={motorista.id} value={motorista.id}>
-                                                        {motorista.nome} - CNH: {motorista.cnh} {motorista.placa && `- Placa: ${motorista.placa}`}
-                                                    </option>
-                                                ))}
-                                            </select>
-                                        </div>
-                                    )}
-                                </div>
-                            )}
+                                                {showDesignar === candidatura.id ? 'Fechar' : 'Designar Motorista'}
+                                            </button>
+                                        )}
 
-                            {/* BOTÃO CANCELAR (APENAS PENDENTE) */}
-                            {candidatura.status === 'PENDENTE' && (
-                                <div className="card-candidatura-actions">
-                                    <button 
-                                        className="btn btn-danger btn-sm"
-                                        onClick={() => handleCancelar(candidatura.id)}
-                                        disabled={processando === candidatura.id}
-                                    >
-                                        {processando === candidatura.id ? 'Cancelando...' : 'Cancelar Candidatura'}
-                                    </button>
-                                </div>
-                            )}
+                                        {showDesignar === candidatura.id && !candidatura.motorista_designado_nome && (
+                                            <div className="card-candidatura-designar">
+                                                <h4>Selecione um motorista:</h4>
+                                                <select 
+                                                    className="form-select"
+                                                    onChange={(e) => {
+                                                        if (e.target.value) {
+                                                            handleDesignarMotorista(candidatura.id, parseInt(e.target.value));
+                                                        }
+                                                    }}
+                                                    disabled={processando === candidatura.id}
+                                                >
+                                                    <option value="">Selecione...</option>
+                                                    {motoristas.map((motorista) => (
+                                                        <option key={motorista.id} value={motorista.id}>
+                                                            {motorista.nome} - CNH: {motorista.cnh} {motorista.placa && `- ${motorista.placa}`}
+                                                        </option>
+                                                    ))}
+                                                </select>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
 
-                            {/* MENSAGEM DE STATUS */}
-                            {candidatura.status === 'ACEITO' && (
-                                <div className="card-candidatura-status-aceito">
-                                    Candidatura aceita! Aguarde o contato do embarcador.
-                                </div>
-                            )}
+                                {candidatura.status === 'PENDENTE' && (
+                                    <div className="card-candidatura-actions">
+                                        <button 
+                                            className="btn btn-danger btn-sm"
+                                            onClick={() => handleCancelar(candidatura.id)}
+                                            disabled={processando === candidatura.id}
+                                        >
+                                            {processando === candidatura.id ? 'Cancelando...' : 'Cancelar Candidatura'}
+                                        </button>
+                                    </div>
+                                )}
 
-                            {candidatura.status === 'RECUSADO' && (
-                                <div className="card-candidatura-status-recusado">
-                                    Candidatura recusada pelo embarcador.
-                                </div>
-                            )}
+                                {candidatura.status === 'ACEITO' && (
+                                    <div className="card-candidatura-status-aceito">
+                                         Candidatura aceita! Aguarde o contato do embarcador.
+                                    </div>
+                                )}
 
-                            {candidatura.status === 'CANCELADO' && (
-                                <div className="card-candidatura-status-cancelado">
-                                    Candidatura cancelada por você.
-                                </div>
-                            )}
-                        </div>
-                    ))}
+                                {candidatura.status === 'RECUSADO' && (
+                                    <div className="card-candidatura-status-recusado">
+                                         Candidatura recusada pelo embarcador.
+                                    </div>
+                                )}
+
+                                {candidatura.status === 'CANCELADO' && (
+                                    <div className="card-candidatura-status-cancelado">
+                                         Candidatura cancelada por você.
+                                    </div>
+                                )}
+                            </div>
+                        );
+                    })}
                 </div>
             )}
         </div>

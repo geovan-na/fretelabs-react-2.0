@@ -150,7 +150,10 @@ export default function Form({ tipo, onSubmit }) {
                 cpf_cnpj: (tipo === 'embarcador' || tipo === 'frota') ? formData.cnpj : formData.cpf,
                 email: formData.email,
                 senha: formData.senha,
-                telefone: formData.telefone
+                telefone: formData.telefone,
+                cnh: (tipo === 'autonomo' || tipo === 'vinculado') ? formData.cnh : null,
+                cnh_categoria: (tipo === 'autonomo' || tipo === 'vinculado') ? formData.categoria_cnh : null,
+                cnh_validade: tipo === 'vinculado' ? formData.validade_cnh : null
             };
             
             // Envia o payload tratado

@@ -4761,7 +4761,10 @@ footer {
     margin: 0 auto;
 }
 
-/* RESUMO */
+/* ============================================
+   RESUMO
+   ============================================ */
+
 .financeiro-resumo {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
@@ -4799,7 +4802,10 @@ footer {
     color: #1F2937;
 }
 
-/* SALDO */
+/* ============================================
+   SALDO
+   ============================================ */
+
 .financeiro-saldo {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -4835,7 +4841,10 @@ footer {
     color: #1E40AF;
 }
 
-/* DADOS BANCÁRIOS */
+/* ============================================
+   DADOS BANCÁRIOS
+   ============================================ */
+
 .financeiro-dados-bancarios {
     background: #FFFFFF;
     border-radius: 1rem;
@@ -4897,7 +4906,163 @@ footer {
     padding: 0.5rem 0;
 }
 
-/* TRANSAÇÕES */
+/* ============================================
+   FORMULÁRIO DADOS BANCÁRIOS
+   ============================================ */
+
+.dados-bancarios-form {
+    margin-top: 1rem;
+}
+
+.dados-bancarios-form .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.dados-bancarios-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    width: 100%;
+    margin-bottom: 1rem;
+}
+
+.dados-bancarios-form .form-group label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #4B5563;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.dados-bancarios-form .form-group label span {
+    color: #EF4444;
+    margin-left: 2px;
+}
+
+.dados-bancarios-form .form-group input {
+    width: 100%;
+    background-color: #FFFFFF;
+    border: 1px solid #D1D5DB;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: #1F2937;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.dados-bancarios-form .form-group input:focus {
+    outline: none;
+    border-color: #FF8200;
+    box-shadow: 0 0 0 3px rgba(255, 130, 0, 0.1);
+}
+
+.dados-bancarios-form .form-group input::placeholder {
+    color: #9CA3AF;
+}
+
+.dados-bancarios-form .form-group input.error {
+    border-color: #EF4444;
+}
+
+.dados-bancarios-form .form-group .error-message {
+    color: #EF4444;
+    font-size: 0.7rem;
+    margin-top: 0.25rem;
+}
+
+/* SELECTS PADRONIZADOS */
+.dados-bancarios-form .form-select,
+.dados-bancarios-form .form-group select {
+    width: 100%;
+    background-color: #FFFFFF;
+    border: 1px solid #D1D5DB;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: #1F2937;
+    transition: all 0.2s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1rem;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.dados-bancarios-form .form-select:focus,
+.dados-bancarios-form .form-group select:focus {
+    outline: none;
+    border-color: #FF8200;
+    box-shadow: 0 0 0 3px rgba(255, 130, 0, 0.1);
+}
+
+.dados-bancarios-form .form-select option,
+.dados-bancarios-form .form-group select option {
+    color: #1F2937;
+    background-color: #FFFFFF;
+    padding: 0.5rem;
+}
+
+.dados-bancarios-form .form-select option:checked,
+.dados-bancarios-form .form-group select option:checked {
+    background-color: #FF8200;
+    color: #FFFFFF;
+}
+
+.dados-bancarios-form .form-select.error,
+.dados-bancarios-form .form-group select.error {
+    border-color: #EF4444;
+}
+
+/* SECTION PIX */
+.dados-bancarios-form .form-section {
+    background: #F9FAFB;
+    border-radius: 0.75rem;
+    padding: 1rem;
+    margin-bottom: 1rem;
+}
+
+.dados-bancarios-form .form-section-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1F2937;
+    margin-bottom: 0.75rem;
+}
+
+/* CHECKBOX */
+.dados-bancarios-form .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: #1F2937;
+    cursor: pointer;
+}
+
+.dados-bancarios-form .checkbox-label input[type="checkbox"] {
+    width: 1rem;
+    height: 1rem;
+    accent-color: #FF8200;
+    cursor: pointer;
+}
+
+/* BOTÕES */
+.dados-bancarios-form .form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 1.5rem;
+}
+
+/* ============================================
+   TRANSAÇÕES
+   ============================================ */
+
 .financeiro-transacoes {
     background: #FFFFFF;
     border-radius: 1rem;
@@ -4908,6 +5073,30 @@ footer {
 .financeiro-filtros {
     display: flex;
     gap: 0.3rem;
+}
+
+.financeiro-filtros select {
+    background-color: #FFFFFF;
+    border: 1px solid #D1D5DB;
+    border-radius: 0.75rem;
+    padding: 0.4rem 1rem;
+    font-size: 0.8rem;
+    color: #1F2937;
+    transition: all 0.2s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.8rem center;
+    background-size: 0.8rem;
+    cursor: pointer;
+    font-family: inherit;
+    padding-right: 2.2rem;
+}
+
+.financeiro-filtros select:focus {
+    outline: none;
+    border-color: #FF8200;
+    box-shadow: 0 0 0 3px rgba(255, 130, 0, 0.1);
 }
 
 .financeiro-lista {
@@ -4975,49 +5164,29 @@ footer {
     text-align: center;
 }
 
-/* FORMULÁRIO DADOS BANCÁRIOS */
-.dados-bancarios-form {
-    margin-top: 1rem;
+/* ============================================
+   STATUS BADGES
+   ============================================ */
+
+.status-pendente {
+    background: #FEF3C7;
+    color: #92400E;
 }
 
-.dados-bancarios-form .form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    margin-bottom: 1rem;
+.status-aceito {
+    background: #D1FAE5;
+    color: #065F46;
 }
 
-.dados-bancarios-form .form-section {
-    background: #F9FAFB;
-    border-radius: 0.75rem;
-    padding: 1rem;
-    margin-bottom: 1rem;
+.status-concluido {
+    background: #D1FAE5;
+    color: #065F46;
 }
 
-.dados-bancarios-form .form-section-title {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #1F2937;
-    margin-bottom: 0.75rem;
-}
+/* ============================================
+   LOADING E ERROR
+   ============================================ */
 
-.dados-bancarios-form .form-actions {
-    display: flex;
-    gap: 1rem;
-    justify-content: flex-end;
-    margin-top: 1.5rem;
-}
-
-.dados-bancarios-form .checkbox-label {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    font-size: 0.9rem;
-    color: #1F2937;
-    cursor: pointer;
-}
-
-/* LOADING E ERROR */
 .financeiro-loading,
 .financeiro-error {
     display: flex;
@@ -5102,6 +5271,14 @@ footer {
         text-align: center;
         justify-content: center;
     }
+
+    .dados-bancarios-form .form-actions .btn-secondary {
+        order: 2;
+    }
+
+    .dados-bancarios-form .form-actions .btn-primary {
+        order: 1;
+    }
 }
 
 @media (max-width: 480px) {
@@ -5111,5 +5288,1412 @@ footer {
 
     .financeiro-saldo-valor {
         font-size: 1.3rem;
+    }
+
+    .financeiro-filtros select {
+        width: 100%;
+        font-size: 0.75rem;
+        padding: 0.3rem 0.8rem;
+    }
+}
+
+/* ============================================
+   AVALIAÇÕES
+   ============================================ */
+
+.avaliacoes-container {
+    padding: 1.5rem 0;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* MÉDIA GERAL */
+.avaliacoes-media {
+    background: #FFFFFF;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    border: 1px solid #E5E7EB;
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.avaliacoes-media-label {
+    font-size: 0.8rem;
+    color: #6B7280;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+.avaliacoes-media-valor {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.avaliacoes-media-nota {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #1F2937;
+}
+
+.avaliacoes-media-estrelas {
+    font-size: 1.5rem;
+    color: #FF8200;
+    letter-spacing: 0.2rem;
+}
+
+.avaliacoes-media-total {
+    display: block;
+    font-size: 0.85rem;
+    color: #6B7280;
+    margin-top: 0.5rem;
+}
+
+/* LISTA DE AVALIAÇÕES */
+.avaliacoes-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+/* CARD AVALIAÇÃO */
+.card-avaliacao {
+    background: #FFFFFF;
+    border-radius: 1rem;
+    padding: 1.25rem;
+    border: 1px solid #E5E7EB;
+    transition: all 0.3s ease;
+}
+
+.card-avaliacao:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+    border-color: #FF8200;
+}
+
+.card-avaliacao-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.card-avaliacao-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.card-avaliacao-avaliador {
+    font-weight: 600;
+    color: #1F2937;
+    font-size: 1rem;
+}
+
+.card-avaliacao-frete {
+    font-size: 0.8rem;
+    color: #6B7280;
+}
+
+.card-avaliacao-nota {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.card-avaliacao-nota .estrela {
+    font-size: 1.2rem;
+}
+
+.card-avaliacao-nota .estrela.cheia {
+    color: #FF8200;
+}
+
+.card-avaliacao-nota .estrela.vazia {
+    color: #D1D5DB;
+}
+
+.card-avaliacao-nota-valor {
+    font-weight: 700;
+    color: #1F2937;
+    font-size: 1.1rem;
+}
+
+.card-avaliacao-detalhes {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 0.5rem;
+    padding: 0.75rem 0;
+    border-top: 1px solid #F3F4F6;
+    border-bottom: 1px solid #F3F4F6;
+    margin-bottom: 0.75rem;
+}
+
+.card-avaliacao-detalhe-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.card-avaliacao-detalhe-label {
+    font-size: 0.6rem;
+    color: #6B7280;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.card-avaliacao-detalhe-estrelas .estrela {
+    font-size: 0.8rem;
+}
+
+.card-avaliacao-detalhe-estrelas .estrela.cheia {
+    color: #FF8200;
+}
+
+.card-avaliacao-detalhe-estrelas .estrela.vazia {
+    color: #D1D5DB;
+}
+
+.card-avaliacao-comentario {
+    background: #F9FAFB;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.card-avaliacao-comentario p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #4B5563;
+    font-style: italic;
+}
+
+.card-avaliacao-footer {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.card-avaliacao-data {
+    font-size: 0.75rem;
+    color: #9CA3AF;
+}
+
+/* FORMULÁRIO DE AVALIAÇÃO */
+.form-avaliacao {
+    background: #FFFFFF;
+    border-radius: 1rem;
+    padding: 2rem;
+    border: 1px solid #E5E7EB;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.form-avaliacao-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.form-avaliacao-header h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1F2937;
+    margin: 0 0 0.25rem 0;
+}
+
+.form-avaliacao-subtitle {
+    color: #6B7280;
+    font-size: 0.9rem;
+    margin: 0;
+}
+
+.form-avaliacao-campos {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-avaliacao-nota label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #1F2937;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.form-avaliacao-nota label span {
+    color: #EF4444;
+}
+
+.estrelas-container {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.estrela-input {
+    font-size: 2rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.estrela-input.cheia {
+    color: #FF8200;
+}
+
+.estrela-input.vazia {
+    color: #D1D5DB;
+}
+
+.estrela-input:hover {
+    transform: scale(1.1);
+}
+
+.nota-valor {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1F2937;
+    margin-left: 0.5rem;
+}
+
+.form-textarea {
+    width: 100%;
+    background-color: #FFFFFF;
+    border: 1px solid #D1D5DB;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: #1F2937;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    resize: vertical;
+}
+
+.form-textarea:focus {
+    outline: none;
+    border-color: #FF8200;
+    box-shadow: 0 0 0 3px rgba(255, 130, 0, 0.1);
+}
+
+/* VÁZIO */
+.avaliacoes-vazio {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: #F9FAFB;
+    border-radius: 1rem;
+    border: 1px solid #E5E7EB;
+}
+
+.avaliacoes-vazio p {
+    color: #6B7280;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.avaliacoes-vazio-sub {
+    color: #9CA3AF;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+}
+
+/* LOADING E ERROR */
+.avaliacoes-loading,
+.avaliacoes-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    gap: 1rem;
+}
+
+.avaliacoes-loading p {
+    color: #6B7280;
+    font-size: 1rem;
+}
+
+.avaliacoes-error p {
+    color: #EF4444;
+    font-size: 1rem;
+}
+
+/* ============================================
+   RESPONSIVO
+   ============================================ */
+
+@media (max-width: 992px) {
+    .avaliacoes-list {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .avaliacoes-list {
+        grid-template-columns: 1fr;
+    }
+
+    .card-avaliacao-detalhes {
+        grid-template-columns: 1fr;
+        gap: 0.3rem;
+    }
+
+    .card-avaliacao-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .form-avaliacao {
+        padding: 1.5rem;
+    }
+
+    .estrela-input {
+        font-size: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .avaliacoes-media-valor {
+        flex-direction: column;
+        gap: 0.3rem;
+    }
+
+    .avaliacoes-media-nota {
+        font-size: 2rem;
+    }
+
+    .avaliacoes-media-estrelas {
+        font-size: 1.2rem;
+    }
+}
+/* ============================================
+   BUSCAR FRETES
+   ============================================ */
+
+.buscar-fretes-container {
+    padding: 1.5rem 0;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* HEADER */
+.buscar-fretes-container .page-header {
+    margin-bottom: 2rem;
+}
+
+.buscar-fretes-container .page-header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1F2937;
+    margin: 0 0 0.25rem 0;
+}
+
+.buscar-fretes-container .page-header .subtitle {
+    color: #6B7280;
+    font-size: 0.95rem;
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* BOTÃO FILTROS */
+.btn-filtros-toggle {
+    background: transparent;
+    border: 1px solid #E5E7EB;
+    border-radius: 0.75rem;
+    padding: 0.6rem 1.5rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #6B7280;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    margin-bottom: 1.5rem;
+}
+
+.btn-filtros-toggle:hover {
+    border-color: #FF8200;
+    color: #FF8200;
+    background: #FFF8F0;
+}
+
+/* FILTROS */
+.filtros-form {
+    background: #F9FAFB;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    border: 1px solid #E5E7EB;
+    margin-bottom: 1.5rem;
+}
+
+.filtros-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.filtros-row:last-child {
+    margin-bottom: 0;
+}
+
+.filtros-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.filtros-form .form-group label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #4B5563;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.filtros-form .form-input {
+    width: 100%;
+    background-color: #FFFFFF;
+    border: 1px solid #D1D5DB;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: #1F2937;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.filtros-form .form-input:focus {
+    outline: none;
+    border-color: #FF8200;
+    box-shadow: 0 0 0 3px rgba(255, 130, 0, 0.1);
+}
+
+.filtros-form .form-input::placeholder {
+    color: #9CA3AF;
+}
+
+.filtros-form .form-select {
+    width: 100%;
+    background-color: #FFFFFF;
+    border: 1px solid #D1D5DB;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: #1F2937;
+    transition: all 0.2s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1rem;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.filtros-form .form-select:focus {
+    outline: none;
+    border-color: #FF8200;
+    box-shadow: 0 0 0 3px rgba(255, 130, 0, 0.1);
+}
+
+.filtros-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #E5E7EB;
+}
+
+.filtros-actions .btn {
+    padding: 0.6rem 1.5rem;
+    font-size: 0.85rem;
+}
+
+/* TOTAL FRETES */
+.buscar-fretes-total {
+    font-size: 0.85rem;
+    color: #6B7280;
+    padding: 0.5rem 0;
+    margin-bottom: 1rem;
+    border-bottom: 1px solid #F3F4F6;
+}
+
+/* GRID DE FRETES */
+.buscar-fretes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+/* VÁZIO - PADRÃO */
+.buscar-fretes-vazio {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem 2rem;
+    background: #F9FAFB;
+    border-radius: 1rem;
+    border: 1px solid #E5E7EB;
+}
+
+.buscar-fretes-vazio p {
+    color: #6B7280;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.buscar-fretes-vazio-sub {
+    color: #9CA3AF;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+}
+
+/* LOADING E ERROR */
+.buscar-fretes-loading,
+.buscar-fretes-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    gap: 1rem;
+}
+
+.buscar-fretes-loading p {
+    color: #6B7280;
+    font-size: 1rem;
+}
+
+.buscar-fretes-error p {
+    color: #EF4444;
+    font-size: 1rem;
+}
+
+/* PAGINAÇÃO */
+.paginacao {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #F3F4F6;
+}
+
+.paginacao-btn {
+    background: transparent;
+    border: 1px solid #E5E7EB;
+    border-radius: 0.5rem;
+    padding: 0.4rem 1.2rem;
+    font-size: 0.8rem;
+    color: #6B7280;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.paginacao-btn:hover:not(:disabled) {
+    border-color: #FF8200;
+    color: #FF8200;
+}
+
+.paginacao-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+
+.paginacao-info {
+    font-size: 0.85rem;
+    color: #6B7280;
+}
+
+/* ============================================
+   CARD FRETE DISPONÍVEL
+   ============================================ */
+
+.card-frete-disponivel {
+    background: #FFFFFF;
+    border-radius: 1rem;
+    border: 1px solid #E5E7EB;
+    padding: 1.25rem;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-frete-disponivel:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+    border-color: #FF8200;
+}
+
+.card-frete-disponivel .card-frete-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #F3F4F6;
+}
+
+.card-frete-disponivel .card-frete-id {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.card-frete-disponivel .card-frete-id-label {
+    font-size: 0.65rem;
+    color: #6B7280;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.card-frete-disponivel .card-frete-id-value {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #1F2937;
+}
+
+.card-frete-disponivel .card-frete-embarcador {
+    font-size: 0.75rem;
+    color: #6B7280;
+    background: #F3F4F6;
+    padding: 0.2rem 0.75rem;
+    border-radius: 30px;
+}
+
+.card-frete-disponivel .card-frete-route {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: #F9FAFB;
+    border-radius: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.card-frete-disponivel .route-point {
+    flex: 1;
+    min-width: 0;
+}
+
+.card-frete-disponivel .route-point-label {
+    font-size: 0.55rem;
+    color: #6B7280;
+    text-transform: uppercase;
+    font-weight: 600;
+    display: block;
+    letter-spacing: 0.3px;
+}
+
+.card-frete-disponivel .route-point-value {
+    font-size: 0.8rem;
+    color: #1F2937;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    font-weight: 500;
+}
+
+.card-frete-disponivel .route-arrow {
+    color: #D1D5DB;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.card-frete-disponivel .card-frete-info {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.4rem;
+    padding: 0.5rem 0.75rem;
+    background: #F9FAFB;
+    border-radius: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.card-frete-disponivel .card-frete-info-item {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.card-frete-disponivel .card-frete-info-label {
+    font-size: 0.55rem;
+    color: #6B7280;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.card-frete-disponivel .card-frete-info-value {
+    font-size: 0.8rem;
+    color: #1F2937;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-frete-disponivel .card-frete-valor {
+    color: #0066CC;
+    font-weight: 700;
+}
+
+.card-frete-disponivel .card-frete-footer {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #F3F4F6;
+}
+
+.card-frete-disponivel .card-frete-footer .btn {
+    flex: 1;
+    text-align: center;
+    justify-content: center;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.8rem;
+}
+
+/* ============================================
+   RESPONSIVO
+   ============================================ */
+
+@media (max-width: 992px) {
+    .buscar-fretes-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .card-frete-disponivel .card-frete-info {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .buscar-fretes-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .filtros-row {
+        grid-template-columns: 1fr;
+    }
+
+    .filtros-actions {
+        flex-direction: column;
+    }
+
+    .filtros-actions .btn {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+
+    .card-frete-disponivel .card-frete-route {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.15rem;
+    }
+
+    .card-frete-disponivel .route-arrow {
+        transform: rotate(90deg);
+        padding: 0.1rem 0;
+    }
+
+    .card-frete-disponivel .card-frete-info {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.2rem;
+        padding: 0.4rem 0.6rem;
+    }
+
+    .card-frete-disponivel .card-frete-footer {
+        flex-direction: column;
+    }
+
+    .card-frete-disponivel .card-frete-footer .btn {
+        width: 100%;
+    }
+
+    .paginacao {
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 480px) {
+    .buscar-fretes-container .page-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .card-frete-disponivel .card-frete-info {
+        grid-template-columns: 1fr;
+    }
+
+    .card-frete-disponivel {
+        padding: 1rem;
+    }
+
+    .filtros-form {
+        padding: 1rem;
+    }
+}
+
+/* ============================================
+   FRETES ACEITOS
+   ============================================ */
+
+.fretes-aceitos-container {
+    padding: 1.5rem 0;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* HEADER */
+.fretes-aceitos-container .page-header {
+    margin-bottom: 2rem;
+}
+
+.fretes-aceitos-container .page-header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1F2937;
+    margin: 0 0 0.25rem 0;
+}
+
+.fretes-aceitos-container .page-header .subtitle {
+    color: #6B7280;
+    font-size: 0.95rem;
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* FILTROS */
+.fretes-aceitos-filtros {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+}
+
+.fretes-aceitos-filtros .filtro-btn {
+    padding: 0.4rem 1.2rem;
+    border-radius: 30px;
+    border: 1px solid #E5E7EB;
+    background: #FFFFFF;
+    color: #6B7280;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.fretes-aceitos-filtros .filtro-btn:hover {
+    border-color: #FF8200;
+    color: #FF8200;
+}
+
+.fretes-aceitos-filtros .filtro-btn.active {
+    background: #FF8200;
+    color: #FFFFFF;
+    border-color: #FF8200;
+}
+
+/* GRID DE FRETES */
+.fretes-aceitos-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+/* VÁZIO - PADRÃO */
+.fretes-aceitos-vazio {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem 2rem;
+    background: #F9FAFB;
+    border-radius: 1rem;
+    border: 1px solid #E5E7EB;
+}
+
+.fretes-aceitos-vazio p {
+    color: #6B7280;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.fretes-aceitos-vazio-sub {
+    color: #9CA3AF;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+}
+
+/* CARD FRETE ACEITO */
+.card-frete-aceito {
+    background: #FFFFFF;
+    border-radius: 1rem;
+    border: 1px solid #E5E7EB;
+    padding: 1.25rem;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+
+.card-frete-aceito:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+    border-color: #FF8200;
+}
+
+.card-frete-aceito .card-frete-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #F3F4F6;
+}
+
+.card-frete-aceito .card-frete-id {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.card-frete-aceito .card-frete-id-label {
+    font-size: 0.65rem;
+    color: #6B7280;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.card-frete-aceito .card-frete-id-value {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #1F2937;
+}
+
+.card-frete-aceito .card-frete-route {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: #F9FAFB;
+    border-radius: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.card-frete-aceito .route-point {
+    flex: 1;
+    min-width: 0;
+}
+
+.card-frete-aceito .route-point-label {
+    font-size: 0.55rem;
+    color: #6B7280;
+    text-transform: uppercase;
+    font-weight: 600;
+    display: block;
+    letter-spacing: 0.3px;
+}
+
+.card-frete-aceito .route-point-value {
+    font-size: 0.8rem;
+    color: #1F2937;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: block;
+    font-weight: 500;
+}
+
+.card-frete-aceito .route-arrow {
+    color: #D1D5DB;
+    font-size: 1rem;
+    flex-shrink: 0;
+}
+
+.card-frete-aceito .card-frete-info {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.4rem;
+    padding: 0.5rem 0.75rem;
+    background: #F9FAFB;
+    border-radius: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.card-frete-aceito .card-frete-info-item {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+.card-frete-aceito .card-frete-info-label {
+    font-size: 0.55rem;
+    color: #6B7280;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.card-frete-aceito .card-frete-info-value {
+    font-size: 0.8rem;
+    color: #1F2937;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-frete-aceito .card-frete-valor {
+    color: #0066CC;
+    font-weight: 700;
+}
+
+.card-frete-aceito .card-frete-footer {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #F3F4F6;
+}
+
+.card-frete-aceito .card-frete-link {
+    font-size: 0.85rem;
+    color: #FF8200;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.card-frete-aceito .card-frete-link:hover {
+    transform: translateX(4px);
+}
+
+/* LOADING E ERROR */
+.fretes-aceitos-loading,
+.fretes-aceitos-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    gap: 1rem;
+}
+
+.fretes-aceitos-loading p {
+    color: #6B7280;
+    font-size: 1rem;
+}
+
+.fretes-aceitos-error p {
+    color: #EF4444;
+    font-size: 1rem;
+}
+
+/* ============================================
+   RESPONSIVO
+   ============================================ */
+
+@media (max-width: 992px) {
+    .fretes-aceitos-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .card-frete-aceito .card-frete-info {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .fretes-aceitos-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .card-frete-aceito .card-frete-route {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.15rem;
+    }
+
+    .card-frete-aceito .route-arrow {
+        transform: rotate(90deg);
+        padding: 0.1rem 0;
+    }
+
+    .card-frete-aceito .card-frete-info {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.2rem;
+        padding: 0.4rem 0.6rem;
+    }
+
+    .fretes-aceitos-filtros {
+        gap: 0.3rem;
+    }
+
+    .fretes-aceitos-filtros .filtro-btn {
+        font-size: 0.7rem;
+        padding: 0.3rem 0.8rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .fretes-aceitos-container .page-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .card-frete-aceito .card-frete-info {
+        grid-template-columns: 1fr;
+    }
+
+    .card-frete-aceito {
+        padding: 1rem;
+    }
+}
+
+/* ============================================
+   VEÍCULOS
+   ============================================ */
+
+.veiculos-container {
+    padding: 1.5rem 0;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.veiculos-container .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.veiculos-container .page-header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1F2937;
+    margin: 0 0 0.25rem 0;
+}
+
+.veiculos-container .page-header .subtitle {
+    color: #6B7280;
+    font-size: 0.95rem;
+    margin: 0;
+    line-height: 1.6;
+}
+
+.veiculos-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 1.5rem;
+}
+
+/* CARD VEÍCULO */
+.card-veiculo {
+    background: #FFFFFF;
+    border-radius: 1rem;
+    border: 1px solid #E5E7EB;
+    padding: 1.25rem;
+    transition: all 0.3s ease;
+}
+
+.card-veiculo:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+    border-color: #FF8200;
+}
+
+.card-veiculo-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.75rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #F3F4F6;
+}
+
+.card-veiculo-placa {
+    display: flex;
+    flex-direction: column;
+}
+
+.card-veiculo-placa-label {
+    font-size: 0.55rem;
+    color: #6B7280;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.card-veiculo-placa-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1F2937;
+}
+
+.card-veiculo-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+}
+
+.card-veiculo-info-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.card-veiculo-info-label {
+    font-size: 0.55rem;
+    color: #6B7280;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.card-veiculo-info-value {
+    font-size: 0.85rem;
+    color: #1F2937;
+    font-weight: 500;
+}
+
+.card-veiculo-footer {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #F3F4F6;
+    justify-content: flex-end;
+}
+
+.card-veiculo-footer .btn-sm {
+    padding: 0.3rem 0.8rem;
+    font-size: 0.75rem;
+}
+
+/* FORMULÁRIO */
+.veiculos-form-wrapper {
+    background: #F9FAFB;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    border: 1px solid #E5E7EB;
+    margin-bottom: 2rem;
+}
+
+/* VÁZIO */
+.veiculos-vazio {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: #F9FAFB;
+    border-radius: 1rem;
+    border: 1px solid #E5E7EB;
+}
+
+.veiculos-vazio p {
+    color: #6B7280;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.veiculos-vazio-sub {
+    color: #9CA3AF;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+}
+
+/* STATUS BADGES */
+.status-ativo {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.status-inativo {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+.status-manutencao {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+/* ============================================
+   RESPONSIVO
+   ============================================ */
+
+@media (max-width: 768px) {
+    .veiculos-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .veiculos-container .page-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .card-veiculo-info {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .card-veiculo-footer {
+        flex-direction: column;
+    }
+
+    .card-veiculo-footer .btn {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+}
+
+/* ============================================
+   FORMULÁRIO VEÍCULO - BOTÕES
+   ============================================ */
+
+.form-veiculo .form-actions {
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #E5E7EB;
+}
+
+.form-veiculo .form-actions .btn {
+    min-width: 140px;
+    padding: 0.75rem 1.5rem;
+}
+
+.form-veiculo .form-actions .btn-secondary {
+    background: transparent;
+    border: 1px solid #D1D5DB;
+    color: #6B7280;
+}
+
+.form-veiculo .form-actions .btn-secondary:hover {
+    background: #F3F4F6;
+    border-color: #9CA3AF;
+}
+
+@media (max-width: 480px) {
+    .form-veiculo .form-actions {
+        flex-direction: column;
+    }
+    
+    .form-veiculo .form-actions .btn {
+        width: 100%;
+        min-width: unset;
     }
 }

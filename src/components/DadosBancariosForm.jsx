@@ -81,6 +81,7 @@ export default function DadosBancariosForm({
 
     return (
         <form onSubmit={handleSubmit} className="dados-bancarios-form">
+            {/* BANCO E AGÊNCIA */}
             <div className="form-row">
                 <Input
                     label="Banco"
@@ -102,6 +103,7 @@ export default function DadosBancariosForm({
                 />
             </div>
 
+            {/* CONTA E DÍGITO */}
             <div className="form-row">
                 <Input
                     label="Conta"
@@ -121,9 +123,11 @@ export default function DadosBancariosForm({
                 />
             </div>
 
+            {/* TIPO DE CONTA */}
             <div className="form-group">
-                <label>Tipo de Conta</label>
+                <label htmlFor="tipo_conta">Tipo de Conta</label>
                 <select
+                    id="tipo_conta"
                     name="tipo_conta"
                     value={formData.tipo_conta}
                     onChange={handleChange}
@@ -135,6 +139,7 @@ export default function DadosBancariosForm({
                 </select>
             </div>
 
+            {/* TITULAR E CPF/CNPJ */}
             <div className="form-row">
                 <Input
                     label="Titular"
@@ -154,6 +159,7 @@ export default function DadosBancariosForm({
                 />
             </div>
 
+            {/* PIX */}
             <div className="form-section">
                 <h4 className="form-section-title">PIX</h4>
                 <div className="form-row">
@@ -164,22 +170,27 @@ export default function DadosBancariosForm({
                         onChange={handleChange}
                         placeholder="email@exemplo.com ou telefone"
                     />
-                    <select
-                        name="pix_tipo"
-                        value={formData.pix_tipo}
-                        onChange={handleChange}
-                        className="form-select"
-                    >
-                        <option value="">Selecione o tipo de chave</option>
-                        <option value="CPF">CPF</option>
-                        <option value="CNPJ">CNPJ</option>
-                        <option value="EMAIL">E-mail</option>
-                        <option value="TELEFONE">Telefone</option>
-                        <option value="ALEATORIA">Chave Aleatória</option>
-                    </select>
+                    <div className="form-group">
+                        <label htmlFor="pix_tipo">Tipo de Chave</label>
+                        <select
+                            id="pix_tipo"
+                            name="pix_tipo"
+                            value={formData.pix_tipo}
+                            onChange={handleChange}
+                            className="form-select"
+                        >
+                            <option value="">Selecione o tipo de chave</option>
+                            <option value="CPF">CPF</option>
+                            <option value="CNPJ">CNPJ</option>
+                            <option value="EMAIL">E-mail</option>
+                            <option value="TELEFONE">Telefone</option>
+                            <option value="ALEATORIA">Chave Aleatória</option>
+                        </select>
+                    </div>
                 </div>
             </div>
 
+            {/* CONTA PRINCIPAL */}
             <div className="form-group">
                 <label className="checkbox-label">
                     <input
@@ -192,6 +203,7 @@ export default function DadosBancariosForm({
                 </label>
             </div>
 
+            {/* BOTÕES */}
             <div className="form-actions">
                 {onCancel && (
                     <Button 

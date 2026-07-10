@@ -1,25 +1,25 @@
 const db = require('../config/database');
 
-// controllers/freteController.js
-
 const listarFretes = async (req, res) => {
     try {
-        const userId = req.userId; // Do middleware authenticateToken
-        const { status, page = 1, limit = 10 } = req.query;
+        const { 
+            status,
+            origem, 
+            destino, 
+            tipo_carga, 
+            peso_min, 
+            peso_max, 
+            valor_min, 
+            valor_max,
+            page = 1,
+            limit = 10
+        } = req.query;
         
-        // Buscar o embarcador_id do usuário logado
-        const [embarcadorRows] = await db.query(
-            'SELECT id FROM embarcadores WHERE pessoa_id = ?',
-            [userId]
-        );
+        const limitInt = parseInt(limit);
+        const offset = (parseInt(page) - 1) * limitInt;
 
-        if (embarcadorRows.length === 0) {
-            return res.status(404).json({ error: 'Embarcador não encontrado' });
-        }
-
-        const embarcadorId = embarcadorRows[0].id;
-
-        // Construir a query com filtros
+        // Query Base: Busca direta na tabela fretes (f)
+        // Junta com 'embarcadores' e 'pessoas' para pegar o nome de quem publicou
         let query = `
             SELECT 
                 f.*,
@@ -27,71 +27,104 @@ const listarFretes = async (req, res) => {
             FROM fretes f
             JOIN embarcadores e ON f.embarcador_id = e.id
             JOIN pessoas p ON e.pessoa_id = p.id
-            WHERE f.embarcador_id = ?
+            WHERE 1=1
         `;
-        
-        const params = [embarcadorId];
 
-        // Filtrar por status (se fornecido)
+        const params = [];
+
+        // Filtro de Status: Se não for passado nenhum, traz o que está aberto no mercado
         if (status && status !== 'TODOS') {
             query += ` AND f.status = ?`;
             params.push(status);
+        } else if (!status) {
+            query += ` AND f.status IN ('AGUARDANDO', 'NEGOCIACAO')`;
         }
 
-        // Ordenar e paginar
-        query += ` ORDER BY f.data_publicacao DESC LIMIT ? OFFSET ?`;
-        const offset = (parseInt(page) - 1) * parseInt(limit);
-        params.push(parseInt(limit), offset);
+        // Filtros por CEP (Origem e Destino)
+        if (origem) {
+            query += ` AND f.origem_cep LIKE ?`;
+            params.push(`%${origem}%`);
+        }
+        if (destino) {
+            query += ` AND f.destino_cep LIKE ?`;
+            params.push(`%${destino}%`);
+        }
 
-        // Executar query
+        // Filtro por Tipo de Carga
+        if (tipo_carga) {
+            query += ` AND f.tipo_carga LIKE ?`;
+            params.push(`%${tipo_carga}%`);
+        }
+
+        // Filtros por Peso
+        if (peso_min) {
+            query += ` AND f.peso_kg >= ?`;
+            params.push(parseFloat(peso_min));
+        }
+        if (peso_max) {
+            query += ` AND f.peso_kg <= ?`;
+            params.push(parseFloat(peso_max));
+        }
+
+        // Filtros por Valor Ofertado
+        if (valor_min) {
+            query += ` AND f.valor_ofertado >= ?`;
+            params.push(parseFloat(valor_min));
+        }
+        if (valor_max) {
+            query += ` AND f.valor_ofertado <= ?`;
+            params.push(parseFloat(valor_max));
+        }
+
+        // Ordenação usando sua coluna real 'data_publicacao' e limite para paginação
+        query += ` ORDER BY f.data_publicacao DESC LIMIT ? OFFSET ?`;
+        params.push(limitInt, offset);
+
+        // Executa a busca principal dos fretes disponíveis
         const [rows] = await db.query(query, params);
 
-        // Contar total
+        // Query de Contagem (COUNT) para alimentar a paginação do componente React
         let countQuery = `
             SELECT COUNT(*) as total 
             FROM fretes f
-            WHERE f.embarcador_id = ?
+            WHERE 1=1
         `;
-        const countParams = [embarcadorId];
+        const countParams = [];
 
         if (status && status !== 'TODOS') {
             countQuery += ` AND f.status = ?`;
             countParams.push(status);
+        } else if (!status) {
+            countQuery += ` AND f.status IN ('AGUARDANDO', 'NEGOCIACAO')`;
         }
+
+        if (origem) { countQuery += ` AND f.origem_cep LIKE ?`; countParams.push(`%${origem}%`); }
+        if (destino) { countQuery += ` AND f.destino_cep LIKE ?`; countParams.push(`%${destino}%`); }
+        if (tipo_carga) { countQuery += ` AND f.tipo_carga LIKE ?`; countParams.push(`%${tipo_carga}%`); }
 
         const [countResult] = await db.query(countQuery, countParams);
         const total = countResult[0].total;
 
-        res.json({
+        // Resposta formatada de forma limpa para o front-end
+        return res.json({
             data: rows,
-            total,
+            total: total,
             page: parseInt(page),
-            limit: parseInt(limit),
-            totalPages: Math.ceil(total / parseInt(limit))
+            limit: limitInt,
+            totalPages: Math.ceil(total / limitInt)
         });
+
     } catch (error) {
-        console.error('Erro ao listar fretes:', error);
-        res.status(500).json({ error: 'Erro ao listar fretes' });
+        console.error('Erro ao listar fretes diretamente:', error);
+        return res.status(500).json({ error: 'Erro interno ao listar fretes' });
     }
 };
 const buscarFrete = async (req, res) => {
     try {
         const { id } = req.params;
-        const userId = req.userId;
 
-        // Buscar o embarcador_id do usuário
-        const [embarcadorRows] = await db.query(
-            'SELECT id FROM embarcadores WHERE pessoa_id = ?',
-            [userId]
-        );
-
-        if (embarcadorRows.length === 0) {
-            return res.status(404).json({ error: 'Embarcador não encontrado' });
-        }
-
-        const embarcadorId = embarcadorRows[0].id;
-
-        // Buscar o frete com verificação de pertencimento
+        // 🌟 Busca DIRETAMENTE na tabela de fretes pelo ID solicitado
+        // Faz o JOIN para trazer o nome legível de quem publicou
         const [rows] = await db.query(`
             SELECT 
                 f.*,
@@ -99,17 +132,22 @@ const buscarFrete = async (req, res) => {
             FROM fretes f
             JOIN embarcadores e ON f.embarcador_id = e.id
             JOIN pessoas p ON e.pessoa_id = p.id
-            WHERE f.id = ? AND f.embarcador_id = ?
-        `, [id, embarcadorId]);
+            WHERE f.id = ?
+        `, [id]);
         
+        // Se o ID não existir na tabela de fretes
         if (rows.length === 0) {
-            return res.status(404).json({ error: 'Frete não encontrado ou não pertence a este embarcador' });
+            return res.status(404).json({ error: 'Frete não encontrado.' });
         }
         
-        res.json({ data: rows[0] });
+        const frete = rows[0];
+
+        // Retorna o frete encontrado no mesmo formato esperado pelo seu React ({ data: ... })
+        return res.json({ data: frete });
+
     } catch (error) {
-        console.error('Erro ao buscar frete:', error);
-        res.status(500).json({ error: 'Erro ao buscar frete' });
+        console.error('Erro ao buscar detalhes do frete:', error);
+        return res.status(500).json({ error: 'Erro interno ao buscar detalhes do frete' });
     }
 };
 const criarFrete = async (req, res) => {

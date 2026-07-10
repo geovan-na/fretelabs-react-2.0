@@ -67,5 +67,26 @@ const getEstatisticas = async (req, res) => {
         res.status(500).json({ error: 'Erro interno do servidor' });
     }
 };
+// controllers/transportadorController.js
 
-module.exports = { getPerfil, atualizarPerfil, getEstatisticas };
+const buscarPorPessoa = async (req, res) => {
+    try {
+        const userId = req.userId;
+
+        const [rows] = await db.query(
+            'SELECT id FROM transportadores WHERE pessoa_id = ?',
+            [userId]
+        );
+
+        if (rows.length === 0) {
+            return res.status(404).json({ error: 'Transportador não encontrado' });
+        }
+
+        res.json({ id: rows[0].id });
+    } catch (error) {
+        console.error('Erro ao buscar transportador:', error);
+        res.status(500).json({ error: 'Erro ao buscar transportador' });
+    }
+};
+
+module.exports = { getPerfil, atualizarPerfil, getEstatisticas, buscarPorPessoa };

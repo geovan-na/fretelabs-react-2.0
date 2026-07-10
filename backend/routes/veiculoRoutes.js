@@ -10,3 +10,4 @@ router.put('/:id', authenticateToken, veiculoController.atualizarVeiculo);
 router.delete('/:id', authenticateToken, veiculoController.deletarVeiculo);
 
 module.exports = router;
+

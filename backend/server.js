@@ -19,6 +19,8 @@ const avaliacaoRoutes = require('./routes/avaliacaoRoutes');
 const financeiroRoutes = require('./routes/financeiroRoutes');
 const dadosBancariosRoutes = require('./routes/dadosBancariosRoutes');
 
+
+
 const app = express();
 const PORT = process.env.PORT || 3000;
 
