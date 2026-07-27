@@ -318,71 +318,71 @@ const deletarCandidatura = async (req, res) => {
 // =========================================================================
 const designarMotorista = async (req, res) => {
     try {
-        const { id } = req.params;
-        const { motorista_vinculado_id } = req.body;
+        const { id } = req.params; // ID da candidatura
+        const motoristaVinculadoId = req.body.motorista_vinculado_id || req.body.motorista_id;
         const userId = req.userId;
 
-        if (!motorista_vinculado_id) {
+        if (!motoristaVinculadoId) {
             return res.status(400).json({ error: 'ID do motorista é obrigatório' });
         }
 
-        const [candidaturaRows] = await db.query(
-            `SELECT c.*, t.pessoa_id, t.id as transportador_id
-             FROM candidaturas c
-             JOIN transportadores t ON c.transportador_id = t.id
-             WHERE c.id = ? AND t.pessoa_id = ?`,
-            [id, userId]
+        // 1. Obter o ID do transportador (Frota) do usuário logado
+        const [transportadores] = await db.query(
+            'SELECT id FROM transportadores WHERE pessoa_id = ? AND tipo_transportador = "FROTA"',
+            [userId]
         );
 
-        if (candidaturaRows.length === 0) {
-            return res.status(404).json({ error: 'Candidatura não encontrada' });
+        if (transportadores.length === 0) {
+            return res.status(403).json({ error: 'Apenas frotas podem designar motoristas.' });
         }
 
-        const candidatura = candidaturaRows[0];
+        const transportadorId = transportadores[0].id;
 
-        if (candidatura.status !== 'ACEITO') {
-            return res.status(400).json({ 
-                error: 'Apenas candidaturas aceitas podem ter motorista designado' 
-            });
-        }
-
-        const [motoristaRows] = await db.query(
-            `SELECT mv.id, mv.veiculo_id 
+        // 2. Verificar se o motorista pertence à frota logada e buscar o veículo dele (se houver)
+        const [motoristas] = await db.query(
+            `SELECT 
+                mv.id, 
+                v.id AS veiculo_id 
              FROM motoristas_vinculados mv
-             WHERE mv.id = ? AND mv.transportador_id = ? AND mv.status = 'ATIVO'`,
-            [motorista_vinculado_id, candidatura.transportador_id]
+             LEFT JOIN veiculos v ON v.motorista_vinculado_id = mv.id
+             WHERE mv.id = ? 
+               AND mv.transportador_id = ? 
+               AND mv.status = 'ATIVO'`,
+            [motoristaVinculadoId, transportadorId]
         );
 
-        if (motoristaRows.length === 0) {
-            return res.status(404).json({ 
-                error: 'Motorista não encontrado, não pertence à sua frota ou está inativo' 
-            });
+        if (motoristas.length === 0) {
+            return res.status(404).json({ error: 'Motorista não encontrado ou inativo nesta frota.' });
         }
 
-        const motorista = motoristaRows[0];
+        const veiculoId = motoristas[0].veiculo_id;
 
-        await db.query(
-            'UPDATE candidaturas SET motorista_vinculado_id = ? WHERE id = ?',
-            [motorista_vinculado_id, id]
+        // 3. Designar o Motorista (e o seu Veículo) DIRETAMENTE no FRETE
+        const [result] = await db.query(
+            `UPDATE fretes f
+             JOIN candidaturas c ON f.id = c.frete_id
+             SET f.motorista_vinculado_id = ?,
+                 f.veiculo_id = COALESCE(?, f.veiculo_id)
+             WHERE c.id = ?`,
+            [motoristaVinculadoId, veiculoId, id]
         );
 
-        if (motorista.veiculo_id) {
-            await db.query(
-                'UPDATE fretes SET veiculo_id = ? WHERE id = ?',
-                [motorista.veiculo_id, candidatura.frete_id]
-            );
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Candidatura ou frete correspondente não encontrado.' });
         }
 
         res.json({ 
-            message: 'Motorista designado com sucesso',
-            motorista_vinculado_id
+            message: 'Motorista designado com sucesso para o frete!',
+            candidatura_id: parseInt(id),
+            motorista_vinculado_id: parseInt(motoristaVinculadoId),
+            veiculo_id: veiculoId ? parseInt(veiculoId) : null
         });
+
     } catch (error) {
-        console.error('Erro ao designar motorista:', error);
-        res.status(500).json({ error: 'Erro ao designar motorista' });
+        console.error('Erro ao designar motorista no frete:', error);
+        res.status(500).json({ error: 'Erro interno ao designar motorista.' });
     }
 };
-
 // =========================================================================
 // 8. LISTAR MOTORISTAS VINCULADOS (APENAS FROTA)
 // =========================================================================
@@ -419,13 +419,13 @@ const listarMotoristasVinculados = async (req, res) => {
             [transportadorId]
         );
 
-        res.json(motoristas);
+        // Padronizado com { data: motoristas }
+        res.json({ data: motoristas }); 
     } catch (error) {
         console.error('Erro ao listar motoristas:', error);
         res.status(500).json({ error: 'Erro ao listar motoristas' });
     }
 };
-
 // =========================================================================
 // 9. BUSCAR CANDIDATURA ESPECÍFICA
 // =========================================================================

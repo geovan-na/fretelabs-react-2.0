@@ -47,10 +47,10 @@ function LayoutDashboard() {
 
     return (
         <div className="dashboard-layout-wrapper">
-            <SidebarDashboard 
+           <SidebarDashboard 
                 userRole={userRole} 
-                isMobileOpen={isMobileSidebarOpen}
-                onCloseMobile={() => setIsMobileSidebarOpen(false)}
+                isOpen={isMobileSidebarOpen}
+                onClose={() => setIsMobileSidebarOpen(false)}
             />
             
             <div className="dashboard-main-content">
@@ -59,15 +59,14 @@ function LayoutDashboard() {
                         className="mobile-sidebar-toggle"
                         onClick={toggleMobileSidebar}
                     >
-                        Menu
+                        <button 
+    className="mobile-sidebar-toggle"
+    onClick={toggleMobileSidebar}
+    aria-label="Abrir menu"
+>
+    &#9776;
+</button>
                     </button>
-                )}
-
-                {isMobileSidebarOpen && (
-                    <div 
-                        className="mobile-sidebar-overlay"
-                        onClick={() => setIsMobileSidebarOpen(false)}
-                    />
                 )}
 
                 <main className="dashboard-body">

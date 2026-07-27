@@ -6,6 +6,7 @@ import CardFreteDisponivel from '../components/CardFreteDisponivel';
 import Button from '../components/Button';
 
 export default function BuscarFretes() {
+    
     const navigate = useNavigate();
     const [fretes, setFretes] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -31,35 +32,33 @@ export default function BuscarFretes() {
         carregarFretes();
     }, [pagina]);
 
-    const carregarFretes = async () => {
-        setLoading(true);
-        setError(null);
+const carregarFretes = async () => {
+    console.log("--- DEBUG: Iniciando busca otimizada ---");
+    setLoading(true);
+    setError(null);
 
-        try {
-            const params = new URLSearchParams();
-            if (filtros.origem) params.append('origem', filtros.origem);
-            if (filtros.destino) params.append('destino', filtros.destino);
-            if (filtros.tipo_carga) params.append('tipo_carga', filtros.tipo_carga);
-            if (filtros.peso_min) params.append('peso_min', filtros.peso_min);
-            if (filtros.peso_max) params.append('peso_max', filtros.peso_max);
-            if (filtros.valor_min) params.append('valor_min', filtros.valor_min);
-            if (filtros.valor_max) params.append('valor_max', filtros.valor_max);
-            if (filtros.data_coleta) params.append('data_coleta', filtros.data_coleta);
-            params.append('page', pagina);
-            params.append('limit', 10);
+    try {
+        // Agora usamos a função nova que aponta para /fretes/disponiveis
+        // Ela não precisa de parâmetros complexos no front-end
+        const response = await api.fretes.listarDisponiveis(token);
+        
+        console.log("Resposta recebida:", response);
+        
+        // Ajustamos conforme a estrutura que o back-end retorna agora
+        setFretes(response.data || []);
+        
+        // Se a paginação for necessária depois, podemos ajustar o back-end 
+        // para retornar totalPages junto no objeto data
+        setTotalPaginas(1); 
+        setTotalFretes(response.data ? response.data.length : 0);
 
-            const response = await api.fretes.listar(token, `?${params.toString()}`);
-            setFretes(response.data || []);
-            setTotalPaginas(response.totalPages || 1);
-            setTotalFretes(response.total || 0);
-        } catch (err) {
-            console.error('Erro ao carregar fretes:', err);
-            setError('Erro ao carregar fretes disponíveis.');
-        } finally {
-            setLoading(false);
-        }
-    };
-
+    } catch (err) {
+        console.error("DEBUG: Erro capturado na API:", err);
+        setError('Erro ao carregar fretes disponíveis.');
+    } finally {
+        setLoading(false);
+    }
+};
     const handleFiltroChange = (e) => {
         const { name, value } = e.target;
         setFiltros(prev => ({ ...prev, [name]: value }));

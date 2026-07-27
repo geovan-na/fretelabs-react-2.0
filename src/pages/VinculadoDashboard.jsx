@@ -1,60 +1,131 @@
-import { useEffect, useState } from 'react';
-import { useAuth } from '../hooks/useAuth';  // ← CORRIGIDO
-import StatsGrid from '../components/StatsGrid';
-import ProximosFretes from '../components/ProximosFretes';
-import RecentActivities from '../components/RecentActivities';
-import { api } from '../services/api';
+// src/pages/dashboards/VinculadoDashboard.jsx
+import React from 'react';
+import { useDashboard } from '../hooks/useDashboard';
+import { StatsCard } from '../components/StatsCard';
+import { TableCard } from '../components/TableCard';
+import { PerformanceCard } from '../components/PerformanceCard';
+import {
+    CheckIcon, TruckIcon, MoneyIcon, StarIcon, CalendarIcon
+} from '../components/Icons';
 
-function VinculadoDashboard() {
-    const { user } = useAuth();
-    const [stats, setStats] = useState({});
-    const [proximosFretes, setProximosFretes] = useState([]);
-    const [activities, setActivities] = useState([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const token = localStorage.getItem('token');
-                
-                const [statsRes, fretesRes, activitiesRes] = await Promise.all([
-                    api.request('/dashboard/vinculado/stats', 'GET', null, token),
-                    api.request('/dashboard/proximos-fretes', 'GET', null, token),
-                    api.request('/dashboard/atividades', 'GET', null, token)
-                ]);
-                
-                setStats(statsRes.stats);
-                setProximosFretes(fretesRes.fretes);
-                setActivities(activitiesRes.atividades);
-            } catch (error) {
-                console.error('Erro ao carregar dashboard:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
-        
-        fetchData();
-    }, []);
+const VinculadoDashboard = () => {
+    const { data, loading, error } = useDashboard('vinculado');
 
     if (loading) {
-        return <div className="dashboard-loading">Carregando...</div>;
+        return (
+            <div className="dashboard-loading">
+                <p>Carregando dashboard...</p>
+            </div>
+        );
     }
 
+    if (error) {
+        return (
+            <div className="dashboard-loading" style={{ color: '#EF4444' }}>
+                <p>Erro: {error}</p>
+            </div>
+        );
+    }
+
+    const { resumo, frota, proximos_fretes, historico_entregas, desempenho } = data || {};
+
+    const proximosFretesColumns = [
+        { key: 'codigo', label: 'Código' },
+        { key: 'origem', label: 'Origem → Destino' },
+        { key: 'data', label: 'Data de Coleta', render: (row) => new Date(row.data).toLocaleDateString('pt-BR') },
+        { key: 'tipo_carga', label: 'Tipo de Carga' },
+        { 
+            key: 'status', 
+            label: 'Status',
+            render: (row) => (
+                <span className={`status-badge status-${row.status.toLowerCase()}`}>
+                    {row.status}
+                </span>
+            )
+        }
+    ];
+
+    const historicoColumns = [
+        { key: 'codigo', label: 'Nº do Frete' },
+        { key: 'rota', label: 'Rota' },
+        { 
+            key: 'data_entrega', 
+            label: 'Data da Entrega',
+            render: (row) => new Date(row.data_entrega).toLocaleDateString('pt-BR')
+        },
+        { 
+            key: 'status', 
+            label: 'Status',
+            render: (row) => (
+                <span className={`status-badge status-${row.status.toLowerCase()}`}>
+                    {row.status}
+                </span>
+            )
+        },
+        { 
+            key: 'valor', 
+            label: 'Valor',
+            render: (row) => `R$ ${(row.valor || 0).toLocaleString('pt-BR')}`
+        }
+    ];
+
     return (
-        <div className="dashboard-vinculado">
-            <div className="dashboard-welcome">
-                <h1>Olá, {user?.nome || 'Bem-vindo'}!</h1>
-                <p>Acompanhe seus fretes e entregas realizadas</p>
+        <div className="dashboard-content">
+            <div className="dashboard-header">
+                <div className="dashboard-header-left">
+                    <div className="dashboard-welcome">
+                        <h1>Dashboard do Motorista Vinculado</h1>
+                        <p>{frota?.nome ? `Vinculado à ${frota.nome}` : 'Acompanhe seus fretes'}</p>
+                    </div>
+                </div>
             </div>
 
-            <StatsGrid stats={stats} role="vinculado" />
-            
-            <div className="dashboard-grid-2col">
-                <ProximosFretes fretes={proximosFretes} />
-                <RecentActivities activities={activities} title="Histórico de Entregas" />
+            <div className="dashboard-stats">
+                <StatsCard 
+                    icon={<CheckIcon />} 
+                    label="Fretes Concluídos" 
+                    value={resumo?.fretes_concluidos || 0} 
+                    color="#22C55E" 
+                />
+                <StatsCard 
+                    icon={<TruckIcon />} 
+                    label="Em Trânsito" 
+                    value={resumo?.em_transito || 0} 
+                    color="#3B82F6" 
+                />
+                <StatsCard 
+                    icon={<MoneyIcon />} 
+                    label="Total Recebido" 
+                    value={`R$ ${(resumo?.total_recebido || 0).toLocaleString('pt-BR')}`} 
+                    color="#22C55E" 
+                />
+                <StatsCard 
+                    icon={<StarIcon />} 
+                    label="Avaliação Média" 
+                    value={`${resumo?.avaliacao_media || 0} ★`} 
+                    color="#FF8200" 
+                />
+            </div>
+
+            <PerformanceCard data={desempenho} />
+
+            <div className="dashboard-row">
+                <TableCard 
+                    title="Próximos Fretes"
+                    columns={proximosFretesColumns}
+                    data={proximos_fretes || []}
+                />
+            </div>
+
+            <div className="dashboard-row">
+                <TableCard 
+                    title="Histórico de Entregas"
+                    columns={historicoColumns}
+                    data={historico_entregas || []}
+                />
             </div>
         </div>
     );
-}
+};
 
 export default VinculadoDashboard;

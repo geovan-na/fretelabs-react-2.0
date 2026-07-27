@@ -1,3 +1,4 @@
+// components/Form.jsx
 import { useState } from 'react';
 import Input from './Input';
 import Button from './Button';
@@ -23,7 +24,6 @@ export default function Form({ tipo, onSubmit }) {
 
     const [errors, setErrors] = useState({});
     
-    // Máscaras
     const aplicarMascara = (name, value) => {
         if (name === 'cpf') {
             return value
@@ -52,7 +52,6 @@ export default function Form({ tipo, onSubmit }) {
         return value;
     };
     
-    // Handler de mudança nos campos
     const handleChange = (e) => {
         const { name, value } = e.target;
         const valorComMascara = aplicarMascara(name, value);
@@ -62,17 +61,14 @@ export default function Form({ tipo, onSubmit }) {
             [name]: valorComMascara
         }));
         
-        // Limpa erro do campo ao digitar
         if (errors[name]) {
             setErrors(prev => ({ ...prev, [name]: '' }));
         }
     };
     
-    // Validação do formulário
     const validarFormulario = () => {
         const novosErrors = {};
         
-        // ===== VALIDAÇÕES COMUNS A TODOS =====
         if (!formData.email) {
             novosErrors.email = 'E-mail é obrigatório';
         } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
@@ -95,7 +91,6 @@ export default function Form({ tipo, onSubmit }) {
             novosErrors.confirmarSenha = 'As senhas não coincidem';
         }
         
-        // ===== EMBARCADOR ou FROTA (Pessoa Jurídica) =====
         if (tipo === 'embarcador' || tipo === 'frota') {
             if (!formData.razao_social) {
                 novosErrors.razao_social = 'Razão Social é obrigatória';
@@ -107,12 +102,11 @@ export default function Form({ tipo, onSubmit }) {
             }
         }
         
-        // ===== EMBARCADOR específico =====
         if (tipo === 'embarcador' && !formData.porte_empresa) {
             novosErrors.porte_empresa = 'Selecione o porte da empresa';
         }
         
-        // ===== AUTÔNOMO ou VINCULADO (Pessoa Física) =====
+        // 🔥 AUTÔNOMO AGORA TAMBÉM VALIDA CNH E VALIDADE
         if (tipo === 'autonomo' || tipo === 'vinculado') {
             if (!formData.nome_completo) {
                 novosErrors.nome_completo = 'Nome completo é obrigatório';
@@ -130,8 +124,8 @@ export default function Form({ tipo, onSubmit }) {
             }
         }
         
-        // ===== VINCULADO específico =====
-        if (tipo === 'vinculado' && !formData.validade_cnh) {
+        // 🔥 AUTÔNOMO E VINCULADO AGORA TÊM VALIDADE DA CNH
+        if ((tipo === 'autonomo' || tipo === 'vinculado') && !formData.validade_cnh) {
             novosErrors.validade_cnh = 'Validade da CNH é obrigatória';
         }
         
@@ -151,12 +145,15 @@ export default function Form({ tipo, onSubmit }) {
                 email: formData.email,
                 senha: formData.senha,
                 telefone: formData.telefone,
+                celular: formData.telefone, // CORRIGIDO: Enviando o número também para o campo celular do backend
+                inscricao_estadual: formData.inscricao_estadual || null,
+                porte_empresa: tipo === 'embarcador' ? formData.porte_empresa : null, // CORRIGIDO: Incluído o porte da empresa no payload
+                registro_nacional_transportador: formData.rntrc || null,
                 cnh: (tipo === 'autonomo' || tipo === 'vinculado') ? formData.cnh : null,
                 cnh_categoria: (tipo === 'autonomo' || tipo === 'vinculado') ? formData.categoria_cnh : null,
-                cnh_validade: tipo === 'vinculado' ? formData.validade_cnh : null
+                cnh_validade: (tipo === 'autonomo' || tipo === 'vinculado') ? formData.validade_cnh : null
             };
             
-            // Envia o payload tratado
             onSubmit(payload);
         }
     };
@@ -205,19 +202,25 @@ export default function Form({ tipo, onSubmit }) {
             
             {/* ===== EMBARCADOR específico ===== */}
             {tipo === 'embarcador' && (
-                <select
-                    name="porte_empresa"
-                    value={formData.porte_empresa}
-                    onChange={handleChange}
-                    className={`form-select ${errors.porte_empresa ? 'error' : ''}`}
-                >
-                    <option value="">Selecione o porte da empresa</option>
-                    <option value="MEI">MEI</option>
-                    <option value="ME">ME</option>
-                    <option value="EPP">EPP</option>
-                    <option value="MEDIA">Média Empresa</option>
-                    <option value="GRANDE">Grande Empresa</option>
-                </select>
+                <div className="form-group">
+                    <label>Porte da Empresa <span>*</span></label>
+                    <select
+                        name="porte_empresa"
+                        value={formData.porte_empresa}
+                        onChange={handleChange}
+                        className={`form-select ${errors.porte_empresa ? 'error' : ''}`}
+                    >
+                        <option value="">Selecione o porte da empresa</option>
+                        <option value="MEI">MEI</option>
+                        <option value="ME">ME</option>
+                        <option value="EPP">EPP</option>
+                        <option value="MEDIA">Média Empresa</option>
+                        <option value="GRANDE">Grande Empresa</option>
+                    </select>
+                    {errors.porte_empresa && (
+                        <span className="error-message">{errors.porte_empresa}</span>
+                    )}
+                </div>
             )}
             
             {/* ===== FROTA específico ===== */}
@@ -264,42 +267,49 @@ export default function Form({ tipo, onSubmit }) {
                         required
                     />
                     
-                    <select
-                        name="categoria_cnh"
-                        value={formData.categoria_cnh}
-                        onChange={handleChange}
-                        className={`form-select ${errors.categoria_cnh ? 'error' : ''}`}
-                    >
-                        <option value="">Selecione a categoria da CNH</option>
-                        <option value="B">B - Veículos de até 3.500kg</option>
-                        <option value="C">C - Veículos de carga acima de 3.500kg</option>
-                        <option value="D">D - Veículos de passageiros</option>
-                        <option value="E">E - Veículos com reboque</option>
-                    </select>
+                    <div className="form-group">
+                        <label>Categoria da CNH <span>*</span></label>
+                        <select
+                            name="categoria_cnh"
+                            value={formData.categoria_cnh}
+                            onChange={handleChange}
+                            className={`form-select ${errors.categoria_cnh ? 'error' : ''}`}
+                        >
+                            <option value="">Selecione a categoria da CNH</option>
+                            <option value="B">B - Veículos de até 3.500kg</option>
+                            <option value="C">C - Veículos de carga acima de 3.500kg</option>
+                            <option value="D">D - Veículos de passageiros</option>
+                            <option value="E">E - Veículos com reboque</option>
+                        </select>
+                        {errors.categoria_cnh && (
+                            <span className="error-message">{errors.categoria_cnh}</span>
+                        )}
+                    </div>
                 </>
+            )}
+            
+            {/* ===== AUTÔNOMO e VINCULADO - Validade CNH ===== */}
+            {(tipo === 'autonomo' || tipo === 'vinculado') && (
+                <Input
+                    label="VALIDADE DA CNH"
+                    name="validade_cnh"
+                    type="date"
+                    value={formData.validade_cnh}
+                    onChange={handleChange}
+                    error={errors.validade_cnh}
+                    required
+                />
             )}
             
             {/* ===== VINCULADO específico ===== */}
             {tipo === 'vinculado' && (
-                <>
-                    <Input
-                        label="VALIDADE DA CNH"
-                        name="validade_cnh"
-                        type="date"
-                        value={formData.validade_cnh}
-                        onChange={handleChange}
-                        error={errors.validade_cnh}
-                        required
-                    />
-                    
-                    <div className="info-box">
-                        <p>ℹ️ Sobre o vínculo:</p>
-                        <p>Você está se cadastrando como motorista vinculado a uma frota. 
-                        Após o cadastro, você precisará ser aprovado por uma empresa de frota 
-                        para começar a trabalhar. Você poderá se tornar autônomo posteriormente, 
-                        seguindo as regras da plataforma.</p>
-                    </div>
-                </>
+                <div className="info-box">
+                    <p>Sobre o vínculo:</p>
+                    <p>Você está se cadastrando como motorista vinculado a uma frota. 
+                    Após o cadastro, você precisará ser aprovado por uma empresa de frota 
+                    para começar a trabalhar. Você poderá se tornar autônomo posteriormente, 
+                    seguindo as regras da plataforma.</p>
+                </div>
             )}
             
             {/* ===== CAMPOS COMUNS A TODOS ===== */}

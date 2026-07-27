@@ -1,12 +1,13 @@
-// pages/DetalheFrete.jsx
+// pages/DetalheFretes.jsx
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { api } from '../services/api';
 
-export default function DetalheFrete() {
+export default function DetalheFretes() {
     const { id } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
     const { user } = useAuth();
     const [frete, setFrete] = useState(null);
     const [loading, setLoading] = useState(true);
@@ -22,13 +23,32 @@ export default function DetalheFrete() {
     const [jaCandidatou, setJaCandidatou] = useState(false);
 
     const token = localStorage.getItem('token');
-    const isEmbarcador = user?.tipo === 'EMBARCADOR';
-    const isTransportador = ['FROTA', 'AUTONOMO'].includes(user?.tipo);
+
+    // 🔥 CORREÇÃO: O tipo do usuário vem em minúsculo
+    const userTipo = user?.tipo?.toLowerCase() || '';
+    
+    // 🔥 Um usuário é "transportador" se for frota ou autonomo
+    const isFrota = userTipo === 'frota';
+    const isAutonomo = userTipo === 'autonomo';
+    const isEmbarcador = userTipo === 'embarcador';
+    const isTransportador = isFrota || isAutonomo;  // ← ISSO ESTÁ CERTO
+
+    console.log('===== DEBUG =====');
+    console.log('userTipo:', userTipo);
+    console.log('isFrota:', isFrota);
+    console.log('isAutonomo:', isAutonomo);
+    console.log('isTransportador:', isTransportador);
+    console.log('===============');
+
+    const isCandidatarRoute = location.pathname.endsWith('/candidatar');
 
     useEffect(() => {
         carregarDetalhes();
         if (isTransportador) {
             verificarCandidatura();
+        }
+        if (isCandidatarRoute) {
+            setShowCandidatura(true);
         }
     }, [id]);
 
@@ -87,7 +107,8 @@ export default function DetalheFrete() {
             alert('Candidatura enviada com sucesso!');
             setShowCandidatura(false);
             setJaCandidatou(true);
-            navigate('/dashboard/frota/candidaturas');
+            
+            navigate(`/dashboard/${userTipo}/candidaturas`);
         } catch (error) {
             console.error('Erro ao enviar candidatura:', error);
             alert(error.message || 'Erro ao enviar candidatura. Tente novamente.');
@@ -138,8 +159,13 @@ export default function DetalheFrete() {
         });
     };
 
-    const podeCancelar = isEmbarcador && frete && ['AGUARDANDO', 'NEGOCIACAO'].includes(frete.status);
-    const podeCandidatar = isTransportador && frete && ['AGUARDANDO', 'NEGOCIACAO'].includes(frete.status) && !jaCandidatou;
+    // 🔥 PODE CANDIDATAR SE FOR FROTA OU AUTONOMO E O FRETE ESTIVER DISPONÍVEL
+    const podeCandidatar = (isFrota || isAutonomo) && 
+        frete && 
+        ['AGUARDANDO', 'NEGOCIACAO'].includes(frete.status) && 
+        !jaCandidatou;
+
+    console.log('podeCandidatar:', podeCandidatar);
 
     if (loading) {
         return (
@@ -292,7 +318,7 @@ export default function DetalheFrete() {
                 </div>
             </div>
 
-            {/* BOTÃO DE CANDIDATAR (TRANSPORTADOR) */}
+            {/* 🔥 BOTÃO DE CANDIDATAR - SÓ APARECE PARA FROTA E AUTONOMO */}
             {podeCandidatar && (
                 <div className="detalhe-frete-actions">
                     <button 
@@ -305,7 +331,7 @@ export default function DetalheFrete() {
             )}
 
             {/* BOTÃO DE CANCELAR (EMBARCADOR) */}
-            {podeCancelar && (
+            {isEmbarcador && ['AGUARDANDO', 'NEGOCIACAO'].includes(frete.status) && (
                 <div className="detalhe-frete-actions">
                     <button 
                         className="btn btn-danger"

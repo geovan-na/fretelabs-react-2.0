@@ -90,12 +90,6 @@ export default function CardFreteDisponivel({ frete }) {
             {/* BOTÕES */}
             <div className="card-frete-footer">
                 <button 
-                    className="btn btn-primary"
-                    onClick={() => navigate(`/dashboard/fretes/${frete.id}/candidatar`)}
-                >
-                    Candidatar-se
-                </button>
-                <button 
                     className="btn btn-outline"
                     onClick={() => navigate(`/dashboard/fretes/${frete.id}`)}
                 >

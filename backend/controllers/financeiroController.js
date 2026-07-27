@@ -2,7 +2,7 @@
 const db = require('../config/database');
 
 // ============================================
-// FUNÇÃO AUXILIAR: Buscar ID do usuário
+// FUNÇÃO AUXILIAR: Buscar IDs do usuário
 // ============================================
 
 const getIds = async (userId) => {
@@ -18,16 +18,24 @@ const getIds = async (userId) => {
         [userId]
     );
 
-    // Buscar motorista_vinculado_id
+    // Buscar motorista_vinculado (para saber se é vinculado)
     const [motoristaRows] = await db.query(
-        'SELECT id FROM motoristas_vinculados WHERE pessoa_id = ?',
+        'SELECT id, transportador_id FROM motoristas_vinculados WHERE pessoa_id = ?',
         [userId]
     );
+
+    let motoristaId = null;
+    let transportadorIdVinculado = null;
+    if (motoristaRows.length > 0) {
+        motoristaId = motoristaRows[0].id;
+        transportadorIdVinculado = motoristaRows[0].transportador_id;
+    }
 
     return {
         embarcadorId: embarcadorRows.length > 0 ? embarcadorRows[0].id : null,
         transportadorId: transportadorRows.length > 0 ? transportadorRows[0].id : null,
-        motoristaId: motoristaRows.length > 0 ? motoristaRows[0].id : null,
+        motoristaId: motoristaId,
+        transportadorIdVinculado: transportadorIdVinculado,
         isEmbarcador: embarcadorRows.length > 0,
         isTransportador: transportadorRows.length > 0,
         isMotorista: motoristaRows.length > 0
@@ -43,13 +51,15 @@ const getResumo = async (req, res) => {
         const userId = req.userId;
         const ids = await getIds(userId);
 
+        console.log('Resumo financeiro - Usuario:', userId);
+        console.log('IDs encontrados:', ids);
+
         let resultado = {
             total: 0,
             totalTransacoes: 0,
             media: 0,
             aReceber: 0,
-            aPagar: 0,
-            transacoes: []
+            aPagar: 0
         };
 
         if (ids.isEmbarcador) {
@@ -83,19 +93,20 @@ const getResumo = async (req, res) => {
             resultado.isTransportador = true;
 
         } else if (ids.isMotorista) {
-            // MOTORISTA VINCULADO: Ganhos como motorista
+            // VINCULADO: Usar o transportador_id da frota que ele está vinculado
             const [rows] = await db.query(`
                 SELECT 
                     COUNT(*) AS totalTransacoes,
-                    COALESCE(SUM(valor), 0) AS total,
-                    COALESCE(AVG(valor), 0) AS media,
-                    COALESCE(SUM(CASE WHEN status = 'PENDENTE' THEN valor ELSE 0 END), 0) AS aReceber
-                FROM transacoes_financeiras
-                WHERE motorista_vinculado_id = ?
-            `, [ids.motoristaId]);
+                    COALESCE(SUM(valor_fechado), 0) AS total,
+                    COALESCE(AVG(valor_fechado), 0) AS media,
+                    COALESCE(SUM(CASE WHEN status IN ('ACEITO', 'TRANSITO') THEN valor_fechado ELSE 0 END), 0) AS aReceber
+                FROM fretes
+                WHERE transportador_id = ? AND status IN ('ACEITO', 'TRANSITO', 'CONCLUIDO')
+            `, [ids.transportadorIdVinculado]);
 
             resultado = { ...rows[0], ...resultado };
             resultado.isMotorista = true;
+            resultado.frotaId = ids.transportadorIdVinculado;
         }
 
         res.json(resultado);
@@ -113,9 +124,8 @@ const getTransacoes = async (req, res) => {
     try {
         const userId = req.userId;
         const ids = await getIds(userId);
-        const { periodo } = req.query; // 'MES', 'TRIMESTRE', 'ANO'
+        const { periodo } = req.query;
 
-        // Definir período
         let dataLimite = '';
         if (periodo === 'MES') {
             dataLimite = "DATE_SUB(NOW(), INTERVAL 30 DAY)";
@@ -130,7 +140,6 @@ const getTransacoes = async (req, res) => {
         let transacoes = [];
 
         if (ids.isEmbarcador) {
-            // EMBARCADOR: Pagamentos realizados (saídas)
             const [rows] = await db.query(`
                 SELECT 
                     f.id AS id,
@@ -152,7 +161,6 @@ const getTransacoes = async (req, res) => {
             transacoes = rows;
 
         } else if (ids.isTransportador) {
-            // TRANSPORTADOR (FROTA/AUTÔNOMO): Recebimentos (entradas)
             const [rows] = await db.query(`
                 SELECT 
                     f.id AS id,
@@ -174,22 +182,23 @@ const getTransacoes = async (req, res) => {
             transacoes = rows;
 
         } else if (ids.isMotorista) {
-            // MOTORISTA VINCULADO: Pagamentos recebidos
+            // VINCULADO: Transações da frota (transportador_id)
             const [rows] = await db.query(`
                 SELECT 
-                    id,
+                    f.id AS id,
                     'ENTRADA' AS tipo,
-                    valor,
-                    data_solicitacao AS data,
-                    CONCAT('Pagamento frete #', frete_id) AS descricao,
-                    status,
-                    'MOTORISTA' AS perfil
-                FROM transacoes_financeiras
-                WHERE motorista_vinculado_id = ?
-                AND data_solicitacao >= ${dataLimite}
-                ORDER BY data_solicitacao DESC
+                    f.valor_fechado AS valor,
+                    f.data_publicacao AS data,
+                    CONCAT('Frete #', f.id) AS descricao,
+                    f.status,
+                    'VINCULADO' AS perfil
+                FROM fretes f
+                WHERE f.transportador_id = ? 
+                AND f.status IN ('CONCLUIDO', 'ACEITO', 'TRANSITO')
+                AND f.data_publicacao >= ${dataLimite}
+                ORDER BY f.data_publicacao DESC
                 LIMIT 50
-            `, [ids.motoristaId]);
+            `, [ids.transportadorIdVinculado]);
             transacoes = rows;
         }
 
@@ -201,7 +210,7 @@ const getTransacoes = async (req, res) => {
 };
 
 // ============================================
-// 3. GET EXTRATO COMPLETO
+// 3. GET EXTRATO
 // ============================================
 
 const getExtrato = async (req, res) => {
@@ -252,20 +261,22 @@ const getExtrato = async (req, res) => {
             extrato = rows;
 
         } else if (ids.isMotorista) {
+            // VINCULADO: Extrato da frota
             const [rows] = await db.query(`
                 SELECT 
-                    id,
+                    f.id AS id,
                     'ENTRADA' AS tipo,
-                    valor,
-                    data_solicitacao AS data,
-                    CONCAT('Pagamento frete #', frete_id) AS descricao,
-                    status,
-                    'MOTORISTA' AS perfil
-                FROM transacoes_financeiras
-                WHERE motorista_vinculado_id = ?
-                ORDER BY data_solicitacao DESC
+                    f.valor_fechado AS valor,
+                    f.data_publicacao AS data,
+                    CONCAT('Frete #', f.id) AS descricao,
+                    f.status,
+                    'VINCULADO' AS perfil
+                FROM fretes f
+                WHERE f.transportador_id = ? 
+                AND f.status IN ('CONCLUIDO', 'ACEITO', 'TRANSITO')
+                ORDER BY f.data_publicacao DESC
                 LIMIT 100
-            `, [ids.motoristaId]);
+            `, [ids.transportadorIdVinculado]);
             extrato = rows;
         }
 
@@ -277,70 +288,7 @@ const getExtrato = async (req, res) => {
 };
 
 // ============================================
-// 4. SOLICITAR SAQUE (APENAS TRANSPORTADORES)
-// ============================================
-
-const solicitarSaque = async (req, res) => {
-    try {
-        const userId = req.userId;
-        const { valor, dados_bancarios_id } = req.body;
-
-        // Verificar se o usuário é transportador
-        const [transportadorRows] = await db.query(
-            'SELECT id FROM transportadores WHERE pessoa_id = ?',
-            [userId]
-        );
-
-        if (transportadorRows.length === 0) {
-            return res.status(403).json({ 
-                error: 'Apenas transportadores podem solicitar saque' 
-            });
-        }
-
-        const transportadorId = transportadorRows[0].id;
-
-        // Verificar saldo disponível
-        const [saldo] = await db.query(`
-            SELECT COALESCE(SUM(valor_fechado), 0) AS disponivel
-            FROM fretes
-            WHERE transportador_id = ? AND status = 'CONCLUIDO'
-        `, [transportadorId]);
-
-        if (saldo[0].disponivel < valor) {
-            return res.status(400).json({ error: 'Saldo insuficiente' });
-        }
-
-        // Verificar dados bancários
-        const [dadosBancarios] = await db.query(
-            'SELECT id FROM dados_bancarios WHERE id = ? AND pessoa_id = ?',
-            [dados_bancarios_id, userId]
-        );
-
-        if (dadosBancarios.length === 0) {
-            return res.status(404).json({ 
-                error: 'Dados bancários não encontrados' 
-            });
-        }
-
-        // Criar transação de saque
-        const [result] = await db.query(`
-            INSERT INTO transacoes_financeiras 
-            (transportador_id, tipo_transacao, valor, status, metodo_pagamento, dados_bancarios_id) 
-            VALUES (?, 'PAGAMENTO_MOTORISTA', ?, 'PENDENTE', 'PIX', ?)
-        `, [transportadorId, valor, dados_bancarios_id]);
-
-        res.status(201).json({ 
-            message: 'Saque solicitado com sucesso', 
-            id: result.insertId 
-        });
-    } catch (error) {
-        console.error('Erro ao solicitar saque:', error);
-        res.status(500).json({ error: 'Erro ao solicitar saque' });
-    }
-};
-
-// ============================================
-// 5. GET SALDO
+// 4. GET SALDO
 // ============================================
 
 const getSaldo = async (req, res) => {
@@ -371,13 +319,14 @@ const getSaldo = async (req, res) => {
             saldo = { disponivel: rows[0].recebido, aReceber: rows[0].aReceber };
 
         } else if (ids.isMotorista) {
+            // VINCULADO: Saldo da frota
             const [rows] = await db.query(`
                 SELECT 
-                    COALESCE(SUM(CASE WHEN status = 'CONCLUIDO' THEN valor ELSE 0 END), 0) AS recebido,
-                    COALESCE(SUM(CASE WHEN status = 'PENDENTE' THEN valor ELSE 0 END), 0) AS aReceber
-                FROM transacoes_financeiras
-                WHERE motorista_vinculado_id = ?
-            `, [ids.motoristaId]);
+                    COALESCE(SUM(CASE WHEN status = 'CONCLUIDO' THEN valor_fechado ELSE 0 END), 0) AS recebido,
+                    COALESCE(SUM(CASE WHEN status IN ('ACEITO', 'TRANSITO') THEN valor_fechado ELSE 0 END), 0) AS aReceber
+                FROM fretes
+                WHERE transportador_id = ?
+            `, [ids.transportadorIdVinculado]);
             saldo = { disponivel: rows[0].recebido, aReceber: rows[0].aReceber };
         }
 
@@ -389,6 +338,88 @@ const getSaldo = async (req, res) => {
 };
 
 // ============================================
+// 5. SOLICITAR SAQUE (APENAS TRANSPORTADORES)
+// ============================================
+
+const solicitarSaque = async (req, res) => {
+    try {
+        const userId = req.userId;
+        const { valor } = req.body;
+
+        console.log('Solicitando saque:', { userId, valor });
+
+        // Validar valor
+        if (!valor || valor <= 0) {
+            return res.status(400).json({ error: 'Valor inválido para saque' });
+        }
+
+        // Buscar transportador_id
+        const [transportadorRows] = await db.query(
+            'SELECT id FROM transportadores WHERE pessoa_id = ?',
+            [userId]
+        );
+
+        if (transportadorRows.length === 0) {
+            return res.status(404).json({ error: 'Transportador não encontrado' });
+        }
+
+        const transportadorId = transportadorRows[0].id;
+
+        // Verificar saldo disponível (total recebido - total já sacado)
+        const [saldoRows] = await db.query(`
+            SELECT 
+                COALESCE(SUM(CASE 
+                    WHEN f.status = 'CONCLUIDO' THEN f.valor_fechado 
+                    ELSE 0 
+                END), 0) - 
+                COALESCE(SUM(CASE 
+                    WHEN t.tipo_transacao = 'ESTORNO' AND t.status IN ('PENDENTE', 'CONCLUIDO') THEN t.valor 
+                    ELSE 0 
+                END), 0) 
+                AS disponivel
+            FROM fretes f
+            LEFT JOIN transacoes_financeiras t ON f.id = t.frete_id
+            WHERE f.transportador_id = ?
+        `, [transportadorId]);
+
+        const saldoDisponivel = parseFloat(saldoRows[0]?.disponivel || 0);
+
+        console.log('Saldo disponível:', saldoDisponivel);
+
+        if (saldoDisponivel < valor) {
+            return res.status(400).json({ error: 'Saldo insuficiente' });
+        }
+
+        // Verificar se tem dados bancários cadastrados
+        const [dadosBancariosRows] = await db.query(
+            'SELECT id FROM dados_bancarios WHERE pessoa_id = ?',
+            [userId]
+        );
+
+        if (dadosBancariosRows.length === 0) {
+            return res.status(400).json({ error: 'Cadastre seus dados bancários antes de solicitar um saque' });
+        }
+
+        // Criar transação de saque (usando ESTORNO como saque)
+        const [result] = await db.query(`
+            INSERT INTO transacoes_financeiras 
+            (transportador_id, tipo_transacao, valor, status, metodo_pagamento) 
+            VALUES (?, 'ESTORNO', ?, 'PENDENTE', 'PIX')
+        `, [transportadorId, valor]);
+
+        console.log('Saque solicitado com ID:', result.insertId);
+
+        res.status(201).json({ 
+            message: 'Saque solicitado com sucesso',
+            id: result.insertId
+        });
+    } catch (error) {
+        console.error('Erro ao solicitar saque:', error);
+        res.status(500).json({ error: 'Erro ao solicitar saque' });
+    }
+};
+
+// ============================================
 // EXPORTAÇÃO
 // ============================================
 
@@ -396,6 +427,6 @@ module.exports = {
     getResumo, 
     getTransacoes, 
     getExtrato, 
-    solicitarSaque,
-    getSaldo
+    getSaldo,
+    solicitarSaque
 };

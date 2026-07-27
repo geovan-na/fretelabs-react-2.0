@@ -1,4 +1,3 @@
-// pages/MeusFretes.jsx
 import { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { api } from '../services/api';
@@ -15,15 +14,25 @@ export default function MeusFretes() {
 
     useEffect(() => {
         carregarFretes();
-    }, []);
+    }, [filtro]);
 
     const carregarFretes = async () => {
         setLoading(true);
         setError(null);
 
         try {
-            const response = await api.fretes.listar(token);
-            setFretes(response.data || []);
+            // Chamando a rota específica mapeada na api
+            const response = await api.fretes.listarMeusFretes(token, `?status=${filtro}`);
+            console.log(`Fretes do embarcador carregados para o status ${filtro}:`, response.data);
+            
+            // Tratando o envelopamento { data: rows } do backend de forma segura
+            if (response.data && Array.isArray(response.data.data)) {
+                setFretes(response.data.data);
+            } else if (response.data && Array.isArray(response.data)) {
+                setFretes(response.data);
+            } else {
+                setFretes([]);
+            }
         } catch (err) {
             console.error('Erro ao carregar fretes:', err);
             setError('Erro ao carregar a lista de fretes.');
@@ -36,9 +45,9 @@ export default function MeusFretes() {
         setFiltro(status);
     };
 
-    const fretesFiltrados = filtro === 'TODOS' 
-        ? fretes 
-        : fretes.filter(f => f.status === filtro);
+    // Como o backend já faz o filtro por status direto no banco,
+    // usamos o array 'fretes' diretamente sem precisar filtrar na memória do Javascript
+    const fretesFiltrados = fretes;
 
     const statusOptions = [
         { value: 'TODOS', label: 'Todos' },
@@ -71,7 +80,6 @@ export default function MeusFretes() {
 
     return (
         <div className="meus-fretes-container">
-            {/* HEADER PADRONIZADO */}
             <div className="page-header">
                 <h1>Meus Fretes</h1>
                 <p className="subtitle">
@@ -79,7 +87,6 @@ export default function MeusFretes() {
                 </p>
             </div>
 
-            {/* FILTROS */}
             <div className="meus-fretes-filtros">
                 {statusOptions.map((status) => (
                     <button
@@ -92,8 +99,10 @@ export default function MeusFretes() {
                 ))}
             </div>
 
+            <div className="meus-fretes-total">
+                {fretesFiltrados.length} frete(s) encontrado(s)
+            </div>
 
-            {/* LISTA DE FRETES */}
             {fretesFiltrados.length === 0 ? (
                 <div className="meus-fretes-vazio">
                     <p>Nenhum frete encontrado.</p>

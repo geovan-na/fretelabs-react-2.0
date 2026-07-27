@@ -4,6 +4,7 @@ require('dotenv').config();
 
 const authRoutes = require('./routes/authRoutes');
 const usuarioRoutes = require('./routes/usuarioRoutes');
+const perfilRoutes = require('./routes/perfilRoutes');
 const freteRoutes = require('./routes/freteRoutes');
 const veiculoRoutes = require('./routes/veiculoRoutes');
 const enderecoRoutes = require('./routes/enderecoRoutes');
@@ -18,8 +19,11 @@ const ocorrenciaRoutes = require('./routes/ocorrenciaRoutes');
 const avaliacaoRoutes = require('./routes/avaliacaoRoutes');
 const financeiroRoutes = require('./routes/financeiroRoutes');
 const dadosBancariosRoutes = require('./routes/dadosBancariosRoutes');
-
-
+const propostaRoutes = require('./routes/propostaRoutes');
+const contratoRoutes = require('./routes/contratoRoutes');
+const motoristaRoutes = require('./routes/motoristaRoutes');
+const pagamentoRoutes = require('./routes/pagamentoRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -30,7 +34,9 @@ app.use(express.urlencoded({ extended: true }));
 
 // Rotas
 app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes);
 app.use('/api/usuarios', usuarioRoutes);
+app.use('/api/perfil', perfilRoutes);
 app.use('/api/fretes', freteRoutes);
 app.use('/api/veiculos', veiculoRoutes);
 app.use('/api/enderecos', enderecoRoutes);
@@ -45,6 +51,11 @@ app.use('/api/ocorrencias', ocorrenciaRoutes);
 app.use('/api/avaliacoes', avaliacaoRoutes);
 app.use('/api/financeiro', financeiroRoutes);
 app.use('/api/dados-bancarios', dadosBancariosRoutes);
+app.use('/api/propostas', propostaRoutes);
+app.use('/api/contratos', contratoRoutes);
+app.use('/api/motoristas', motoristaRoutes);
+app.use('/api/pagamentos', pagamentoRoutes);
+
 
 app.get('/api/health', (req, res) => {
     res.json({ status: 'OK', message: 'Servidor FreteLabs funcionando' });

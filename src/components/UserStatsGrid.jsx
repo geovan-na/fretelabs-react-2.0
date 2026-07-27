@@ -1,5 +1,5 @@
 // components/dashboard/UserStatsGrid.jsx
-import StatCard from './StatCard';
+import StatCard from './StatsCard';
 
 const UserStatsGrid = ({ stats, userRole }) => {
     const getStatsForRole = () => {

@@ -1,4 +1,5 @@
 // src/pages/Motoristas.jsx
+import { useNavigate } from 'react-router-dom';
 import Button from '../components/Button';
 import CardPerguntas from '../components/CardPerguntas';
 
@@ -6,32 +7,28 @@ const beneficiosMotoristas = [
     {
         titulo: 'Mais Oportunidades',
         descricao: 'Acesso a centenas de fretes de todo o Brasil. Nunca mais fique sem carga para transportar.',
-        icone: '🚚'
+        
     },
     {
         titulo: 'Pagamento Garantido',
         descricao: 'Receba em ate 48h apos a entrega. O valor fica retido em garantia ate a confirmacao.',
-        icone: '💰'
+        
     },
     {
         titulo: 'Seguranca Total',
         descricao: 'Fretes verificados e com seguro de carga incluso. Trabalhe com tranquilidade.',
-        icone: '🛡️'
     },
     {
         titulo: 'Sem Taxas Abusivas',
         descricao: 'Comissao justa e transparente. Nada de taxas escondidas ou surpresas no fim do mes.',
-        icone: '📉'
     },
     {
         titulo: 'Sem Viagem Vazia',
         descricao: 'Encontre fretes para qualquer regiao. Nunca mais volte com o caminhao vazio.',
-        icone: '🔄'
     },
     {
         titulo: 'Suporte 24/7',
         descricao: 'Time especializado sempre disponivel para ajudar com qualquer duvida ou problema.',
-        icone: '💬'
     }
 ];
 
@@ -63,6 +60,16 @@ const faqMotoristas = [
 ];
 
 export default function Motoristas() {
+    const navigate = useNavigate();
+
+    // Função para rolar suavemente até a seção de como funciona
+    const scrollToComoFunciona = () => {
+        const elemento = document.querySelector('.como-funciona-motorista');
+        if (elemento) {
+            elemento.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
     return (
         <div className="motoristas-page">
             {/* HERO */}
@@ -79,8 +86,19 @@ export default function Motoristas() {
                         Trabalhe com liberdade, seguranca e pagamento garantido.
                     </p>
                     <div className="hero-buttons">
-                        <Button variant="primary">Criar conta</Button>
-                        <Button variant="secondary">Ver como funciona</Button>
+
+                        <button 
+                            className="btn-primary" 
+                            onClick={() => navigate('/cadastro')}
+                        >
+                            Criar conta
+                        </button>
+                    <button 
+                        className="btn-secondary" 
+                        onClick={scrollToComoFunciona}
+                    >
+                        Ver como funciona
+                    </button>
                     </div>
                     <div className="hero-features">
                         <span>Fretes na sua regiao</span>
@@ -245,7 +263,12 @@ export default function Motoristas() {
                         Junte-se a milhares de transportadores que ja estao lucrando mais
                         com a FreteLabs.
                     </p>
-                    <Button variant="primary">Criar conta gratuita</Button>
+                    <Button 
+                        variant="primary" 
+                        onClick={() => navigate('/cadastro')}
+                    >
+                        Criar conta gratuita
+                    </Button>
                 </div>
             </section>
         </div>

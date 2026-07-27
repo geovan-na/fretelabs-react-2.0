@@ -27,7 +27,7 @@ function Login() {
             frota: { email: 'frota@fretelabs.com', senha: '123456' },
             autonomo: { email: 'autonomo@fretelabs.com', senha: '123456' },
             vinculado: { email: 'vinculado3@fretelabs.com', senha: '123456' },
-            admin: { email: 'admin@fretelabs.com', senha: '123456' }
+            admin: { email: 'admin@fretelabs.com', senha: 'senhaSegura123' }
         };
         
         if (credenciais[tipo]) {

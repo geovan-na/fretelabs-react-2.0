@@ -1,4 +1,5 @@
 // src/pages/Empresas.jsx
+import { useNavigate } from 'react-router-dom';
 import Button from '../components/Button';
 import CardPerguntas from '../components/CardPerguntas';
 
@@ -6,32 +7,28 @@ const beneficiosEmpresas = [
     {
         titulo: 'Seguranca e Confiabilidade',
         descricao: 'Todos os transportadores passam por verificacao documental e analise de historico. Sua carga esta protegida com seguro incluso.',
-        icone: '🛡️'
     },
     {
         titulo: 'Economia Inteligente',
         descricao: 'Receba multiplos lances de transportadores qualificados e escolha a melhor oferta para seu bolso.',
-        icone: '💰'
     },
     {
         titulo: 'Agilidade Total',
         descricao: 'Publique um frete em minutos e receba propostas em ate 24 horas. Sua carga sai mais rapido.',
-        icone: '⚡'
     },
     {
         titulo: 'Rastreamento em Tempo Real',
         descricao: 'Acompanhe sua carga do inicio ao fim com GPS integrado e notificacoes automaticas.',
-        icone: '📍'
     },
     {
         titulo: 'Gestao Completa',
         descricao: 'Historico detalhado de todos os seus fretes, relatorios financeiros e indicadores de performance.',
-        icone: '📊'
+     
     },
     {
         titulo: 'Suporte Especializado',
         descricao: 'Time de suporte disponivel 24/7 para ajudar com qualquer duvida ou problema.',
-        icone: '💬'
+        
     }
 ];
 
@@ -46,7 +43,7 @@ const faqEmpresas = [
     },
     {
         pergunta: 'Como funciona o pagamento?',
-        resposta: 'O pagamento e feito apenas apos a confirmacao da entrega. O valor fica retido em garantia ate que voce confirme que a carga chegou em perfeito estado.'
+        resposta: 'O pagamento e feito apenas apos a confirmacao da entrega. O valor fica retido em garantia até que voce confirme que a carga chegou em perfeito estado.'
     },
     {
         pergunta: 'Minha carga esta segurada?',
@@ -58,11 +55,21 @@ const faqEmpresas = [
     },
     {
         pergunta: 'Qual o custo para usar a plataforma?',
-        resposta: 'A plataforma cobra uma comissao apenas sobre fretes realizados com sucesso. Nao ha taxas de cadastro ou mensalidades para embarcadores.'
+        resposta: 'A plataforma cobra uma comissao apenas sobre fretes realizados com sucesso. Não ha taxas de cadastro ou mensalidades para embarcadores.'
     }
 ];
 
 export default function Empresas() {
+    const navigate = useNavigate();
+
+    // Função para rolar suavemente até a seção de como funciona
+    const scrollToComoFunciona = () => {
+        const elemento = document.querySelector('.como-funciona-empresa');
+        if (elemento) {
+            elemento.scrollIntoView({ behavior: 'smooth' });
+        }
+    };
+
     return (
         <div className="empresas-page">
             {/* HERO */}
@@ -79,8 +86,18 @@ export default function Empresas() {
                         da sua operacao logistica com seguranca e confiabilidade.
                     </p>
                     <div className="hero-buttons">
-                        <Button variant="primary">Criar conta</Button>
-                        <Button variant="secondary">Ver como funciona</Button>
+                        <Button 
+                            variant="primary" 
+                            onClick={() => navigate('/cadastro')}
+                        >
+                            Criar conta
+                        </Button>
+                        <Button 
+                            variant="secondary" 
+                            onClick={scrollToComoFunciona}
+                        >
+                            Ver como funciona
+                        </Button>
                     </div>
                     <div className="hero-features">
                         <span>Fretes publicados em minutos</span>
@@ -219,7 +236,12 @@ export default function Empresas() {
                         Junte-se a milhares de empresas que ja otimizaram sua logistica
                         com a FreteLabs.
                     </p>
-                    <Button variant="primary">Criar conta gratuita</Button>
+                    <Button 
+                        variant="primary" 
+                        onClick={() => navigate('/cadastro')}
+                    >
+                        Criar conta gratuita
+                    </Button>
                 </div>
             </section>
         </div>

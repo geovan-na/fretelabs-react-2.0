@@ -6697,3 +6697,4240 @@ footer {
         min-width: unset;
     }
 }
+/* ============================================
+   FINANCEIRO - SAQUE
+   ============================================ */
+
+.financeiro-saque {
+    background: #F0FDF4;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    border: 1px solid #D1FAE5;
+    margin-bottom: 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.financeiro-saque-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.financeiro-saque-label {
+    font-size: 0.8rem;
+    color: #6B7280;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.financeiro-saque-valor {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #065F46;
+}
+
+.financeiro-saque-actions {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.financeiro-saque-input {
+    padding: 0.75rem 1rem;
+    border: 1px solid #D1D5DB;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    width: 200px;
+    font-family: inherit;
+}
+
+.financeiro-saque-input:focus {
+    outline: none;
+    border-color: #FF8200;
+    box-shadow: 0 0 0 3px rgba(255, 130, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+    .financeiro-saque {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .financeiro-saque-actions {
+        flex-direction: column;
+    }
+
+    .financeiro-saque-input {
+        width: 100%;
+    }
+
+    .financeiro-saque-actions .btn {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+}
+/* ============================================
+   DADOS BANCÁRIOS - LISTA DE CONTAS
+   ============================================ */
+
+.dados-bancarios-lista {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    margin-top: 1rem;
+}
+
+.dados-bancarios-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: #F9FAFB;
+    border-radius: 0.75rem;
+    border: 1px solid #E5E7EB;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.dados-bancarios-item-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.dados-bancarios-item-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.dados-bancarios-item-banco {
+    font-weight: 600;
+    color: #1F2937;
+    font-size: 1rem;
+}
+
+.dados-bancarios-item-principal {
+    font-size: 0.6rem;
+    font-weight: 600;
+    color: #FFFFFF;
+    background: #0066CC;
+    padding: 0.1rem 0.6rem;
+    border-radius: 30px;
+    text-transform: uppercase;
+}
+
+.dados-bancarios-item-detalhes {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+    font-size: 0.8rem;
+    color: #6B7280;
+}
+
+.dados-bancarios-item-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.dados-bancarios-form-wrapper {
+    margin-bottom: 1.5rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.financeiro-saque-conta {
+    font-size: 0.75rem;
+    color: #6B7280;
+    margin-top: 0.1rem;
+}
+
+@media (max-width: 768px) {
+    .dados-bancarios-item {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .dados-bancarios-item-actions {
+        justify-content: flex-end;
+    }
+
+    .dados-bancarios-item-detalhes {
+        flex-direction: column;
+        gap: 0.1rem;
+    }
+}
+/* ============================================
+   FRETES ACEITOS - BOTÕES
+   ============================================ */
+
+.card-frete-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #F3F4F6;
+}
+
+.card-frete-actions .btn-sm {
+    padding: 0.3rem 0.8rem;
+    font-size: 0.75rem;
+}
+
+.card-frete-motorista {
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: #F0FDF4;
+    border-radius: 0.5rem;
+}
+
+.card-frete-motorista-designado {
+    margin-top: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: #F0FDF4;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.motorista-selector {
+    margin-top: 0.5rem;
+}
+
+.motorista-designado-label {
+    font-size: 0.75rem;
+    color: #6B7280;
+}
+
+.motorista-designado-nome {
+    font-weight: 600;
+    color: #065F46;
+}
+
+@media (max-width: 768px) {
+    .card-frete-actions {
+        flex-direction: column;
+    }
+    
+    .card-frete-actions .btn-sm {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+}
+/* ============================================
+   MOTORISTAS - CSS COMPLETO
+   ============================================ */
+
+.motoristas-container {
+    padding: 1.5rem 0;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* HEADER */
+.motoristas-container .page-header {
+    margin-bottom: 2rem;
+}
+
+.motoristas-container .page-header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1F2937;
+    margin: 0 0 0.25rem 0;
+}
+
+.motoristas-container .page-header .subtitle {
+    color: #6B7280;
+    font-size: 0.95rem;
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* GUIAS */
+.motoristas-guias {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #E5E7EB;
+    padding-bottom: 0.75rem;
+}
+
+.guia-btn {
+    padding: 0.6rem 1.5rem;
+    border-radius: 30px;
+    border: 1px solid #E5E7EB;
+    background: #FFFFFF;
+    color: #6B7280;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    position: relative;
+}
+
+.guia-btn:hover {
+    border-color: #FF8200;
+    color: #FF8200;
+}
+
+.guia-btn.active {
+    background: #FF8200;
+    color: #FFFFFF;
+    border-color: #FF8200;
+}
+
+.guia-badge {
+    background: #EF4444;
+    color: #FFFFFF;
+    font-size: 0.6rem;
+    font-weight: 600;
+    padding: 0.05rem 0.4rem;
+    border-radius: 50%;
+    margin-left: 0.3rem;
+    display: inline-block;
+    min-width: 18px;
+    text-align: center;
+}
+
+.guia-btn.active .guia-badge {
+    background: #FFFFFF;
+    color: #FF8200;
+}
+
+/* GRID DE CARDS */
+.motoristas-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 1.5rem;
+}
+
+/* CARD MOTORISTA */
+.card-motorista {
+    background: #FFFFFF;
+    border-radius: 1rem;
+    border: 1px solid #E5E7EB;
+    padding: 1.25rem;
+    transition: all 0.3s ease;
+}
+
+.card-motorista:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+    border-color: #FF8200;
+}
+
+.card-motorista-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.card-motorista-nome {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1F2937;
+}
+
+.card-motorista-cnh {
+    font-size: 0.8rem;
+    color: #6B7280;
+}
+
+.card-motorista-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+}
+
+.card-motorista-info-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.card-motorista-info-label {
+    font-size: 0.55rem;
+    color: #6B7280;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.card-motorista-info-value {
+    font-size: 0.8rem;
+    color: #1F2937;
+    font-weight: 500;
+}
+
+.card-motorista-veiculo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.75rem;
+    background: #F0FDF4;
+    border-radius: 0.5rem;
+    margin: 0.5rem 0;
+    font-size: 0.8rem;
+    color: #065F46;
+}
+
+.card-motorista-veiculo-sem {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.75rem;
+    background: #FEF3C7;
+    border-radius: 0.5rem;
+    margin: 0.5rem 0;
+    font-size: 0.8rem;
+    color: #92400E;
+}
+
+.card-motorista-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #F3F4F6;
+}
+
+.card-motorista-actions .btn-sm {
+    padding: 0.3rem 0.8rem;
+    font-size: 0.75rem;
+}
+
+/* CARDS DE PROPOSTA */
+.card-proposta {
+    background: #FFFFFF;
+    border-radius: 1rem;
+    border: 1px solid #E5E7EB;
+    padding: 1.25rem;
+    transition: all 0.3s ease;
+}
+
+.card-proposta:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+    border-color: #FF8200;
+}
+
+.card-proposta-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.card-proposta-status {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.2rem 0.75rem;
+    border-radius: 30px;
+}
+
+.card-proposta-status.pendente {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.card-proposta-status.aceita {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.card-proposta-status.recusada {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+.card-proposta-status.modificada {
+    background: #DBEAFE;
+    color: #1E40AF;
+}
+
+.card-proposta-status.contrato_assinado {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.card-proposta-valores {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+}
+
+.card-proposta-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #F3F4F6;
+}
+
+/* VÁZIO */
+.motoristas-vazio {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem 2rem;
+    background: #F9FAFB;
+    border-radius: 1rem;
+    border: 1px solid #E5E7EB;
+}
+
+.motoristas-vazio p {
+    color: #6B7280;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.motoristas-vazio-sub {
+    color: #9CA3AF;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+}
+
+/* LOADING E ERROR */
+.motoristas-loading,
+.motoristas-error {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    gap: 1rem;
+}
+
+.motoristas-loading p {
+    color: #6B7280;
+    font-size: 1rem;
+}
+
+.motoristas-error p {
+    color: #EF4444;
+    font-size: 1rem;
+}
+
+/* STATUS BADGES */
+.status-ativo {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.status-ferias {
+    background: #DBEAFE;
+    color: #1E40AF;
+}
+
+.status-licenca {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.status-desligado {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+/* ============================================
+   RESPONSIVO
+   ============================================ */
+
+@media (max-width: 992px) {
+    .motoristas-grid {
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    }
+}
+
+@media (max-width: 768px) {
+    .motoristas-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .motoristas-guias {
+        flex-direction: column;
+        gap: 0.3rem;
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .guia-btn {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+
+    .card-motorista-info {
+        grid-template-columns: 1fr;
+    }
+
+    .card-motorista-actions {
+        flex-direction: column;
+    }
+
+    .card-motorista-actions .btn-sm {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+
+    .card-proposta-actions {
+        flex-direction: column;
+    }
+
+    .card-proposta-actions .btn-sm {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+
+    .card-proposta-valores {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .motoristas-container .page-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .card-motorista {
+        padding: 1rem;
+    }
+
+    .card-proposta {
+        padding: 1rem;
+    }
+}
+
+/* ============================================
+   MOTORISTAS - COMPONENTES ADICIONAIS
+   ============================================ */
+
+/* Contato */
+.card-motorista-contato {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    padding: 0.4rem 0.75rem;
+    background: #F9FAFB;
+    border-radius: 0.5rem;
+    margin: 0.5rem 0;
+    font-size: 0.8rem;
+    color: #1F2937;
+}
+
+.card-motorista-contato-label {
+    font-weight: 500;
+    color: #6B7280;
+}
+
+/* Mensagem da proposta */
+.card-proposta-mensagem {
+    background: #F9FAFB;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    margin: 0.5rem 0;
+}
+
+.card-proposta-mensagem p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #4B5563;
+    font-style: italic;
+}
+
+/* Modal subtítulo */
+.modal-subtitle {
+    color: #6B7280;
+    font-size: 0.9rem;
+    margin-bottom: 1.5rem;
+}
+
+/* Botão de ação em proposta recebida */
+.card-proposta-actions .btn-success {
+    background: #22C55E;
+    color: #FFFFFF;
+}
+
+.card-proposta-actions .btn-success:hover {
+    background: #16A34A;
+}
+
+.card-proposta-actions .btn-danger {
+    background: #EF4444;
+    color: #FFFFFF;
+}
+
+.card-proposta-actions .btn-danger:hover {
+    background: #DC2626;
+}
+
+/* Ajustes para os cards de proposta */
+.card-proposta-valores {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    padding: 0.5rem 0;
+}
+
+.card-proposta-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #F3F4F6;
+}
+
+/* Status da proposta - cores mais específicas */
+.card-proposta-status.pendente {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.card-proposta-status.aceita {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.card-proposta-status.recusada {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+.card-proposta-status.modificada {
+    background: #DBEAFE;
+    color: #1E40AF;
+}
+
+.card-proposta-status.contrato_assinado {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+/* ============================================
+   STATUS BADGES - COMPLETO
+   ============================================ */
+
+/* Status base */
+.status-badge {
+    padding: 0.2rem 0.75rem;
+    border-radius: 30px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* Usuário */
+.badge-pending {
+    background: #FEF3C7;
+    color: #92400E;
+}
+.badge-approved {
+    background: #D1FAE5;
+    color: #065F46;
+}
+.badge-rejected {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+.badge-blocked {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+/* Motorista */
+.badge-active {
+    background: #D1FAE5;
+    color: #065F46;
+}
+.badge-ferias {
+    background: #DBEAFE;
+    color: #1E40AF;
+}
+.badge-licenca {
+    background: #FEF3C7;
+    color: #92400E;
+}
+.badge-desligado {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+/* Frete */
+.badge-waiting {
+    background: #FEF3C7;
+    color: #92400E;
+}
+.badge-negotiation {
+    background: #DBEAFE;
+    color: #1E40AF;
+}
+.badge-accepted {
+    background: #D1FAE5;
+    color: #065F46;
+}
+.badge-transit {
+    background: #E0E7FF;
+    color: #3730A3;
+}
+.badge-completed {
+    background: #D1FAE5;
+    color: #065F46;
+}
+.badge-cancelled {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+/* Candidatura */
+.badge-recusado {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+/* Veículo */
+.badge-inativo {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+.badge-manutencao {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+/* Proposta */
+.badge-modificada {
+    background: #DBEAFE;
+    color: #1E40AF;
+}
+.badge-contrato-assinado {
+    background: #D1FAE5;
+    color: #065F46;
+}
+.badge-expirada {
+    background: #F3F4F6;
+    color: #6B7280;
+}
+
+/* Pagamento */
+.badge-processando {
+    background: #DBEAFE;
+    color: #1E40AF;
+}
+.badge-falhou {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+.badge-estornado {
+    background: #F3F4F6;
+    color: #6B7280;
+}
+
+/* Contrato */
+.badge-em-experiencia {
+    background: #DBEAFE;
+    color: #1E40AF;
+}
+.badge-renovado {
+    background: #D1FAE5;
+    color: #065F46;
+}
+.badge-encerrado {
+    background: #F3F4F6;
+    color: #6B7280;
+}
+.badge-rescindido {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+.badge-suspenso {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+/* Default */
+.badge-default {
+    background: #F3F4F6;
+    color: #6B7280;
+}
+
+/* ============================================
+   PERFIL
+   ============================================ */
+
+.perfil-container {
+    padding: 1.5rem 0;
+    width: 100%;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.perfil-container .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.perfil-container .page-header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1F2937;
+    margin: 0 0 0.25rem 0;
+}
+
+.perfil-container .page-header .subtitle {
+    color: #6B7280;
+    font-size: 0.95rem;
+    margin: 0;
+    line-height: 1.6;
+}
+
+.perfil-actions {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+}
+
+.perfil-card {
+    background: #FFFFFF;
+    border-radius: 1rem;
+    border: 1px solid #E5E7EB;
+    padding: 2rem;
+}
+
+.perfil-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: #FF8200;
+    color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+.perfil-info {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.perfil-section {
+    border-bottom: 1px solid #F3F4F6;
+    padding-bottom: 1.5rem;
+}
+
+.perfil-section:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.perfil-section h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1F2937;
+    margin-bottom: 1rem;
+}
+
+.perfil-field {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #F9FAFB;
+}
+
+.perfil-field:last-child {
+    border-bottom: none;
+}
+
+.perfil-label {
+    font-size: 0.85rem;
+    color: #6B7280;
+    font-weight: 500;
+}
+
+.perfil-value {
+    font-size: 0.85rem;
+    color: #1F2937;
+    font-weight: 500;
+    text-align: right;
+}
+
+.perfil-input {
+    background: #F9FAFB;
+    border: 1px solid #E5E7EB;
+    border-radius: 0.5rem;
+    padding: 0.3rem 0.75rem;
+    font-size: 0.85rem;
+    color: #1F2937;
+    width: 50%;
+    text-align: right;
+    font-family: inherit;
+}
+
+.perfil-input:focus {
+    outline: none;
+    border-color: #FF8200;
+}
+
+.perfil-senha {
+    text-align: center;
+    padding-top: 1rem;
+}
+
+.perfil-senha .btn {
+    padding: 0.5rem 2rem;
+}
+
+/* ============================================
+   RESPONSIVO
+   ============================================ */
+
+@media (max-width: 768px) {
+    .perfil-container .page-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .perfil-actions {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .perfil-actions .btn {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+
+    .perfil-field {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+
+    .perfil-value {
+        text-align: left;
+    }
+
+    .perfil-input {
+        width: 100%;
+        text-align: left;
+    }
+
+    .perfil-card {
+        padding: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .perfil-container .page-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .perfil-card {
+        padding: 1rem;
+    }
+
+    .perfil-avatar {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+}
+/* ============================================
+   FORMULÁRIO DE CADASTRO - SELECTS
+   ============================================ */
+
+.register-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+    margin-bottom: 1rem;
+    width: 100%;
+}
+
+.register-form .form-group label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #4B5563;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.register-form .form-group label span {
+    color: #EF4444;
+    margin-left: 2px;
+}
+
+.register-form .form-select {
+    width: 100%;
+    background-color: #FFFFFF;
+    border: 1px solid #D1D5DB;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: #1F2937;
+    transition: all 0.2s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1rem;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.register-form .form-select:focus {
+    outline: none;
+    border-color: #FF8200;
+    box-shadow: 0 0 0 3px rgba(255, 130, 0, 0.1);
+}
+
+.register-form .form-select.error {
+    border-color: #EF4444;
+}
+
+.register-form .form-select option {
+    color: #1F2937;
+    background-color: #FFFFFF;
+    padding: 0.5rem;
+}
+
+.register-form .form-select option:checked {
+    background-color: #FF8200;
+    color: #FFFFFF;
+}
+
+.register-form .error-message {
+    color: #EF4444;
+    font-size: 0.7rem;
+    margin-top: 0.25rem;
+}
+
+.register-form .info-box {
+    background: #F0FDF4;
+    border-left: 3px solid #22C55E;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    margin: 1rem 0;
+}
+
+.register-form .info-box p {
+    font-size: 0.8rem;
+    color: #374151;
+    margin: 0;
+    line-height: 1.5;
+}
+
+.register-form .info-box p:first-child {
+    color: #065F46;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+}
+/* styles/Global.css */
+:root {
+    --white: #FFFFFF;
+    --black: #1A1A1A;
+    --gray-light: #F5F7FA;
+    --gray: #6B7280;
+    --gray-dark: #374151;
+    --primary: #FF8200;
+    --primary-dark: #E67300;
+    --secondary: #00D2D3;
+    --secondary-dark: #00B8B9;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--white);
+    color: var(--black);
+    min-height: 100vh;
+}
+
+/* ============================================
+   DASHBOARD - COMPONENTES GLOBAIS
+   ============================================ */
+
+/* Cards de Estatística */
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+    background-color: #FFFFFF;
+    border-radius: 0.75rem;
+    border: 1px solid #E5E7EB;
+    transition: all 0.2s ease;
+    min-height: 80px;
+    width: 100%;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.stat-card:hover {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.06);
+    border-color: #D1D5DB;
+    transform: translateY(-2px);
+}
+
+.stat-card-header {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    width: 100%;
+}
+
+.stat-card-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.stat-card-icon svg {
+    width: 22px;
+    height: 22px;
+}
+
+.stat-card-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.stat-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    color: #6B7280;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin: 0 0 0.1rem 0;
+}
+
+.stat-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1F2937;
+    margin: 0;
+}
+
+.stat-subtitle {
+    font-size: 0.7rem;
+    color: #6B7280;
+    margin: 0.1rem 0 0 0;
+}
+
+.stat-trend {
+    margin-top: 0.2rem;
+    font-size: 0.7rem;
+}
+
+.stat-trend .positive {
+    color: #22C55E;
+    font-weight: 600;
+}
+
+.stat-trend .negative {
+    color: #EF4444;
+    font-weight: 600;
+}
+
+.stat-trend .trend-label {
+    color: #6B7280;
+    margin-left: 0.3rem;
+}
+
+/* Chart Container */
+.chart-container {
+    background-color: #FFFFFF;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    border: 1px solid #E5E7EB;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.chart-container h4 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1F2937;
+    margin: 0 0 1rem 0;
+}
+
+/* Candidaturas Container */
+.candidaturas-container {
+    background-color: #FFFFFF;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    border: 1px solid #E5E7EB;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.candidaturas-container h4 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1F2937;
+    margin: 0 0 0.5rem 0;
+}
+
+.candidaturas-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #FF8200;
+    margin: 0;
+}
+
+.candidaturas-lista {
+    width: 100%;
+    margin-top: 1rem;
+    text-align: left;
+}
+
+.candidaturas-item {
+    padding: 0.5rem;
+    border-bottom: 1px solid #F3F4F6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.candidaturas-item:last-child {
+    border-bottom: none;
+}
+
+.candidaturas-item-nome {
+    font-weight: 500;
+    color: #1F2937;
+}
+
+.candidaturas-item-valor {
+    color: #0066CC;
+    font-weight: 600;
+}
+
+.candidaturas-ver-todas {
+    text-align: center;
+    margin-top: 0.5rem;
+}
+
+.candidaturas-ver-todas a {
+    color: #FF8200;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: color 0.2s;
+}
+
+.candidaturas-ver-todas a:hover {
+    color: #E67300;
+    text-decoration: underline;
+}
+
+/* Table Container */
+.table-container {
+    background-color: #FFFFFF;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    border: 1px solid #E5E7EB;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    overflow-x: auto;
+}
+
+.table-container h4 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1F2937;
+    margin: 0 0 1rem 0;
+}
+
+.table-container table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    min-width: 500px;
+}
+
+.table-container th {
+    text-align: left;
+    padding: 0.75rem 0.5rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #6B7280;
+    border-bottom: 1px solid #E5E7EB;
+}
+
+.table-container td {
+    padding: 0.75rem 0.5rem;
+    color: #1F2937;
+    border-bottom: 1px solid #F3F4F6;
+}
+
+.table-container tr:last-child td {
+    border-bottom: none;
+}
+
+.table-container tbody tr {
+    cursor: default;
+    transition: background-color 0.2s;
+}
+
+.table-container tbody tr.clickable {
+    cursor: pointer;
+}
+
+.table-container tbody tr.clickable:hover {
+    background-color: #F9FAFB;
+}
+
+.table-empty {
+    text-align: center;
+    color: #6B7280;
+    padding: 2rem;
+}
+
+/* Activity List */
+.activity-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.activity-item {
+    padding: 0.75rem;
+    border-bottom: 1px solid #F3F4F6;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.activity-item:last-child {
+    border-bottom: none;
+}
+
+.activity-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.activity-descricao {
+    font-weight: 500;
+    color: #1F2937;
+    font-size: 0.9rem;
+}
+
+.activity-tipo {
+    font-size: 0.75rem;
+    color: #6B7280;
+}
+
+.activity-data {
+    font-size: 0.75rem;
+    color: #9CA3AF;
+    white-space: nowrap;
+    margin-left: 1rem;
+}
+
+/* Alert List */
+.alert-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.alert-item {
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    border-left: 4px solid;
+}
+
+.alert-item.manutencao {
+    background-color: #FEF2F2;
+    border-left-color: #EF4444;
+}
+
+.alert-item.seguro {
+    background-color: #FEF3C7;
+    border-left-color: #F59E0B;
+}
+
+.alert-item.cnh {
+    background-color: #FEF3C7;
+    border-left-color: #F59E0B;
+}
+
+.alert-titulo {
+    font-weight: 600;
+    color: #1F2937;
+    font-size: 0.85rem;
+}
+
+.alert-descricao {
+    font-size: 0.8rem;
+    color: #6B7280;
+}
+
+.alert-data {
+    font-size: 0.7rem;
+    color: #9CA3AF;
+    margin-top: 0.25rem;
+}
+
+.alert-empty {
+    text-align: center;
+    color: #6B7280;
+    padding: 1rem;
+}
+
+/* Performance Card */
+.performance-card {
+    background-color: #FFFFFF;
+    border-radius: 0.75rem;
+    padding: 1.5rem;
+    border: 1px solid #E5E7EB;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.performance-card h4 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1F2937;
+    margin: 0 0 1rem 0;
+}
+
+.performance-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.performance-item-label {
+    font-size: 0.7rem;
+    color: #6B7280;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin: 0;
+}
+
+.performance-item-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1F2937;
+    margin: 0.1rem 0 0 0;
+}
+
+.performance-item-value.green {
+    color: #22C55E;
+}
+
+.performance-item-value.orange {
+    color: #FF8200;
+}
+
+.performance-item-value.blue {
+    color: #3B82F6;
+}
+
+/* Veículo Info Card */
+.veiculo-info-card {
+    background-color: #FFFFFF;
+    border-radius: 0.75rem;
+    padding: 1rem 1.5rem;
+    border: 1px solid #E5E7EB;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.veiculo-info-icon {
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.veiculo-info-icon svg {
+    width: 28px;
+    height: 28px;
+}
+
+.veiculo-info-detalhes {
+    flex: 1;
+    min-width: 150px;
+}
+
+.veiculo-info-detalhes h3 {
+    margin: 0;
+    color: #1F2937;
+    font-size: 1rem;
+}
+
+.veiculo-info-detalhes p {
+    margin: 0;
+    color: #6B7280;
+    font-size: 0.9rem;
+}
+
+.veiculo-info-cnh {
+    margin-left: auto;
+    text-align: right;
+}
+
+.veiculo-info-cnh .label {
+    font-size: 0.8rem;
+    color: #6B7280;
+}
+
+.veiculo-info-cnh .value {
+    font-size: 0.75rem;
+    color: #6B7280;
+}
+
+/* Dashboard Row */
+.dashboard-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.dashboard-row-full {
+    grid-template-columns: 1fr;
+}
+
+.dashboard-row-1fr {
+    grid-template-columns: 1fr 1fr;
+}
+
+/* Dashboard Stats Grid */
+.dashboard-stats {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+/* Dashboard Content */
+.dashboard-content {
+    padding: 0.5rem 0;
+}
+
+.dashboard-content .dashboard-header {
+    margin-bottom: 1.5rem;
+}
+
+/* Dashboard Loading */
+.dashboard-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    font-size: 1.1rem;
+    color: #6B7280;
+}
+
+/* ============================================
+   STATUS BADGES COMPLETO
+   ============================================ */
+
+.status-badge {
+    padding: 0.2rem 0.75rem;
+    border-radius: 30px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* Frete */
+.status-aguardando {
+    background: #FEF3C7;
+    color: #92400E;
+}
+.status-negociacao {
+    background: #DBEAFE;
+    color: #1E40AF;
+}
+.status-aceito {
+    background: #D1FAE5;
+    color: #065F46;
+}
+.status-transito {
+    background: #E0E7FF;
+    color: #3730A3;
+}
+.status-concluido {
+    background: #D1FAE5;
+    color: #065F46;
+}
+.status-cancelado {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+/* Motorista */
+.badge-ativo {
+    background: #D1FAE5;
+    color: #065F46;
+}
+.badge-ferias {
+    background: #DBEAFE;
+    color: #1E40AF;
+}
+.badge-licenca {
+    background: #FEF3C7;
+    color: #92400E;
+}
+.badge-desligado {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+/* ============================================
+   RESPONSIVO
+   ============================================ */
+
+/* Tablet Grande */
+@media (max-width: 1200px) {
+    .dashboard-stats {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.75rem;
+    }
+}
+
+/* Tablet */
+@media (max-width: 992px) {
+    .dashboard-row {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .dashboard-row-1fr {
+        grid-template-columns: 1fr;
+    }
+    
+    .dashboard-stats {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+/* Mobile */
+@media (max-width: 768px) {
+    .dashboard-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.75rem;
+    }
+    
+    .stat-card {
+        padding: 0.75rem 1rem;
+        min-height: 70px;
+    }
+    
+    .stat-value {
+        font-size: 1rem;
+    }
+    
+    .stat-card-icon {
+        width: 36px;
+        height: 36px;
+    }
+    
+    .stat-card-icon svg {
+        width: 18px;
+        height: 18px;
+    }
+    
+    .performance-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+    }
+    
+    .veiculo-info-card {
+        flex-direction: column;
+        text-align: center;
+        padding: 1rem;
+    }
+    
+    .veiculo-info-cnh {
+        margin-left: 0;
+        text-align: center;
+    }
+    
+    .activity-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+        padding: 0.5rem;
+    }
+    
+    .activity-data {
+        margin-left: 0;
+        font-size: 0.7rem;
+    }
+    
+    .table-container {
+        padding: 1rem;
+    }
+    
+    .table-container table {
+        min-width: 400px;
+        font-size: 0.8rem;
+    }
+    
+    .table-container th,
+    .table-container td {
+        padding: 0.5rem 0.4rem;
+    }
+    
+    .candidaturas-number {
+        font-size: 2rem;
+    }
+    
+    .chart-container {
+        padding: 1rem;
+    }
+    
+    .alert-item {
+        padding: 0.5rem;
+    }
+}
+
+/* Mobile Pequeno */
+@media (max-width: 480px) {
+    .dashboard-stats {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+    }
+    
+    .stat-card {
+        padding: 0.5rem 0.75rem;
+        min-height: 60px;
+        gap: 0.5rem;
+    }
+    
+    .stat-value {
+        font-size: 0.9rem;
+    }
+    
+    .stat-label {
+        font-size: 0.55rem;
+    }
+    
+    .stat-card-icon {
+        width: 32px;
+        height: 32px;
+    }
+    
+    .stat-card-icon svg {
+        width: 16px;
+        height: 16px;
+    }
+    
+    .candidaturas-number {
+        font-size: 1.8rem;
+    }
+    
+    .performance-card {
+        padding: 1rem;
+    }
+    
+    .performance-item-value {
+        font-size: 1.2rem;
+    }
+    
+    .table-container table {
+        min-width: 300px;
+        font-size: 0.7rem;
+    }
+    
+    .table-container th,
+    .table-container td {
+        padding: 0.4rem 0.3rem;
+    }
+    
+    .dashboard-row {
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+    }
+    
+    .veiculo-info-detalhes h3 {
+        font-size: 0.9rem;
+    }
+    
+    .veiculo-info-detalhes p {
+        font-size: 0.8rem;
+    }
+    
+    .activity-descricao {
+        font-size: 0.8rem;
+    }
+}
+/* ============================================
+   PROPOSTAS VINCULADO
+   ============================================ */
+
+/* Container principal - mesmo padrão da página Motoristas */
+.propostas-container {
+    padding: 1.5rem 0;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Header - mesmo padrão da página Motoristas */
+.propostas-container .page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.propostas-container .page-header h1 {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #1F2937;
+    margin: 0 0 0.25rem 0;
+}
+
+.propostas-container .page-header .subtitle {
+    color: #6B7280;
+    font-size: 0.95rem;
+    margin: 0;
+    line-height: 1.6;
+}
+
+/* Tabs - mesmo padrão da página Motoristas */
+.propostas-guias {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+    border-bottom: 1px solid #E5E7EB;
+    padding-bottom: 0.75rem;
+}
+
+.propostas-guia-btn {
+    padding: 0.6rem 1.5rem;
+    border-radius: 30px;
+    border: 1px solid #E5E7EB;
+    background: #FFFFFF;
+    color: #6B7280;
+    font-size: 0.85rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.propostas-guia-btn:hover {
+    border-color: #FF8200;
+    color: #FF8200;
+}
+
+.propostas-guia-btn.active {
+    background: #FF8200;
+    color: #FFFFFF;
+    border-color: #FF8200;
+}
+
+/* Grid de cards - mesmo padrão da página Motoristas */
+.propostas-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+/* Card de Proposta - mesmo padrão do card-motorista */
+.card-proposta {
+    background: #FFFFFF;
+    border-radius: 1rem;
+    border: 1px solid #E5E7EB;
+    padding: 1.25rem;
+    transition: all 0.3s ease;
+}
+
+.card-proposta:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+    border-color: #FF8200;
+}
+
+.card-proposta-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.card-proposta-header .card-proposta-nome {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1F2937;
+}
+
+.card-proposta-header .card-proposta-data {
+    font-size: 0.75rem;
+    color: #6B7280;
+    margin: 0.2rem 0 0 0;
+}
+
+/* Status Badge - mesmo padrão da página Motoristas */
+.card-proposta-status {
+    padding: 0.2rem 0.75rem;
+    border-radius: 30px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.card-proposta-status.pendente {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.card-proposta-status.aceita {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.card-proposta-status.recusada {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+.card-proposta-status.modificada {
+    background: #DBEAFE;
+    color: #1E40AF;
+}
+
+.card-proposta-status.contrato_assinado {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.card-proposta-status.cancelada {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+/* Informações da proposta - mesmo padrão do card-motorista-info */
+.card-proposta-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    background: #F9FAFB;
+    border-radius: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.card-proposta-info-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.card-proposta-info-label {
+    font-size: 0.55rem;
+    color: #6B7280;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.card-proposta-info-value {
+    font-size: 0.85rem;
+    color: #1F2937;
+    font-weight: 500;
+}
+
+/* Mensagem da proposta */
+.card-proposta-mensagem {
+    background: #F9FAFB;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.card-proposta-mensagem p {
+    margin: 0;
+    font-size: 0.85rem;
+    color: #4B5563;
+    font-style: italic;
+}
+
+/* Ações da proposta - mesmo padrão do card-motorista-actions */
+.card-proposta-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.5rem;
+}
+
+.card-proposta-actions .btn-sm {
+    padding: 0.3rem 0.8rem;
+    font-size: 0.75rem;
+}
+
+/* Aviso de proposta modificada */
+.proposta-aviso {
+    background: #FEF3C7;
+    padding: 0.5rem 0.75rem;
+    border-radius: 0.5rem;
+    border-left: 3px solid #F59E0B;
+    margin-top: 0.5rem;
+}
+
+.proposta-aviso p {
+    margin: 0;
+    font-size: 0.8rem;
+    color: #92400E;
+}
+
+/* Mensagens de sucesso/erro */
+.propostas-mensagem {
+    padding: 1rem 1.5rem;
+    border-radius: 0.75rem;
+    margin-bottom: 1.5rem;
+    font-weight: 500;
+    font-size: 0.95rem;
+}
+
+.propostas-mensagem.sucesso {
+    background-color: #D1FAE5;
+    color: #065F46;
+    border: 1px solid #A7F3D0;
+}
+
+.propostas-mensagem.erro {
+    background-color: #FEE2E2;
+    color: #991B1B;
+    border: 1px solid #FCA5A5;
+}
+
+/* Vazio - mesmo padrão da página Motoristas */
+.propostas-vazio {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 4rem 2rem;
+    background: #F9FAFB;
+    border-radius: 1rem;
+    border: 1px solid #E5E7EB;
+}
+
+.propostas-vazio p {
+    color: #6B7280;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.propostas-vazio-sub {
+    color: #9CA3AF;
+    font-size: 0.85rem;
+    margin-top: 0.5rem;
+}
+
+/* Loading - mesmo padrão da página Motoristas */
+.propostas-loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    gap: 1rem;
+}
+
+.propostas-loading p {
+    color: #6B7280;
+    font-size: 1rem;
+}
+
+/* ============================================
+   BUSCAR FROTAS - DENTRO DE PROPOSTAS
+   ============================================ */
+
+/* Busca - mesmo padrão */
+.buscar-frotas-header {
+    margin-bottom: 1.5rem;
+}
+
+.buscar-frotas-input {
+    display: flex;
+    gap: 0.5rem;
+    max-width: 600px;
+}
+
+.buscar-frotas-input input {
+    flex: 1;
+    padding: 0.75rem 1rem;
+    border: 1px solid #D1D5DB;
+    border-radius: 0.75rem;
+    font-size: 0.875rem;
+    font-family: inherit;
+    background-color: #FFFFFF;
+    transition: all 0.2s ease;
+}
+
+.buscar-frotas-input input:focus {
+    outline: none;
+    border-color: #FF8200;
+    box-shadow: 0 0 0 3px rgba(255, 130, 0, 0.1);
+}
+
+.buscar-frotas-input input::placeholder {
+    color: #9CA3AF;
+}
+
+/* Avaliação da frota */
+.frota-avaliacao {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    background-color: #F9FAFB;
+    padding: 0.2rem 0.6rem;
+    border-radius: 30px;
+}
+
+.frota-avaliacao .stars {
+    color: #FF8200;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.frota-avaliacao .total {
+    color: #6B7280;
+    font-size: 0.7rem;
+}
+
+/* ============================================
+   RESPONSIVO - mesmo padrão da página Motoristas
+   ============================================ */
+
+@media (max-width: 992px) {
+    .propostas-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .propostas-container {
+        padding: 1rem;
+    }
+    
+    .propostas-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .propostas-guias {
+        flex-direction: column;
+        border-bottom: none;
+        padding-bottom: 0;
+        gap: 0.3rem;
+    }
+    
+    .propostas-guia-btn {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+    
+    .card-proposta-info {
+        grid-template-columns: 1fr;
+    }
+    
+    .card-proposta-actions {
+        flex-direction: column;
+    }
+    
+    .card-proposta-actions .btn {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+    
+    .buscar-frotas-input {
+        flex-direction: column;
+        max-width: 100%;
+    }
+    
+    .buscar-frotas-input .btn {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .propostas-container .page-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .card-proposta {
+        padding: 1rem;
+    }
+    
+    .card-proposta-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+/* ============================================
+   VINCULADO - COMPONENTES
+   ============================================ */
+
+/* Card Frete - Para Meus Fretes e Atualizar Status */
+.card-frete-observacao {
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #F3F4F6;
+}
+
+.card-frete-observacao .btn-secondary {
+    background: transparent;
+    border: 1px solid #D1D5DB;
+    color: #6B7280;
+    font-size: 0.75rem;
+    padding: 0.3rem 0.8rem;
+}
+
+.card-frete-observacao .btn-secondary:hover {
+    background: #F3F4F6;
+    border-color: #9CA3AF;
+}
+
+.card-frete-observacao .form-textarea {
+    width: 100%;
+    padding: 0.5rem 0.75rem;
+    border: 1px solid #D1D5DB;
+    border-radius: 0.5rem;
+    font-size: 0.85rem;
+    font-family: inherit;
+    transition: all 0.2s ease;
+    resize: vertical;
+}
+
+.card-frete-observacao .form-textarea:focus {
+    outline: none;
+    border-color: #FF8200;
+    box-shadow: 0 0 0 3px rgba(255, 130, 0, 0.1);
+}
+
+/* Timeline */
+.timeline-frete {
+    background: #FFFFFF;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    border: 1px solid #E5E7EB;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+}
+
+.timeline-frete h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1F2937;
+    margin: 0 0 1.5rem 0;
+}
+
+.timeline-items {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    position: relative;
+}
+
+.timeline-items::before {
+    content: '';
+    position: absolute;
+    left: 16px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: #E5E7EB;
+}
+
+.timeline-item {
+    display: flex;
+    gap: 1rem;
+    padding-left: 2.5rem;
+    position: relative;
+}
+
+.timeline-item:last-child .timeline-icon::after {
+    display: none;
+}
+
+.timeline-icon {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: #F3F4F6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    z-index: 1;
+}
+
+.timeline-item.completed .timeline-icon {
+    background: #D1FAE5;
+}
+
+.timeline-item.current .timeline-icon {
+    background: #FF8200;
+    color: #FFFFFF;
+}
+
+.timeline-item.pending .timeline-icon {
+    background: #F3F4F6;
+}
+
+.timeline-content {
+    flex: 1;
+    padding-bottom: 0.5rem;
+}
+
+.timeline-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.timeline-status {
+    font-weight: 600;
+    color: #1F2937;
+    font-size: 0.9rem;
+}
+
+.timeline-date {
+    font-size: 0.75rem;
+    color: #6B7280;
+}
+
+.timeline-observacao {
+    margin: 0.25rem 0 0 0;
+    font-size: 0.8rem;
+    color: #6B7280;
+    font-style: italic;
+}
+
+.timeline-empty {
+    color: #6B7280;
+    font-size: 0.9rem;
+    padding: 1rem 0;
+    text-align: center;
+}
+
+/* Ocorrências na Timeline */
+.timeline-ocorrencias {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #E5E7EB;
+}
+
+.timeline-ocorrencias h5 {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #1F2937;
+    margin: 0 0 0.5rem 0;
+}
+
+.ocorrencia-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.4rem 0.75rem;
+    border-radius: 0.5rem;
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
+    background: #F9FAFB;
+}
+
+.ocorrencia-item.resolvida {
+    border-left: 3px solid #22C55E;
+}
+
+.ocorrencia-item.pendente {
+    border-left: 3px solid #EF4444;
+}
+
+.ocorrencia-tipo {
+    font-weight: 600;
+    color: #1F2937;
+    text-transform: uppercase;
+    font-size: 0.65rem;
+    padding: 0.1rem 0.4rem;
+    border-radius: 4px;
+    background: #E5E7EB;
+}
+
+.ocorrencia-descricao {
+    flex: 1;
+    color: #4B5563;
+}
+
+.ocorrencia-data {
+    font-size: 0.7rem;
+    color: #9CA3AF;
+}
+
+/* Ações do Card Frete */
+.card-frete-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid #F3F4F6;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .timeline-item {
+        padding-left: 2rem;
+    }
+    
+    .timeline-icon {
+        width: 26px;
+        height: 26px;
+        font-size: 0.8rem;
+    }
+    
+    .timeline-items::before {
+        left: 12px;
+    }
+    
+    .timeline-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.1rem;
+    }
+    
+    .ocorrencia-item {
+        flex-wrap: wrap;
+        gap: 0.3rem;
+    }
+    
+    .card-frete-actions {
+        flex-direction: column;
+    }
+    
+    .card-frete-actions .btn {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 480px) {
+    .timeline-frete {
+        padding: 1rem;
+    }
+    
+    .timeline-item {
+        padding-left: 1.8rem;
+    }
+    
+    .timeline-icon {
+        width: 22px;
+        height: 22px;
+        font-size: 0.7rem;
+    }
+    
+    .timeline-items::before {
+        left: 10px;
+    }
+}
+
+/* ============================================
+   VINCULADO - PÁGINAS
+   ============================================ */
+
+/* Meus Fretes - Filtros */
+.meus-fretes-filtros {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.5rem;
+}
+
+.meus-fretes-filtros .filtro-btn {
+    padding: 0.4rem 1.2rem;
+    border-radius: 30px;
+    border: 1px solid #E5E7EB;
+    background: #FFFFFF;
+    color: #6B7280;
+    font-size: 0.8rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.meus-fretes-filtros .filtro-btn:hover {
+    border-color: #FF8200;
+    color: #FF8200;
+}
+
+.meus-fretes-filtros .filtro-btn.active {
+    background: #FF8200;
+    color: #FFFFFF;
+    border-color: #FF8200;
+}
+
+/* Meus Fretes - Grid */
+.meus-fretes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+/* Rastreamento - Selector */
+.rastreamento-selector {
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.rastreamento-selector label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #1F2937;
+}
+
+.rastreamento-selector .form-select {
+    min-width: 300px;
+    padding: 0.6rem 1rem;
+    border: 1px solid #D1D5DB;
+    border-radius: 0.75rem;
+    font-size: 0.875rem;
+    font-family: inherit;
+    background-color: #FFFFFF;
+    cursor: pointer;
+}
+
+.rastreamento-selector .form-select:focus {
+    outline: none;
+    border-color: #FF8200;
+    box-shadow: 0 0 0 3px rgba(255, 130, 0, 0.1);
+}
+
+/* Rastreamento - Timeline */
+.rastreamento-timeline {
+    margin-top: 0;
+}
+
+/* Entregas Realizadas - Filtros */
+.entregas-filtros {
+    background: #F9FAFB;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    border: 1px solid #E5E7EB;
+    margin-bottom: 1.5rem;
+}
+
+.entregas-filtros .filtros-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 0.5fr;
+    gap: 1rem;
+    align-items: end;
+}
+
+.entregas-filtros .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.entregas-filtros .form-group label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #4B5563;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.entregas-filtros .form-group .btn-secondary {
+    background: transparent;
+    border: 1px solid #D1D5DB;
+    color: #6B7280;
+    padding: 0.6rem 1rem;
+    border-radius: 0.75rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    width: 100%;
+}
+
+.entregas-filtros .form-group .btn-secondary:hover {
+    background: #F3F4F6;
+    border-color: #9CA3AF;
+}
+
+/* ============================================
+   RESPONSIVO - VINCULADO
+   ============================================ */
+
+@media (max-width: 992px) {
+    .meus-fretes-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .meus-fretes-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .meus-fretes-filtros {
+        gap: 0.3rem;
+    }
+    
+    .meus-fretes-filtros .filtro-btn {
+        font-size: 0.7rem;
+        padding: 0.3rem 0.8rem;
+    }
+    
+    .rastreamento-selector {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .rastreamento-selector .form-select {
+        min-width: unset;
+        width: 100%;
+    }
+    
+    .entregas-filtros .filtros-row {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    .entregas-filtros .form-group .btn-secondary {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .meus-fretes-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .entregas-filtros {
+        padding: 1rem;
+    }
+}
+/* ============================================
+   MINHA FROTA - VINCULADO
+   ============================================ */
+
+/* Modal de Confirmação */
+.modal-btn-danger {
+    background: #DC2626;
+    color: #FFFFFF;
+}
+
+.modal-btn-danger:hover {
+    background: #B91C1C;
+}
+
+.modal-btn-danger:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Status ativo/desligado */
+.status-ativo {
+    color: #22C55E;
+    font-weight: 600;
+}
+
+.status-desligado {
+    color: #EF4444;
+    font-weight: 600;
+}
+
+/* Perfil Card - reutilizando estilos existentes */
+.perfil-card {
+    background: #FFFFFF;
+    border-radius: 1rem;
+    border: 1px solid #E5E7EB;
+    padding: 1.5rem;
+}
+
+.perfil-field {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #F9FAFB;
+}
+
+.perfil-field:last-child {
+    border-bottom: none;
+}
+
+.perfil-label {
+    font-size: 0.85rem;
+    color: #6B7280;
+    font-weight: 500;
+}
+
+.perfil-value {
+    font-size: 0.85rem;
+    color: #1F2937;
+    font-weight: 500;
+    text-align: right;
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+    .perfil-field {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.25rem;
+    }
+    
+    .perfil-value {
+        text-align: left;
+    }
+}
+/* ============================================
+   ADMIN - COMPONENTES DE GESTÃO
+   ============================================ */
+
+/* ============================================
+   STATUS BADGE ADMIN
+   ============================================ */
+
+.badge-admin {
+    padding: 0.2rem 0.75rem;
+    border-radius: 30px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    display: inline-block;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* Status - Usuários */
+.badge-admin.badge-pendente {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.badge-admin.badge-aprovado {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.badge-admin.badge-reprovado {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+.badge-admin.badge-bloqueado {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+/* Status - Fretes */
+.badge-admin.badge-aguardando {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.badge-admin.badge-negociacao {
+    background: #DBEAFE;
+    color: #1E40AF;
+}
+
+.badge-admin.badge-aceito {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.badge-admin.badge-transito {
+    background: #E0E7FF;
+    color: #3730A3;
+}
+
+.badge-admin.badge-concluido {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.badge-admin.badge-cancelado {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+/* Status - Motorista Vinculado */
+.badge-admin.badge-ativo {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.badge-admin.badge-ferias {
+    background: #DBEAFE;
+    color: #1E40AF;
+}
+
+.badge-admin.badge-licenca {
+    background: #FEF3C7;
+    color: #92400E;
+}
+
+.badge-admin.badge-desligado {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+/* Status - Propostas */
+.badge-admin.badge-recusado {
+    background: #FEE2E2;
+    color: #991B1B;
+}
+
+.badge-admin.badge-modificada {
+    background: #DBEAFE;
+    color: #1E40AF;
+}
+
+.badge-admin.badge-contrato-assinado {
+    background: #D1FAE5;
+    color: #065F46;
+}
+
+.badge-admin.badge-expirada {
+    background: #F3F4F6;
+    color: #6B7280;
+}
+
+/* Default */
+.badge-admin.badge-default {
+    background: #F3F4F6;
+    color: #6B7280;
+}
+
+/* ============================================
+   MODAL DE CONFIRMAÇÃO
+   ============================================ */
+
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 1rem;
+    animation: fadeIn 0.2s ease;
+}
+
+.modal-content {
+    background: #FFFFFF;
+    border-radius: 1rem;
+    padding: 2rem;
+    max-width: 480px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+    animation: slideUp 0.3s ease;
+    text-align: center;
+}
+
+.modal-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.modal-content h3 {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #1F2937;
+    margin: 0 0 0.5rem 0;
+}
+
+.modal-content p {
+    color: #6B7280;
+    font-size: 0.95rem;
+    margin: 0.5rem 0;
+    line-height: 1.6;
+}
+
+.modal-detail {
+    color: #4B5563 !important;
+    font-size: 0.85rem !important;
+    background: #F9FAFB;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    margin-top: 0.5rem !important;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    justify-content: center;
+}
+
+.modal-btn {
+    padding: 0.6rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+    font-family: inherit;
+    min-width: 100px;
+}
+
+.modal-btn-secondary {
+    background: #F3F4F6;
+    color: #6B7280;
+}
+
+.modal-btn-secondary:hover {
+    background: #E5E7EB;
+}
+
+.modal-btn-secondary:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.modal-btn-danger {
+    background: #DC2626;
+    color: #FFFFFF;
+}
+
+.modal-btn-danger:hover {
+    background: #B91C1C;
+}
+
+.modal-btn-danger:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.modal-btn-warning {
+    background: #F59E0B;
+    color: #FFFFFF;
+}
+
+.modal-btn-warning:hover {
+    background: #D97706;
+}
+
+.modal-btn-warning:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.modal-btn-info {
+    background: #3B82F6;
+    color: #FFFFFF;
+}
+
+.modal-btn-info:hover {
+    background: #2563EB;
+}
+
+.modal-btn-info:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Animações do Modal */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { 
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================
+   TABELA DE USUÁRIOS - ADMIN
+   ============================================ */
+
+.table-responsive {
+    overflow-x: auto;
+    margin-top: 1rem;
+}
+
+.table-admin {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+    min-width: 900px;
+}
+
+.table-admin thead th {
+    text-align: left;
+    padding: 0.75rem 0.75rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    color: #6B7280;
+    border-bottom: 2px solid #E5E7EB;
+    background: #F9FAFB;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+.table-admin tbody td {
+    padding: 0.75rem 0.75rem;
+    color: #1F2937;
+    border-bottom: 1px solid #F3F4F6;
+    vertical-align: middle;
+}
+
+.table-admin tbody tr {
+    transition: background-color 0.2s ease;
+}
+
+.table-admin tbody tr:hover {
+    background-color: #F9FAFB;
+}
+
+/* Coluna de Nome */
+.table-cell-nome {
+    min-width: 180px;
+}
+
+.user-name-cell {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.user-name {
+    font-weight: 500;
+    color: #1F2937;
+}
+
+.admin-badge {
+    font-size: 0.55rem;
+    font-weight: 600;
+    color: #FFFFFF;
+    background: #8B5CF6;
+    padding: 0.1rem 0.5rem;
+    border-radius: 30px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+/* Badge de Tipo de Usuário */
+.tipo-badge {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: #4B5563;
+    background: #F3F4F6;
+    padding: 0.1rem 0.6rem;
+    border-radius: 30px;
+    display: inline-block;
+}
+
+/* Coluna de Ações */
+/* Adicione ou atualize estas classes no seu arquivo CSS */
+
+.table-actions {
+    min-width: 150px; /* Garante que a coluna tenha espaço mínimo suficiente */
+}
+
+.action-buttons {
+    display: flex;
+    flex-wrap: wrap; /* Permite que os botões pulem para a linha de baixo se faltar espaço */
+    gap: 8px; /* Adiciona um espaço seguro de 8 pixels entre os botões */
+    align-items: center;
+    justify-content: flex-start;
+}
+
+/* Opcional: Melhora a aparência dos botões agora que eles usam texto */
+.btn-action {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 0.85rem;
+}
+
+/* Botões de Ação 
+.btn-action {
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: all 0.2s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+}
+*/
+.btn-action:hover {
+    transform: scale(1.1);
+}
+
+.btn-view:hover {
+    background: #DBEAFE;
+}
+
+.btn-approve:hover {
+    background: #D1FAE5;
+}
+
+.btn-reject:hover {
+    background: #FEE2E2;
+}
+
+.btn-block:hover {
+    background: #FEE2E2;
+}
+
+.btn-unblock:hover {
+    background: #D1FAE5;
+}
+
+/* Select de Role */
+.role-select {
+    padding: 0.2rem 0.5rem;
+    border: 1px solid #D1D5DB;
+    border-radius: 0.4rem;
+    font-size: 0.7rem;
+    color: #1F2937;
+    background: #FFFFFF;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.role-select:hover {
+    border-color: #FF8200;
+}
+
+.role-select:focus {
+    outline: none;
+    border-color: #FF8200;
+    box-shadow: 0 0 0 2px rgba(255, 130, 0, 0.1);
+}
+
+/* Estados da Tabela */
+.table-loading,
+.table-empty {
+    text-align: center;
+    padding: 3rem 2rem;
+    color: #6B7280;
+}
+
+.table-loading p,
+.table-empty p {
+    margin: 0;
+    font-size: 1rem;
+}
+
+/* ============================================
+   FILTRO DE USUÁRIOS
+   ============================================ */
+
+.filtro-usuarios {
+    margin-bottom: 1.5rem;
+}
+
+.btn-filtros-toggle {
+    background: transparent;
+    border: 1px solid #E5E7EB;
+    border-radius: 0.75rem;
+    padding: 0.6rem 1.5rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #6B7280;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-family: inherit;
+    margin-bottom: 1rem;
+}
+
+.btn-filtros-toggle:hover {
+    border-color: #FF8200;
+    color: #FF8200;
+    background: #FFF8F0;
+}
+
+.filtros-form {
+    background: #F9FAFB;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    border: 1px solid #E5E7EB;
+    margin-bottom: 1.5rem;
+    animation: slideDown 0.3s ease;
+}
+
+.filtros-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.filtros-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.filtros-form .form-group label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #4B5563;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.filtros-form .form-input {
+    width: 100%;
+    background-color: #FFFFFF;
+    border: 1px solid #D1D5DB;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: #1F2937;
+    transition: all 0.2s ease;
+    font-family: inherit;
+}
+
+.filtros-form .form-input:focus {
+    outline: none;
+    border-color: #FF8200;
+    box-shadow: 0 0 0 3px rgba(255, 130, 0, 0.1);
+}
+
+.filtros-form .form-input::placeholder {
+    color: #9CA3AF;
+}
+
+.filtros-form .form-select {
+    width: 100%;
+    background-color: #FFFFFF;
+    border: 1px solid #D1D5DB;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: #1F2937;
+    transition: all 0.2s ease;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236B7280' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1rem;
+    cursor: pointer;
+    font-family: inherit;
+}
+
+.filtros-form .form-select:focus {
+    outline: none;
+    border-color: #FF8200;
+    box-shadow: 0 0 0 3px rgba(255, 130, 0, 0.1);
+}
+
+.filtros-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #E5E7EB;
+}
+
+.filtros-actions .btn {
+    padding: 0.6rem 1.5rem;
+    font-size: 0.85rem;
+}
+
+/* Animação do Filtro */
+@keyframes slideDown {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ============================================
+   RESPONSIVO - ADMIN
+   ============================================ */
+
+@media (max-width: 992px) {
+    .filtros-row {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .filtros-row {
+        grid-template-columns: 1fr;
+    }
+
+    .filtros-actions {
+        flex-direction: column;
+    }
+
+    .filtros-actions .btn {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+
+    .action-buttons {
+        justify-content: flex-start;
+        gap: 0.2rem;
+    }
+
+    .role-select {
+        font-size: 0.65rem;
+        padding: 0.15rem 0.4rem;
+    }
+
+    .modal-content {
+        padding: 1.5rem;
+        margin: 1rem;
+    }
+
+    .modal-buttons {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .modal-btn {
+        width: 100%;
+        min-width: unset;
+    }
+}
+
+@media (max-width: 480px) {
+    .table-admin {
+        font-size: 0.75rem;
+        min-width: 700px;
+    }
+
+    .table-admin thead th,
+    .table-admin tbody td {
+        padding: 0.5rem 0.5rem;
+    }
+
+    .user-name-cell {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.2rem;
+    }
+
+    .admin-badge {
+        font-size: 0.5rem;
+    }
+
+    .btn-action {
+        width: 28px;
+        height: 28px;
+        font-size: 0.75rem;
+    }
+
+    .role-select {
+        font-size: 0.6rem;
+        padding: 0.1rem 0.3rem;
+        max-width: 80px;
+    }
+
+    .filtros-form {
+        padding: 1rem;
+    }
+
+    .modal-content {
+        padding: 1rem;
+    }
+
+    .modal-icon {
+        font-size: 2rem;
+    }
+}
+/* ============================================
+   ADMIN - PÁGINAS
+   ============================================ */
+
+/* Container padrão */
+.admin-usuarios-container,
+.admin-fretes-container,
+.admin-blacklist-container,
+.admin-relatorios-container,
+.admin-configuracoes-container {
+    padding: 1.5rem 0;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Header com informações */
+.page-header-info {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.total-badge {
+    background: #F3F4F6;
+    padding: 0.4rem 1rem;
+    border-radius: 30px;
+    font-size: 0.85rem;
+    color: #6B7280;
+    font-weight: 500;
+}
+
+/* Detalhe do Usuário */
+.detalhe-usuario-container {
+    padding: 1.5rem 0;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.detalhe-usuario-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.detalhe-usuario-header .btn-voltar {
+    background: transparent;
+    border: none;
+    color: #6B7280;
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 0.4rem 0;
+    transition: color 0.2s;
+    font-family: inherit;
+}
+
+.detalhe-usuario-header .btn-voltar:hover {
+    color: #FF8200;
+}
+
+.detalhe-usuario-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1F2937;
+    margin: 0;
+}
+
+.detalhe-usuario-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.detalhe-usuario-section {
+    background: #FFFFFF;
+    border-radius: 1rem;
+    padding: 1.25rem;
+    border: 1px solid #E5E7EB;
+}
+
+.detalhe-usuario-section.full-width {
+    grid-column: 1 / -1;
+}
+
+.detalhe-usuario-section h3 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1F2937;
+    margin: 0 0 0.75rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #F3F4F6;
+}
+
+.detalhe-usuario-field {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid #F9FAFB;
+}
+
+.detalhe-usuario-field:last-child {
+    border-bottom: none;
+}
+
+.detalhe-usuario-field .label {
+    font-size: 0.8rem;
+    color: #6B7280;
+    font-weight: 500;
+}
+
+.detalhe-usuario-field .value {
+    font-size: 0.8rem;
+    color: #1F2937;
+    font-weight: 500;
+    text-align: right;
+    max-width: 60%;
+    word-break: break-word;
+}
+
+.detalhe-usuario-field .value .email-small {
+    display: block;
+    font-size: 0.7rem;
+    color: #9CA3AF;
+    font-weight: 400;
+}
+
+/* Endereços no detalhe */
+.endereco-item {
+    padding: 0.75rem;
+    background: #F9FAFB;
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.endereco-item:last-child {
+    margin-bottom: 0;
+}
+
+.endereco-tipo {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #6B7280;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.endereco-completo {
+    font-size: 0.85rem;
+    color: #1F2937;
+    margin-top: 0.25rem;
+    line-height: 1.5;
+}
+
+/* Logs */
+.logs-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+}
+
+.log-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.4rem 0.75rem;
+    background: #F9FAFB;
+    border-radius: 0.4rem;
+    font-size: 0.8rem;
+}
+
+.log-acao {
+    font-weight: 600;
+    color: #1F2937;
+}
+
+.log-detalhe {
+    color: #6B7280;
+    font-size: 0.7rem;
+}
+
+.log-data {
+    color: #9CA3AF;
+    font-size: 0.7rem;
+}
+
+/* Detalhe do Frete */
+.detalhe-frete-container {
+    padding: 1.5rem 0;
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.detalhe-frete-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.detalhe-frete-header .btn-voltar {
+    background: transparent;
+    border: none;
+    color: #6B7280;
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 0.4rem 0;
+    transition: color 0.2s;
+    font-family: inherit;
+}
+
+.detalhe-frete-header .btn-voltar:hover {
+    color: #FF8200;
+}
+
+.detalhe-frete-header h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #1F2937;
+    margin: 0;
+}
+
+.codigo-rastreamento {
+    font-size: 0.85rem;
+    color: #6B7280;
+    background: #F3F4F6;
+    padding: 0.3rem 1rem;
+    border-radius: 30px;
+}
+
+.detalhe-frete-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.detalhe-frete-section {
+    background: #FFFFFF;
+    border-radius: 1rem;
+    padding: 1.25rem;
+    border: 1px solid #E5E7EB;
+}
+
+.detalhe-frete-section.full-width {
+    grid-column: 1 / -1;
+}
+
+.detalhe-frete-section h3 {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #1F2937;
+    margin: 0 0 0.75rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #F3F4F6;
+}
+
+.detalhe-frete-field {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.4rem 0;
+    border-bottom: 1px solid #F9FAFB;
+}
+
+.detalhe-frete-field:last-child {
+    border-bottom: none;
+}
+
+.detalhe-frete-field .label {
+    font-size: 0.8rem;
+    color: #6B7280;
+    font-weight: 500;
+}
+
+.detalhe-frete-field .value {
+    font-size: 0.8rem;
+    color: #1F2937;
+    font-weight: 500;
+    text-align: right;
+    max-width: 60%;
+    word-break: break-word;
+}
+
+.detalhe-frete-field .value.destaque {
+    color: #0066CC;
+    font-weight: 700;
+}
+
+.detalhe-frete-actions {
+    margin-top: 1.5rem;
+    padding-top: 1rem;
+    border-top: 1px solid #E5E7EB;
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+}
+
+.descricao-texto {
+    font-size: 0.85rem;
+    color: #4B5563;
+    line-height: 1.6;
+    margin: 0.5rem 0 0 0;
+    white-space: pre-wrap;
+}
+
+.descricao-texto.cancelado {
+    color: #DC2626;
+    font-weight: 500;
+}
+
+/* Blacklist */
+.blacklist-form {
+    background: #F9FAFB;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    border: 1px solid #E5E7EB;
+    margin-bottom: 1.5rem;
+}
+
+.blacklist-form .form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.blacklist-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.blacklist-form .form-group label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #4B5563;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.blacklist-form .form-group label span {
+    color: #EF4444;
+}
+
+.blacklist-form .form-textarea {
+    width: 100%;
+    background-color: #FFFFFF;
+    border: 1px solid #D1D5DB;
+    border-radius: 0.75rem;
+    padding: 0.75rem 1rem;
+    font-size: 0.875rem;
+    color: #1F2937;
+    font-family: inherit;
+    transition: all 0.2s ease;
+    resize: vertical;
+}
+
+.blacklist-form .form-textarea:focus {
+    outline: none;
+    border-color: #FF8200;
+    box-shadow: 0 0 0 3px rgba(255, 130, 0, 0.1);
+}
+
+.blacklist-form .form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #E5E7EB;
+}
+
+.helper-text {
+    font-size: 0.7rem;
+    color: #9CA3AF;
+    margin-top: 0.2rem;
+}
+
+.usuarios-sugestoes {
+    max-height: 200px;
+    overflow-y: auto;
+    background: #FFFFFF;
+    border: 1px solid #D1D5DB;
+    border-radius: 0.75rem;
+    margin-top: 0.25rem;
+}
+
+.sugestao-item {
+    padding: 0.6rem 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid #F3F4F6;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    flex-wrap: wrap;
+    transition: background-color 0.2s;
+}
+
+.sugestao-item:last-child {
+    border-bottom: none;
+}
+
+.sugestao-item:hover {
+    background: #F3F4F6;
+}
+
+.sugestao-nome {
+    font-weight: 500;
+    color: #1F2937;
+    font-size: 0.85rem;
+}
+
+.sugestao-email {
+    color: #6B7280;
+    font-size: 0.75rem;
+}
+
+.buscando-text {
+    font-size: 0.75rem;
+    color: #6B7280;
+    margin-top: 0.2rem;
+}
+
+.usuario-selecionado {
+    font-size: 0.85rem;
+    color: #065F46;
+    background: #D1FAE5;
+    padding: 0.3rem 0.75rem;
+    border-radius: 0.5rem;
+    margin-top: 0.25rem;
+}
+
+.motivo-cell {
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Relatórios */
+.relatorios-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.relatorio-card {
+    background: #FFFFFF;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    border: 1px solid #E5E7EB;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.relatorio-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+}
+
+.relatorio-card h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1F2937;
+    margin: 0 0 0.5rem 0;
+}
+
+.relatorio-card p {
+    color: #6B7280;
+    font-size: 0.9rem;
+    margin: 0 0 1rem 0;
+    line-height: 1.5;
+}
+
+/* Configurações */
+.configuracoes-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1.5rem;
+}
+
+.configuracao-card {
+    background: #FFFFFF;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    border: 1px solid #E5E7EB;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.configuracao-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+}
+
+.configuracao-card h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1F2937;
+    margin: 0 0 0.5rem 0;
+}
+
+.configuracao-card p {
+    color: #6B7280;
+    font-size: 0.9rem;
+    margin: 0 0 1rem 0;
+    line-height: 1.5;
+}
+
+/* Loading e Error */
+.detalhe-usuario-loading,
+.detalhe-usuario-error,
+.detalhe-frete-loading,
+.detalhe-frete-error,
+.admin-fretes-loading,
+.admin-blacklist-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+    gap: 1rem;
+}
+
+.detalhe-usuario-loading p,
+.detalhe-frete-loading p,
+.admin-fretes-loading p,
+.admin-blacklist-loading p {
+    color: #6B7280;
+    font-size: 1rem;
+}
+
+.detalhe-usuario-error p,
+.detalhe-frete-error p {
+    color: #EF4444;
+    font-size: 1rem;
+}
+
+/* ============================================
+   RESPONSIVO - ADMIN
+   ============================================ */
+
+@media (max-width: 992px) {
+    .detalhe-usuario-grid,
+    .detalhe-frete-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .relatorios-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+    
+    .configuracoes-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .detalhe-usuario-grid,
+    .detalhe-frete-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .detalhe-usuario-field,
+    .detalhe-frete-field {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.1rem;
+    }
+    
+    .detalhe-usuario-field .value,
+    .detalhe-frete-field .value {
+        text-align: left;
+        max-width: 100%;
+    }
+    
+    .detalhe-usuario-header,
+    .detalhe-frete-header {
+        flex-wrap: wrap;
+    }
+    
+    .blacklist-form .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .blacklist-form .form-actions {
+        flex-direction: column;
+    }
+    
+    .blacklist-form .form-actions .btn {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+    
+    .relatorios-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .configuracoes-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .log-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.2rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .detalhe-usuario-header h1,
+    .detalhe-frete-header h1 {
+        font-size: 1.2rem;
+    }
+    
+    .detalhe-usuario-section,
+    .detalhe-frete-section {
+        padding: 1rem;
+    }
+    
+    .sugestao-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.2rem;
+    }
+    
+    .page-header-info {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+    }
+    
+    .page-header-info .btn {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+    }
+}
+/* Esconde o botão de fechar e o fundo escuro por padrão no computador (Desktop) */
+.close-sidebar-btn,
+.sidebar-overlay {
+    display: none;
+}
+
+/* Estilos específicos para quando a tela for menor (Mobile / Responsivo) */
+@media (max-width: 768px) {
+    .sidebar-container {
+        position: fixed;
+        left: -100%;
+        top: 0;
+        height: 100vh;
+        z-index: 1000;
+        transition: left 0.3s ease;
+    }
+
+    .sidebar-container.open {
+        left: 0;
+    }
+
+    /* Mostra e posiciona o botão "X" bonitinho no canto superior direito do menu mobile */
+    .close-sidebar-btn {
+        display: block;
+        position: absolute;
+        top: 10px;
+        right: 15px;
+        background: transparent;
+        border: none;
+        color: #ffffff;
+        font-size: 28px;
+        cursor: pointer;
+        z-index: 1001;
+    }
+
+    .sidebar-overlay {
+        display: block;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100vw;
+        height: 100vh;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+    }
+}
+/* Estilo do botão de menu hambúrguer */
+.mobile-sidebar-toggle {
+    background-color: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    width: 42px;
+    height: 42px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    color: #1f2937;
+    cursor: pointer;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+    transition: background-color 0.2s, border-color 0.2s;
+    margin-bottom: 15px; /* Dá um respiro entre o botão e o conteúdo abaixo */
+}
+
+.mobile-sidebar-toggle:hover {
+    background-color: #f3f4f6;
+    border-color: #9ca3af;
+}

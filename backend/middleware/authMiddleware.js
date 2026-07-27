@@ -19,5 +19,37 @@ const authenticateToken = (req, res, next) => {
         return res.status(403).json({ error: 'Token inválido ou expirado' });
     }
 };
+ const isAdmin = async (req, res, next) => {
+    try {
+        const db = require('../config/database');
+        
+        const [rows] = await db.execute(
+            'SELECT is_admin FROM pessoas WHERE id = ?',
+            [req.userId]
+        );
 
-module.exports = { authenticateToken };
+        if (rows.length === 0) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Usuário não encontrado' 
+            });
+        }
+
+        if (!rows[0].is_admin) {
+            return res.status(403).json({ 
+                success: false, 
+                message: 'Acesso negado. Apenas administradores podem acessar esta rota.' 
+            });
+        }
+
+        next();
+    } catch (error) {
+        console.error('Erro ao verificar admin:', error);
+        return res.status(500).json({ 
+            success: false, 
+            message: 'Erro interno ao verificar permissões' 
+        });
+    }
+};
+
+module.exports = { authenticateToken, isAdmin };
