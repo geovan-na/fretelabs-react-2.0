@@ -2,28 +2,22 @@ const mysql = require('mysql2');
 require('dotenv').config();
 
 const host = process.env.DB_HOST || 'localhost';
-const port = parseInt(process.env.DB_PORT || '3307', 10);
-const user = process.env.DB_USER || 'root';
-const password = process.env.DB_PASSWORD || '';
-const database = process.env.DB_NAME || 'fretelabs';
-
-console.log(`🔌 [Database] Connecting to MySQL Host: ${host}:${port} | Database: ${database}`);
+const port = process.env.DB_PORT ? Number(process.env.DB_PORT) : 13405;
 
 const dbConfig = {
-    host,
-    port,
-    user,
-    password,
-    database,
+    host: host,
+    port: port,
+    user: process.env.DB_USER,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
 };
 
-// Enable SSL if connecting to cloud database providers (like Aiven)
-if (process.env.DB_SSL === 'true' || host.includes('aivencloud.com') || host.includes('cloud')) {
+// Enable SSL for external cloud database connections (Aiven, etc.)
+if (process.env.DB_SSL === 'true' || host !== 'localhost' || host.includes('aivencloud') || port !== 3306) {
     dbConfig.ssl = { rejectUnauthorized: false };
-    console.log('🔒 [Database] SSL enabled for cloud connection.');
 }
 
 const pool = mysql.createPool(dbConfig);
