@@ -65,8 +65,8 @@ app.use((req, res) => {
     res.status(404).json({ error: 'Rota não encontrada' });
 });
 app.use((err, req, res, next) => {
-    console.error('ERRO DETALHADO:', err); // Tirar o .message faz mostrar o rastro completo
-    res.status(500).json({ error: 'Erro interno do servidor' });
+    console.error('ERRO DETALHADO:', err);
+    res.status(500).json({ error: 'Erro interno do servidor', details: err.message || String(err) });
 });
 
 app.listen(PORT, () => {
