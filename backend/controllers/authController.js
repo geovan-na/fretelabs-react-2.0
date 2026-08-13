@@ -258,7 +258,8 @@ const login = async (req, res) => {
 
     } catch (error) {
         console.error('Erro no login:', error);
-        res.status(500).json({ error: error.message || 'Erro interno do servidor' });
+        const errMsg = error.message || error.code || String(error);
+        res.status(500).json({ error: errMsg || 'Erro interno do servidor', details: JSON.stringify(error, Object.getOwnPropertyNames(error)) });
     }
 };
 
