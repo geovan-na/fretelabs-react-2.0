@@ -66,7 +66,7 @@ app.use((req, res) => {
 });
 app.use((err, req, res, next) => {
     console.error('ERRO DETALHADO:', err);
-    res.status(500).json({ error: 'Erro interno do servidor', details: err.message || String(err) });
+    res.status(500).json({ error: err.message || 'Erro interno do servidor' });
 });
 
 app.listen(PORT, () => {
