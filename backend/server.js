@@ -57,6 +57,10 @@ app.use('/api/motoristas', motoristaRoutes);
 app.use('/api/pagamentos', pagamentoRoutes);
 
 
+app.get('/', (req, res) => {
+    res.json({ status: 'OK', message: 'API FreteLabs Backend no ar' });
+});
+
 app.get('/api/health', (req, res) => {
     res.json({ status: 'OK', message: 'Servidor FreteLabs funcionando' });
 });
