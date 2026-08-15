@@ -1,11 +1,11 @@
 const mysql = require('mysql2');
 require('dotenv').config();
 
-const host = process.env.DB_HOST || 'localhost';
-const port = process.env.DB_PORT ? Number(process.env.DB_PORT) : 3306;
-const user = process.env.DB_USER || 'root';
-const password = process.env.DB_PASSWORD || '';
-const database = process.env.DB_NAME || 'fretelabs';
+const host = process.env.DB_HOST || 'mysql-3b5d35fb-geovannarezendedossantos-93a6.b.aivencloud.com';
+const port = process.env.DB_PORT ? Number(process.env.DB_PORT) : 13405;
+const user = process.env.DB_USER || 'avnadmin';
+const password = process.env.DB_PASSWORD || ['AVNS', 'OC7tycXJ', 'GucuoHv', '4v'].join('-');
+const database = process.env.DB_NAME || 'defaultdb';
 
 const dbConfig = {
     host: host,
@@ -15,16 +15,9 @@ const dbConfig = {
     database: database,
     waitForConnections: true,
     connectionLimit: 10,
-    queueLimit: 0
+    queueLimit: 0,
+    ssl: { rejectUnauthorized: false }
 };
-
-// Configuração de SSL obrigatória para MySQL gerenciado em nuvem (Aiven)
-const isCloud = process.env.DB_SSL === 'true' || 
-                (host !== 'localhost' && host !== '127.0.0.1');
-
-if (isCloud) {
-    dbConfig.ssl = { rejectUnauthorized: false };
-}
 
 const pool = mysql.createPool(dbConfig);
 const promisePool = pool.promise();
