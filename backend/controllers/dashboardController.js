@@ -112,7 +112,7 @@ const getEmbarcadorDashboard = async (req, res) => {
         
     } catch (error) {
         console.error('Erro ao buscar dashboard do embarcador:', error);
-        return res.status(500).json({ error: 'Erro interno do servidor' });
+        return res.status(500).json({ error: error.message || 'Erro interno do servidor' });
     }
 };
 
@@ -262,7 +262,7 @@ const getFrotaDashboard = async (req, res) => {
         
     } catch (error) {
         console.error('Erro ao buscar dashboard da frota:', error);
-        return res.status(500).json({ error: 'Erro interno do servidor' });
+        return res.status(500).json({ error: error.message || 'Erro interno do servidor' });
     }
 };
 
@@ -382,7 +382,7 @@ const getAutonomoDashboard = async (req, res) => {
         
     } catch (error) {
         console.error('Erro ao buscar dashboard do autônomo:', error);
-        return res.status(500).json({ error: 'Erro interno do servidor' });
+        return res.status(500).json({ error: error.message || 'Erro interno do servidor' });
     }
 };
 
@@ -504,7 +504,7 @@ const getVinculadoDashboard = async (req, res) => {
         
     } catch (error) {
         console.error('Erro ao buscar dashboard do vinculado:', error);
-        return res.status(500).json({ error: 'Erro interno do servidor' });
+        return res.status(500).json({ error: error.message || 'Erro interno do servidor' });
     }
 };
 
@@ -683,7 +683,7 @@ const getAdminDashboard = async (req, res) => {
         
     } catch (error) {
         console.error('Erro ao buscar dashboard do admin:', error);
-        return res.status(500).json({ error: 'Erro interno do servidor' });
+        return res.status(500).json({ error: error.message || 'Erro interno do servidor' });
     }
 };
 
