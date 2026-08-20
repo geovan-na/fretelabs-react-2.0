@@ -6,7 +6,7 @@ const db = require('../config/database');
 // ============================================
 const getTransportadorId = async (userId) => {
     const [rows] = await db.query(
-        'SELECT id FROM transportadores WHERE pessoa_id = ? AND tipo_transportador = "FROTA"',
+        "SELECT id FROM transportadores WHERE pessoa_id = ? AND tipo_transportador = 'FROTA'",
         [userId]
     );
     return rows.length > 0 ? rows[0].id : null;
@@ -72,7 +72,7 @@ const criarPagamento = async (req, res) => {
         // Verificar se já existe pagamento para esta referência
         if (mes_referencia && tipo === 'SALARIO') {
             const [existente] = await db.query(
-                'SELECT id FROM pagamentos_motoristas WHERE motorista_vinculado_id = ? AND mes_referencia = ? AND tipo = "SALARIO"',
+                "SELECT id FROM pagamentos_motoristas WHERE motorista_vinculado_id = ? AND mes_referencia = ? AND tipo = 'SALARIO'",
                 [motorista_vinculado_id, mes_referencia]
             );
 

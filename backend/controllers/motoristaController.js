@@ -4,7 +4,7 @@ const db = require('../config/database');
 // Função auxiliar para buscar o transportador associado ao usuário logado
 const getTransportadorId = async (userId) => {
     const [rows] = await db.query(
-        'SELECT id FROM transportadores WHERE pessoa_id = ? AND tipo_transportador = "FROTA"',
+        "SELECT id FROM transportadores WHERE pessoa_id = ? AND tipo_transportador = 'FROTA'",
         [userId]
     );
     return rows.length > 0 ? rows[0].id : null;
@@ -243,7 +243,7 @@ const finalizarVinculo = async (req, res) => {
 
         // Validação correta: impede a demissão se houver pagamentos pendentes
         const [pagamentos] = await db.query(
-            'SELECT COUNT(*) as total FROM pagamentos_motoristas WHERE motorista_vinculado_id = ? AND status = "PENDENTE"',
+            "SELECT COUNT(*) as total FROM pagamentos_motoristas WHERE motorista_vinculado_id = ? AND status = 'PENDENTE'",
             [id]
         );
 
@@ -272,7 +272,7 @@ const finalizarVinculo = async (req, res) => {
 
         // 3. Encerra qualquer contrato ativo associado a esse vínculo
         const [contrato] = await db.query(
-            'SELECT id FROM contratos WHERE motorista_vinculado_id = ? AND status IN ("ATIVO", "EM_EXPERIENCIA")',
+            "SELECT id FROM contratos WHERE motorista_vinculado_id = ? AND status IN ('ATIVO', 'EM_EXPERIENCIA')",
             [id]
         );
 

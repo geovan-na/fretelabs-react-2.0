@@ -116,7 +116,7 @@ const register = async (req, res) => {
 
             // Buscar uma frota existente
             const [frota] = await db.query(
-                'SELECT id FROM transportadores WHERE tipo_transportador = "FROTA" LIMIT 1'
+                "SELECT id FROM transportadores WHERE tipo_transportador = 'FROTA' LIMIT 1"
             );
             
             if (frota.length === 0) {

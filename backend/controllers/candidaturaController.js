@@ -162,7 +162,7 @@ const criarCandidatura = async (req, res) => {
         }
 
         const [existing] = await db.query(
-            'SELECT id FROM candidaturas WHERE frete_id = ? AND transportador_id = ? AND status != "RECUSADO"',
+            "SELECT id FROM candidaturas WHERE frete_id = ? AND transportador_id = ? AND status != 'RECUSADO'",
             [frete_id, transportadorId]
         );
 
@@ -328,7 +328,7 @@ const designarMotorista = async (req, res) => {
 
         // 1. Obter o ID do transportador (Frota) do usuário logado
         const [transportadores] = await db.query(
-            'SELECT id FROM transportadores WHERE pessoa_id = ? AND tipo_transportador = "FROTA"',
+            "SELECT id FROM transportadores WHERE pessoa_id = ? AND tipo_transportador = 'FROTA'",
             [userId]
         );
 

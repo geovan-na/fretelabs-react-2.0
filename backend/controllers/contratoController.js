@@ -6,7 +6,7 @@ const db = require('../config/database');
 // ============================================
 const getTransportadorId = async (userId) => {
     const [rows] = await db.query(
-        'SELECT id FROM transportadores WHERE pessoa_id = ? AND tipo_transportador = "FROTA"',
+        "SELECT id FROM transportadores WHERE pessoa_id = ? AND tipo_transportador = 'FROTA'",
         [userId]
     );
     return rows.length > 0 ? rows[0].id : null;
@@ -431,7 +431,7 @@ const encerrarContrato = async (req, res) => {
 
         // Verificar se há pagamentos pendentes
         const [pagamentosPendentes] = await db.query(
-            'SELECT COUNT(*) as total FROM pagamentos_motoristas WHERE contrato_id = ? AND status != "PAGO"',
+            "SELECT COUNT(*) as total FROM pagamentos_motoristas WHERE contrato_id = ? AND status != 'PAGO'",
             [id]
         );
 

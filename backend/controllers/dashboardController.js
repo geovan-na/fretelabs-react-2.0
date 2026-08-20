@@ -124,7 +124,7 @@ const getFrotaDashboard = async (req, res) => {
         const userId = req.userId;
         
         const [transportadorRows] = await db.execute(
-            'SELECT id FROM transportadores WHERE pessoa_id = ? AND tipo_transportador = "FROTA"',
+            "SELECT id FROM transportadores WHERE pessoa_id = ? AND tipo_transportador = 'FROTA'",
             [userId]
         );
         
@@ -274,7 +274,7 @@ const getAutonomoDashboard = async (req, res) => {
         const userId = req.userId;
         
         const [transportadorRows] = await db.execute(
-            'SELECT id FROM transportadores WHERE pessoa_id = ? AND tipo_transportador = "AUTONOMO"',
+            "SELECT id FROM transportadores WHERE pessoa_id = ? AND tipo_transportador = 'AUTONOMO'",
             [userId]
         );
         
