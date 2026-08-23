@@ -1,12 +1,13 @@
 // components/LayoutDashboard.jsx
 import { useState, useEffect } from 'react';
-import { Outlet, useNavigate } from 'react-router-dom';
+import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import SidebarDashboard from './SidebarDashboard';
 
 function LayoutDashboard() {
     const { user, logout } = useAuth();
     const navigate = useNavigate();
+    const location = useLocation();
     const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
 
@@ -21,8 +22,25 @@ function LayoutDashboard() {
     useEffect(() => {
         if (!user) {
             navigate('/login');
+            return;
         }
-    }, [user, navigate]);
+
+        // Se o usuário acessar a rota raiz do dashboard (/dashboard ou /dashboard/), redireciona para a página específica da role dele
+        if (location.pathname === '/dashboard' || location.pathname === '/dashboard/') {
+            const role = (user.tipo || '').toLowerCase();
+            if (role === 'embarcador') {
+                navigate('/dashboard/embarcador', { replace: true });
+            } else if (role === 'frota') {
+                navigate('/dashboard/frota', { replace: true });
+            } else if (role === 'autonomo') {
+                navigate('/dashboard/autonomo', { replace: true });
+            } else if (role === 'vinculado' || role === 'usuario') {
+                navigate('/dashboard/vinculado', { replace: true });
+            } else if (role === 'admin') {
+                navigate('/dashboard/admin', { replace: true });
+            }
+        }
+    }, [user, navigate, location.pathname]);
 
     const handleLogout = () => {
         logout();
@@ -37,13 +55,7 @@ function LayoutDashboard() {
         return <div className="dashboard-loading">Carregando...</div>;
     }
 
-    if (!user.tipo) {
-        console.error('Usuario sem tipo definido:', user);
-        navigate('/login');
-        return null;
-    }
-
-    const userRole = user.tipo;
+    const userRole = user.tipo || 'usuario';
 
     return (
         <div className="dashboard-layout-wrapper">
@@ -58,14 +70,9 @@ function LayoutDashboard() {
                     <button 
                         className="mobile-sidebar-toggle"
                         onClick={toggleMobileSidebar}
+                        aria-label="Abrir menu"
                     >
-                        <button 
-    className="mobile-sidebar-toggle"
-    onClick={toggleMobileSidebar}
-    aria-label="Abrir menu"
->
-    &#9776;
-</button>
+                        &#9776;
                     </button>
                 )}
 

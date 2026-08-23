@@ -9,10 +9,7 @@ import { NavLink } from 'react-router-dom';
  * @param {function} onClose - Função para fechar o menu mobile
  */
 function SidebarDashboard({ userRole, isOpen, onClose }) {
-    if (!userRole) {
-        console.error('SidebarDashboard sem userRole');
-        return null;
-    }
+    const rawRole = (userRole || 'usuario').toLowerCase();
 
     const getLinks = () => {
         const links = {
@@ -63,15 +60,15 @@ function SidebarDashboard({ userRole, isOpen, onClose }) {
                 { label: 'Blacklist', path: '/dashboard/admin/blacklist' },
             ]
         };
-        return links[userRole] || null;
+
+        if (rawRole === 'usuario') {
+            return links.vinculado;
+        }
+
+        return links[rawRole] || links.vinculado;
     };
 
     const menuLinks = getLinks();
-
-    if (!menuLinks) {
-        console.error('Role não encontrada:', userRole);
-        return null;
-    }
 
     return (
         <>
@@ -107,7 +104,7 @@ function SidebarDashboard({ userRole, isOpen, onClose }) {
                                 key={link.path}
                                 to={link.path}
                                 end={isDashboard}
-                                onClick={onClose} // Fecha o menu automaticamente ao selecionar uma página
+                                onClick={onClose}
                                 className={({ isActive }) => 
                                     `nav-link ${isActive ? 'active' : ''}`
                                 }
