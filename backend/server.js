@@ -65,6 +65,10 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'OK', message: 'Servidor FreteLabs funcionando' });
 });
 
+app.get('/api/version', (req, res) => {
+    res.json({ version: '2.0.2-build-10d2d56', timestamp: new Date().toISOString() });
+});
+
 app.use((req, res) => {
     res.status(404).json({ error: 'Rota não encontrada' });
 });
