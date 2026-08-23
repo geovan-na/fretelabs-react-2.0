@@ -6,16 +6,21 @@ const db = require('../config/database');
 // ============================================
 const getEmbarcadorDashboard = async (req, res) => {
     try {
-        const userId = req.userId; // Do middleware authenticateToken
+        const userId = req.userId;
         
-        // Buscar o embarcador_id
         const [embarcadorRows] = await db.execute(
             'SELECT id FROM embarcadores WHERE pessoa_id = ?',
             [userId]
         );
         
         if (embarcadorRows.length === 0) {
-            return res.status(404).json({ error: 'Embarcador não encontrado' });
+            return res.json({
+                resumo: { total: 0, aguardando: 0, negociacao: 0, transito: 0, concluido: 0, cancelado: 0, gasto_total: 0 },
+                fretes_por_mes: [],
+                candidaturas_pendentes: [],
+                atividades_recentes: [],
+                motoristas_favoritos: []
+            });
         }
         
         const embarcadorId = embarcadorRows[0].id;
@@ -124,12 +129,21 @@ const getFrotaDashboard = async (req, res) => {
         const userId = req.userId;
         
         const [transportadorRows] = await db.execute(
-            "SELECT id FROM transportadores WHERE pessoa_id = ? AND tipo_transportador = 'FROTA'",
-            [userId]
+            'SELECT id FROM transportadores WHERE pessoa_id = ? AND tipo_transportador = ?',
+            [userId, 'FROTA']
         );
         
         if (transportadorRows.length === 0) {
-            return res.status(404).json({ error: 'Frota não encontrada' });
+            return res.json({
+                veiculos: { total: 0, ativos: 0, manutencao: 0, inativos: 0 },
+                motoristas: { total: 0, ativos: 0, ferias: 0, licenca: 0, desligados: 0 },
+                fretes_transito: 0,
+                faturamento_total: 0,
+                fretes_faturamento_mes: [],
+                alertas: [],
+                desempenho_motoristas: [],
+                veiculos_mais_utilizados: []
+            });
         }
         
         const transportadorId = transportadorRows[0].id;
@@ -274,12 +288,19 @@ const getAutonomoDashboard = async (req, res) => {
         const userId = req.userId;
         
         const [transportadorRows] = await db.execute(
-            "SELECT id FROM transportadores WHERE pessoa_id = ? AND tipo_transportador = 'AUTONOMO'",
-            [userId]
+            'SELECT id FROM transportadores WHERE pessoa_id = ? AND tipo_transportador = ?',
+            [userId, 'AUTONOMO']
         );
         
         if (transportadorRows.length === 0) {
-            return res.status(404).json({ error: 'Autônomo não encontrado' });
+            return res.json({
+                resumo: { fretes_concluidos: 0, em_transito: 0, candidaturas_pendentes: 0, receita_total: 0, taxa_aceite: 0, total_fretes: 0 },
+                veiculo: null,
+                cnh: null,
+                receita_por_mes: [],
+                proximos_fretes: [],
+                alertas: []
+            });
         }
         
         const transportadorId = transportadorRows[0].id;
@@ -399,7 +420,13 @@ const getVinculadoDashboard = async (req, res) => {
         );
         
         if (motoristaRows.length === 0) {
-            return res.status(404).json({ error: 'Motorista vinculado não encontrado' });
+            return res.json({
+                resumo: { fretes_concluidos: 0, em_transito: 0, total_recebido: 0, avaliacao_media: 0, total_fretes: 0 },
+                frota: null,
+                proximos_fretes: [],
+                historico_entregas: [],
+                desempenho: { total_entregas: 0, taxa_entrega: 0, avaliacao_media: 0, dias_trabalhados: 0, dias_folga: 30 }
+            });
         }
         
         const motoristaId = motoristaRows[0].id;
@@ -421,14 +448,18 @@ const getVinculadoDashboard = async (req, res) => {
         `, [motoristaId]);
         
         // 4.2 Frota
-        const [frota] = await db.execute(`
-            SELECT 
-                p.nome_razao_social as nome,
-                t.id as transportador_id
-            FROM transportadores t
-            JOIN pessoas p ON t.pessoa_id = p.id
-            WHERE t.id = ?
-        `, [motoristaRows[0].transportador_id]);
+        let frotaInfo = null;
+        if (motoristaRows[0].transportador_id) {
+            const [frota] = await db.execute(`
+                SELECT 
+                    p.nome_razao_social as nome,
+                    t.id as transportador_id
+                FROM transportadores t
+                JOIN pessoas p ON t.pessoa_id = p.id
+                WHERE t.id = ?
+            `, [motoristaRows[0].transportador_id]);
+            frotaInfo = frota[0] || null;
+        }
         
         // 4.3 Próximos fretes
         const [proximosFretes] = await db.execute(`
@@ -492,7 +523,7 @@ const getVinculadoDashboard = async (req, res) => {
         
         return res.json({
             resumo: resumo[0] || { fretes_concluidos: 0, em_transito: 0, total_recebido: 0, avaliacao_media: 0, total_fretes: 0 },
-            frota: frota[0] || null,
+            frota: frotaInfo,
             proximos_fretes: proximosFretes,
             historico_entregas: historicoEntregas,
             desempenho: {
