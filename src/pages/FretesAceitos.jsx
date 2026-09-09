@@ -357,6 +357,21 @@ export default function FretesAceitos() {
                                                 {processando === frete.id ? 'Processando...' : 'Concluir Entrega'}
                                             </button>
                                         )}
+
+                                        {frete.status === 'CONCLUIDO' && (
+                                            <button 
+                                                className="btn btn-sm"
+                                                onClick={() => navigate(`/dashboard/fretes/${frete.id}`)}
+                                                style={{
+                                                    backgroundColor: '#F59E0B',
+                                                    borderColor: '#D97706',
+                                                    color: '#FFFFFF',
+                                                    fontWeight: '600'
+                                                }}
+                                            >
+                                                ⭐ Avaliar Frete
+                                            </button>
+                                        )}
                                     </div>
                                 </div>
                             </div>

@@ -160,13 +160,33 @@ export default function CardFrete({ frete, onFreteAtualizado }) {
             </div>
 
             {/* RODAPÉ */}
-            <div className="card-frete-footer">
+            <div className="card-frete-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span 
                     className="card-frete-link"
                     onClick={() => navigate(`/dashboard/embarcador/fretes/${frete.id}`)}
                 >
                     Ver detalhes →
                 </span>
+                {frete.status === 'CONCLUIDO' && (
+                    <button
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            navigate(`/dashboard/embarcador/fretes/${frete.id}`);
+                        }}
+                        style={{
+                            backgroundColor: '#F59E0B',
+                            color: '#FFFFFF',
+                            border: 'none',
+                            padding: '4px 12px',
+                            borderRadius: '6px',
+                            fontSize: '12px',
+                            fontWeight: '600',
+                            cursor: 'pointer'
+                        }}
+                    >
+                        ⭐ Avaliar
+                    </button>
+                )}
             </div>
 
             {/* MODAL DE CONFIRMAÇÃO */}

@@ -3,6 +3,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { api } from '../services/api';
+import ModalAvaliacao from '../components/ModalAvaliacao';
 
 export default function DetalheFretes() {
     const { id } = useParams();
@@ -21,6 +22,8 @@ export default function DetalheFretes() {
     });
     const [enviandoCandidatura, setEnviandoCandidatura] = useState(false);
     const [jaCandidatou, setJaCandidatou] = useState(false);
+    const [jaAvaliou, setJaAvaliou] = useState(false);
+    const [showModalAvaliacao, setShowModalAvaliacao] = useState(false);
 
     const token = localStorage.getItem('token');
 
@@ -31,14 +34,7 @@ export default function DetalheFretes() {
     const isFrota = userTipo === 'frota';
     const isAutonomo = userTipo === 'autonomo';
     const isEmbarcador = userTipo === 'embarcador';
-    const isTransportador = isFrota || isAutonomo;  // ← ISSO ESTÁ CERTO
-
-    console.log('===== DEBUG =====');
-    console.log('userTipo:', userTipo);
-    console.log('isFrota:', isFrota);
-    console.log('isAutonomo:', isAutonomo);
-    console.log('isTransportador:', isTransportador);
-    console.log('===============');
+    const isTransportador = isFrota || isAutonomo;
 
     const isCandidatarRoute = location.pathname.endsWith('/candidatar');
 
@@ -50,7 +46,17 @@ export default function DetalheFretes() {
         if (isCandidatarRoute) {
             setShowCandidatura(true);
         }
+        verificarAvaliacao();
     }, [id]);
+
+    const verificarAvaliacao = async () => {
+        try {
+            const res = await api.avaliacoes.verificar(id, token);
+            setJaAvaliou(res.jaAvaliou);
+        } catch (err) {
+            console.error('Erro ao verificar se já avaliou:', err);
+        }
+    };
 
     const carregarDetalhes = async () => {
         setLoading(true);
@@ -341,6 +347,51 @@ export default function DetalheFretes() {
                     </button>
                 </div>
             )}
+
+            {/* BOTÃO DE AVALIAÇÃO - APENAS SE STATUS = CONCLUIDO */}
+            {frete.status === 'CONCLUIDO' && (
+                <div className="detalhe-frete-actions" style={{ marginTop: '16px' }}>
+                    {jaAvaliou ? (
+                        <div style={{
+                            backgroundColor: '#10B98120',
+                            border: '1px solid #10B981',
+                            color: '#10B981',
+                            padding: '12px 20px',
+                            borderRadius: '8px',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '8px',
+                            fontWeight: '600'
+                        }}>
+                            ✓ Frete Avaliado
+                        </div>
+                    ) : (
+                        <button 
+                            className="btn"
+                            onClick={() => setShowModalAvaliacao(true)}
+                            style={{
+                                backgroundColor: '#F59E0B',
+                                borderColor: '#D97706',
+                                color: '#FFFFFF',
+                                fontWeight: '600',
+                                padding: '12px 24px',
+                                borderRadius: '8px',
+                                cursor: 'pointer'
+                            }}
+                        >
+                            ⭐ Avaliar Frete Concluído
+                        </button>
+                    )}
+                </div>
+            )}
+
+            {/* MODAL DE AVALIAÇÃO */}
+            <ModalAvaliacao
+                isOpen={showModalAvaliacao}
+                onClose={() => setShowModalAvaliacao(false)}
+                frete={frete}
+                onSuccess={() => setJaAvaliou(true)}
+            />
 
             {/* MODAL DE CANDIDATURA */}
             {showCandidatura && (

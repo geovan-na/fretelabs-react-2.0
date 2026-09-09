@@ -301,4 +301,12 @@ motoristaVinculado: {
         vinculado: (token) => api.request('/dashboard/vinculado', 'GET', null, token),
         admin: (token) => api.request('/dashboard/admin', 'GET', null, token),
     },
+
+    avaliacoes: {
+        criar: (dados, token) => api.request('/avaliacoes', 'POST', dados, token),
+        listar: (token) => api.request('/avaliacoes/recebidas', 'GET', null, token),
+        listarMinhas: (token) => api.request('/avaliacoes/minhas', 'GET', null, token),
+        listarRecebidas: (token) => api.request('/avaliacoes/recebidas', 'GET', null, token),
+        verificar: (freteId, token) => api.request(`/avaliacoes/verificar/${freteId}`, 'GET', null, token),
+    },
 };
