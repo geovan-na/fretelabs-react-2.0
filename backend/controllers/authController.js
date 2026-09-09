@@ -319,12 +319,145 @@ const getMe = async (req, res) => {
     }
 };
 
+const ensureRecoveryTableExists = async () => {
+    try {
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS recuperacao_senha (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                pessoa_id INT NOT NULL,
+                codigo VARCHAR(6) NOT NULL,
+                expiracao DATETIME NOT NULL,
+                usado TINYINT(1) DEFAULT 0,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+        `);
+    } catch (e) {
+        console.warn('Aviso: erro ao verificar/criar tabela recuperacao_senha:', e.message);
+    }
+};
+
 const forgotPassword = async (req, res) => {
-    res.json({ message: 'Link de recuperação enviado' });
+    try {
+        const { email } = req.body;
+        if (!email) {
+            return res.status(400).json({ error: 'E-mail é obrigatório' });
+        }
+
+        const [users] = await db.query('SELECT id, nome_razao_social, email FROM pessoas WHERE email = ?', [email]);
+        if (users.length === 0) {
+            return res.status(404).json({ error: 'E-mail não encontrado no sistema' });
+        }
+
+        const user = users[0];
+        
+        // Gerar código de 6 dígitos aleatório
+        const codigo = Math.floor(100000 + Math.random() * 900000).toString();
+
+        await ensureRecoveryTableExists();
+
+        // Inserir registro com 15 minutos de validade
+        await db.query(
+            `INSERT INTO recuperacao_senha (pessoa_id, codigo, expiracao, usado)
+             VALUES (?, ?, DATE_ADD(NOW(), INTERVAL 15 MINUTE), 0)`,
+            [user.id, codigo]
+        );
+
+        console.log(`🔑 Código de recuperação gerado para [${email}]: ${codigo}`);
+
+        res.json({
+            message: 'Código de verificação enviado com sucesso!',
+            email: user.email,
+            codigo: codigo
+        });
+    } catch (error) {
+        console.error('Erro em forgotPassword:', error);
+        res.status(500).json({ error: error.message || 'Erro interno ao solicitar recuperação de senha' });
+    }
+};
+
+const verifyCode = async (req, res) => {
+    try {
+        const { email, codigo } = req.body;
+        if (!email || !codigo) {
+            return res.status(400).json({ error: 'E-mail e código são obrigatórios' });
+        }
+
+        const [users] = await db.query('SELECT id FROM pessoas WHERE email = ?', [email]);
+        if (users.length === 0) {
+            return res.status(404).json({ error: 'Usuário não encontrado' });
+        }
+
+        const userId = users[0].id;
+
+        await ensureRecoveryTableExists();
+
+        const [records] = await db.query(
+            `SELECT id FROM recuperacao_senha 
+             WHERE pessoa_id = ? AND codigo = ? AND usado = 0 AND expiracao > NOW()
+             ORDER BY id DESC LIMIT 1`,
+            [userId, codigo]
+        );
+
+        if (records.length === 0) {
+            return res.status(400).json({ error: 'Código de verificação inválido ou expirado' });
+        }
+
+        res.json({ message: 'Código verificado com sucesso!', valido: true });
+    } catch (error) {
+        console.error('Erro em verifyCode:', error);
+        res.status(500).json({ error: error.message || 'Erro interno ao verificar código' });
+    }
 };
 
 const resetPassword = async (req, res) => {
-    res.json({ message: 'Senha redefinida com sucesso' });
+    try {
+        const { email, codigo, novaSenha } = req.body;
+        if (!email || !codigo || !novaSenha) {
+            return res.status(400).json({ error: 'E-mail, código e nova senha são obrigatórios' });
+        }
+
+        if (novaSenha.length < 6) {
+            return res.status(400).json({ error: 'A nova senha deve ter no mínimo 6 caracteres' });
+        }
+
+        const [users] = await db.query('SELECT id FROM pessoas WHERE email = ?', [email]);
+        if (users.length === 0) {
+            return res.status(404).json({ error: 'Usuário não encontrado' });
+        }
+
+        const userId = users[0].id;
+
+        await ensureRecoveryTableExists();
+
+        const [records] = await db.query(
+            `SELECT id FROM recuperacao_senha 
+             WHERE pessoa_id = ? AND codigo = ? AND usado = 0 AND expiracao > NOW()
+             ORDER BY id DESC LIMIT 1`,
+            [userId, codigo]
+        );
+
+        if (records.length === 0) {
+            return res.status(400).json({ error: 'Código de verificação inválido ou expirado' });
+        }
+
+        const recoveryId = records[0].id;
+
+        // Hash da nova senha
+        const hashedPassword = await bcrypt.hash(novaSenha, 10);
+
+        // Atualizar senha na tabela pessoas
+        await db.query('UPDATE pessoas SET senha = ? WHERE id = ?', [hashedPassword, userId]);
+
+        // Marcar o código de recuperação como usado
+        await db.query('UPDATE recuperacao_senha SET usado = 1 WHERE id = ?', [recoveryId]);
+
+        console.log(`✅ Senha redefinida com sucesso para o usuário [${email}]`);
+
+        res.json({ message: 'Senha redefinida com sucesso! Você já pode fazer login.' });
+    } catch (error) {
+        console.error('Erro em resetPassword:', error);
+        res.status(500).json({ error: error.message || 'Erro interno ao redefinir senha' });
+    }
 };
 
-module.exports = { register, login, getMe, forgotPassword, resetPassword };
+module.exports = { register, login, getMe, forgotPassword, verifyCode, resetPassword };

@@ -39,6 +39,9 @@ export const api = {
         register: (dados) => api.request('/auth/register', 'POST', dados),
         login: (email, senha) => api.request('/auth/login', 'POST', { email, senha }),
         getMe: (token) => api.request('/auth/me', 'GET', null, token),
+        forgotPassword: (email) => api.request('/auth/forgot-password', 'POST', { email }),
+        verifyCode: (email, codigo) => api.request('/auth/verify-code', 'POST', { email, codigo }),
+        resetPassword: (email, codigo, novaSenha) => api.request('/auth/reset-password', 'POST', { email, codigo, novaSenha }),
     },
 
     usuarios: {

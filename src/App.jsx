@@ -5,6 +5,7 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 import Login from './pages/Login';
 import Cadastro from './pages/Cadastro';
+import RecuperarSenha from './pages/RecuperarSenha';
 import Solucoes from './pages/Solucoes';
 import Empresa from './pages/Empresa';
 import Motorista from './pages/Motorista';
@@ -73,6 +74,24 @@ function App() {
                             <Header />
                             <main className="main-content">
                                 <Cadastro />
+                            </main>
+                            <Footer />
+                        </>
+                    } />
+                    <Route path="/recuperar-senha" element={
+                        <>
+                            <Header />
+                            <main className="main-content">
+                                <RecuperarSenha />
+                            </main>
+                            <Footer />
+                        </>
+                    } />
+                    <Route path="/esqueci-senha" element={
+                        <>
+                            <Header />
+                            <main className="main-content">
+                                <RecuperarSenha />
                             </main>
                             <Footer />
                         </>
