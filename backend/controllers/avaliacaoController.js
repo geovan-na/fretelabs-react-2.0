@@ -49,18 +49,66 @@ const criarAvaliacao = async (req, res) => {
 
         const userId = req.userId;
 
+        // Resolvendo ID da pessoa do Embarcador
+        let embarcadorPessoaId = frete.embarcador_pessoa_id;
+        if (!embarcadorPessoaId && frete.embarcador_id) {
+            const [pEmb] = await db.query('SELECT id FROM pessoas WHERE id = ?', [frete.embarcador_id]);
+            if (pEmb.length > 0) embarcadorPessoaId = pEmb[0].id;
+        }
+
+        // Resolvendo ID da pessoa do Transportador com fallbacks
+        let transportadorPessoaId = frete.transportador_pessoa_id;
+        
+        // Fallback A: Checar se f.transportador_id já é o id na tabela pessoas
+        if (!transportadorPessoaId && frete.transportador_id) {
+            const [pTrans] = await db.query('SELECT id FROM pessoas WHERE id = ?', [frete.transportador_id]);
+            if (pTrans.length > 0) transportadorPessoaId = pTrans[0].id;
+        }
+
+        // Fallback B: Checar se existe candidatura ACEITA para este frete
+        if (!transportadorPessoaId) {
+            const [candRows] = await db.query(`
+                SELECT t.pessoa_id, c.transportador_id
+                FROM candidaturas c
+                JOIN transportadores t ON c.transportador_id = t.id
+                WHERE c.frete_id = ? AND c.status = 'ACEITO'
+                LIMIT 1
+            `, [frete_id]);
+            if (candRows.length > 0) {
+                transportadorPessoaId = candRows[0].pessoa_id;
+                // Aproveita para atualizar o frete com o transportador_id se estiver nulo
+                if (!frete.transportador_id && candRows[0].transportador_id) {
+                    await db.query('UPDATE fretes SET transportador_id = ? WHERE id = ?', [candRows[0].transportador_id, frete_id]);
+                }
+            }
+        }
+
+        // Fallback C: Checar se o motorista vinculado dá acesso à pessoa do transportador
+        if (!transportadorPessoaId && frete.motorista_pessoa_id) {
+            transportadorPessoaId = frete.motorista_pessoa_id;
+        }
+
         // Auto-resolver o avaliado_id e tipo_avaliacao se não foram passados
         if (!avaliado_id || !tipo_avaliacao) {
-            if (userId === frete.embarcador_pessoa_id) {
+            if (userId === embarcadorPessoaId || userId === frete.embarcador_id) {
                 // Usuário logado é o Embarcador -> avalia o Transportador
-                avaliado_id = frete.transportador_pessoa_id;
+                avaliado_id = transportadorPessoaId;
                 tipo_avaliacao = 'EMPRESA_TRANSPORTADOR';
-            } else if (userId === frete.transportador_pessoa_id || (frete.motorista_pessoa_id && userId === frete.motorista_pessoa_id)) {
-                // Usuário logado é o Transportador (Frota/Autônomo/Vinculado) -> avalia o Embarcador
-                avaliado_id = frete.embarcador_pessoa_id;
+            } else if (userId === transportadorPessoaId || userId === frete.transportador_id || userId === frete.motorista_pessoa_id) {
+                // Usuário logado é o Transportador -> avalia o Embarcador
+                avaliado_id = embarcadorPessoaId;
                 tipo_avaliacao = 'TRANSPORTADOR_EMPRESA';
             } else {
-                return res.status(403).json({ error: 'Apenas o embarcador ou o transportador deste frete podem avaliá-lo.' });
+                // Fallback por eliminação se for uma das 2 partes registradas
+                if (transportadorPessoaId && userId !== transportadorPessoaId) {
+                    avaliado_id = transportadorPessoaId;
+                    tipo_avaliacao = 'EMPRESA_TRANSPORTADOR';
+                } else if (embarcadorPessoaId && userId !== embarcadorPessoaId) {
+                    avaliado_id = embarcadorPessoaId;
+                    tipo_avaliacao = 'TRANSPORTADOR_EMPRESA';
+                } else {
+                    return res.status(403).json({ error: 'Apenas o embarcador ou o transportador deste frete podem avaliá-lo.' });
+                }
             }
         }
 
@@ -112,13 +160,13 @@ const criarAvaliacao = async (req, res) => {
 
         if (tipo_avaliacao === 'EMPRESA_TRANSPORTADOR') {
             await db.query(
-                'UPDATE transportadores SET avaliacao_media = ?, total_avaliacoes = ? WHERE pessoa_id = ?',
-                [mediaNota, totalAvaliacoes, avaliado_id]
+                'UPDATE transportadores SET avaliacao_media = ?, total_avaliacoes = ? WHERE pessoa_id = ? OR id = ?',
+                [mediaNota, totalAvaliacoes, avaliado_id, avaliado_id]
             );
         } else {
             await db.query(
-                'UPDATE embarcadores SET score_credito = ? WHERE pessoa_id = ?',
-                [mediaNota, avaliado_id]
+                'UPDATE embarcadores SET score_credito = ? WHERE pessoa_id = ? OR id = ?',
+                [mediaNota, avaliado_id, avaliado_id]
             );
         }
 
