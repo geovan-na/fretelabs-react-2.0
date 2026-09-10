@@ -25,11 +25,14 @@ const criarAvaliacao = async (req, res) => {
                 f.status, 
                 f.embarcador_id, 
                 f.transportador_id,
+                f.motorista_vinculado_id,
                 e.pessoa_id as embarcador_pessoa_id,
-                t.pessoa_id as transportador_pessoa_id
+                t.pessoa_id as transportador_pessoa_id,
+                mv.pessoa_id as motorista_pessoa_id
             FROM fretes f
             LEFT JOIN embarcadores e ON f.embarcador_id = e.id
             LEFT JOIN transportadores t ON f.transportador_id = t.id
+            LEFT JOIN motoristas_vinculados mv ON f.motorista_vinculado_id = mv.id
             WHERE f.id = ?
         `, [frete_id]);
 
@@ -52,8 +55,8 @@ const criarAvaliacao = async (req, res) => {
                 // Usuário logado é o Embarcador -> avalia o Transportador
                 avaliado_id = frete.transportador_pessoa_id;
                 tipo_avaliacao = 'EMPRESA_TRANSPORTADOR';
-            } else if (userId === frete.transportador_pessoa_id) {
-                // Usuário logado é o Transportador -> avalia o Embarcador
+            } else if (userId === frete.transportador_pessoa_id || (frete.motorista_pessoa_id && userId === frete.motorista_pessoa_id)) {
+                // Usuário logado é o Transportador (Frota/Autônomo/Vinculado) -> avalia o Embarcador
                 avaliado_id = frete.embarcador_pessoa_id;
                 tipo_avaliacao = 'TRANSPORTADOR_EMPRESA';
             } else {
