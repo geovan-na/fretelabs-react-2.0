@@ -1,19 +1,66 @@
 const db = require('../config/database');
-// 1. Busca Geral (Apenas fretes disponíveis)
+// 1. Busca Geral (Apenas fretes disponíveis com suporte a filtros)
 const listarDisponiveis = async (req, res) => {
     try {
-        // Busca apenas fretes com status 'AGUARDANDO'
-        const query = `
+        const { 
+            origem, 
+            destino, 
+            tipo_carga, 
+            peso_min, 
+            peso_max, 
+            valor_min, 
+            valor_max, 
+            data_coleta 
+        } = req.query;
+
+        let query = `
             SELECT f.*, p.nome_razao_social as embarcador_nome 
             FROM fretes f 
             JOIN embarcadores e ON f.embarcador_id = e.id 
             JOIN pessoas p ON e.pessoa_id = p.id 
             WHERE f.status IN ('AGUARDANDO', 'NEGOCIACAO')
-            ORDER BY f.data_publicacao DESC
         `;
-        const [rows] = await db.query(query);
-        res.json({ data: rows });
+        const params = [];
+
+        if (origem) {
+            query += ` AND (f.origem_cep LIKE ? OR f.origem_endereco LIKE ?)`;
+            params.push(`%${origem}%`, `%${origem}%`);
+        }
+        if (destino) {
+            query += ` AND (f.destino_cep LIKE ? OR f.destino_endereco LIKE ?)`;
+            params.push(`%${destino}%`, `%${destino}%`);
+        }
+        if (tipo_carga) {
+            query += ` AND f.tipo_carga = ?`;
+            params.push(tipo_carga);
+        }
+        if (peso_min) {
+            query += ` AND f.peso_kg >= ?`;
+            params.push(parseFloat(peso_min));
+        }
+        if (peso_max) {
+            query += ` AND f.peso_kg <= ?`;
+            params.push(parseFloat(peso_max));
+        }
+        if (valor_min) {
+            query += ` AND f.valor_ofertado >= ?`;
+            params.push(parseFloat(valor_min));
+        }
+        if (valor_max) {
+            query += ` AND f.valor_ofertado <= ?`;
+            params.push(parseFloat(valor_max));
+        }
+        if (data_coleta) {
+            query += ` AND DATE(f.data_coleta_prevista) >= ?`;
+            params.push(data_coleta);
+        }
+
+        query += ` ORDER BY f.data_publicacao DESC`;
+
+        const [rows] = await db.query(query, params);
+        res.json({ data: rows, total: rows.length });
     } catch (error) {
+        console.error('Erro ao listar fretes disponíveis:', error);
         res.status(500).json({ error: 'Erro ao listar fretes disponíveis' });
     }
 };

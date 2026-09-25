@@ -62,7 +62,7 @@ export const api = {
             listar: (token, params = '') => api.request(`/fretes${params}`, 'GET', null, token),
             listarMeusFretes: (token, params = '') => api.request(`/fretes/meus-fretes${params}`, 'GET', null, token),
             listarAceitos: (token, params = '') => api.request(`/fretes/aceitos${params}`, 'GET', null, token),
-            listarDisponiveis: (token, params = '') => api.request('/fretes', 'GET', null, token), // Verifique se sua rota no express usa /disponiveis
+            listarDisponiveis: (token, params = '') => api.request(`/fretes${params}`, 'GET', null, token),
             buscar: (id, token) => api.request(`/fretes/${id}`, 'GET', null, token),
             criar: (dados, token) => api.request('/fretes', 'POST', dados, token),
             atualizar: (id, dados, token) => api.request(`/fretes/${id}`, 'PUT', dados, token),

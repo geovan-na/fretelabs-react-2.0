@@ -32,33 +32,63 @@ export default function BuscarFretes() {
         carregarFretes();
     }, [pagina]);
 
-const carregarFretes = async () => {
-    console.log("--- DEBUG: Iniciando busca otimizada ---");
-    setLoading(true);
-    setError(null);
+    const carregarFretes = async (filtrosAtuais = filtros) => {
+        setLoading(true);
+        setError(null);
 
-    try {
-        // Agora usamos a função nova que aponta para /fretes/disponiveis
-        // Ela não precisa de parâmetros complexos no front-end
-        const response = await api.fretes.listarDisponiveis(token);
-        
-        console.log("Resposta recebida:", response);
-        
-        // Ajustamos conforme a estrutura que o back-end retorna agora
-        setFretes(response.data || []);
-        
-        // Se a paginação for necessária depois, podemos ajustar o back-end 
-        // para retornar totalPages junto no objeto data
-        setTotalPaginas(1); 
-        setTotalFretes(response.data ? response.data.length : 0);
+        try {
+            const queryParams = new URLSearchParams();
+            if (filtrosAtuais.origem) queryParams.append('origem', filtrosAtuais.origem);
+            if (filtrosAtuais.destino) queryParams.append('destino', filtrosAtuais.destino);
+            if (filtrosAtuais.tipo_carga) queryParams.append('tipo_carga', filtrosAtuais.tipo_carga);
+            if (filtrosAtuais.peso_min) queryParams.append('peso_min', filtrosAtuais.peso_min);
+            if (filtrosAtuais.peso_max) queryParams.append('peso_max', filtrosAtuais.peso_max);
+            if (filtrosAtuais.valor_min) queryParams.append('valor_min', filtrosAtuais.valor_min);
+            if (filtrosAtuais.valor_max) queryParams.append('valor_max', filtrosAtuais.valor_max);
+            if (filtrosAtuais.data_coleta) queryParams.append('data_coleta', filtrosAtuais.data_coleta);
 
-    } catch (err) {
-        console.error("DEBUG: Erro capturado na API:", err);
-        setError('Erro ao carregar fretes disponíveis.');
-    } finally {
-        setLoading(false);
-    }
-};
+            const queryString = queryParams.toString() ? `?${queryParams.toString()}` : '';
+            const response = await api.fretes.listarDisponiveis(token, queryString);
+            
+            let dados = response.data || [];
+            
+            // Filtro client-side resiliente para garantir funcionamento imediato em qualquer cenário
+            if (filtrosAtuais.origem) {
+                const o = filtrosAtuais.origem.toLowerCase();
+                dados = dados.filter(f => (f.origem_endereco || '').toLowerCase().includes(o) || (f.origem_cep || '').includes(o));
+            }
+            if (filtrosAtuais.destino) {
+                const d = filtrosAtuais.destino.toLowerCase();
+                dados = dados.filter(f => (f.destino_endereco || '').toLowerCase().includes(d) || (f.destino_cep || '').includes(d));
+            }
+            if (filtrosAtuais.tipo_carga) {
+                dados = dados.filter(f => f.tipo_carga === filtrosAtuais.tipo_carga);
+            }
+            if (filtrosAtuais.peso_min) {
+                dados = dados.filter(f => parseFloat(f.peso_kg || 0) >= parseFloat(filtrosAtuais.peso_min));
+            }
+            if (filtrosAtuais.peso_max) {
+                dados = dados.filter(f => parseFloat(f.peso_kg || 0) <= parseFloat(filtrosAtuais.peso_max));
+            }
+            if (filtrosAtuais.valor_min) {
+                dados = dados.filter(f => parseFloat(f.valor_ofertado || 0) >= parseFloat(filtrosAtuais.valor_min));
+            }
+            if (filtrosAtuais.valor_max) {
+                dados = dados.filter(f => parseFloat(f.valor_ofertado || 0) <= parseFloat(filtrosAtuais.valor_max));
+            }
+            
+            setFretes(dados);
+            setTotalPaginas(1);
+            setTotalFretes(dados.length);
+
+        } catch (err) {
+            console.error("DEBUG: Erro capturado na API:", err);
+            setError('Erro ao carregar fretes disponíveis.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     const handleFiltroChange = (e) => {
         const { name, value } = e.target;
         setFiltros(prev => ({ ...prev, [name]: value }));
@@ -67,11 +97,11 @@ const carregarFretes = async () => {
     const aplicarFiltros = (e) => {
         e.preventDefault();
         setPagina(1);
-        carregarFretes();
+        carregarFretes(filtros);
     };
 
     const limparFiltros = () => {
-        setFiltros({
+        const filtrosLimpos = {
             origem: '',
             destino: '',
             tipo_carga: '',
@@ -80,9 +110,10 @@ const carregarFretes = async () => {
             valor_min: '',
             valor_max: '',
             data_coleta: ''
-        });
+        };
+        setFiltros(filtrosLimpos);
         setPagina(1);
-        setTimeout(() => carregarFretes(), 100);
+        carregarFretes(filtrosLimpos);
     };
 
     const tiposCarga = [

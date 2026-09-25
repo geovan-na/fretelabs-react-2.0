@@ -70,10 +70,20 @@ const criarVeiculo = async (req, res) => {
 
         console.log('📝 Criando veículo:', { placa, modelo, tipo_veiculo });
 
-        // Verificar se placa já existe
-        const [existing] = await db.query('SELECT id FROM veiculos WHERE placa = ?', [placa]);
-        if (existing.length > 0) {
-            return res.status(400).json({ error: 'Placa já cadastrada' });
+        // Resolver transportador_id automaticamente caso não seja enviado no body
+        let transportadorIdFinal = transportador_id;
+        if (!transportadorIdFinal) {
+            const [tRows] = await db.query(
+                'SELECT id FROM transportadores WHERE pessoa_id = ?',
+                [req.userId]
+            );
+            if (tRows.length > 0) {
+                transportadorIdFinal = tRows[0].id;
+            }
+        }
+
+        if (!transportadorIdFinal) {
+            return res.status(400).json({ error: 'Transportador não identificado para vincular ao veículo' });
         }
 
         const [result] = await db.query(
@@ -97,7 +107,7 @@ const criarVeiculo = async (req, res) => {
                 status
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
             [
-                transportador_id, 
+                transportadorIdFinal, 
                 placa, 
                 renavam || null,
                 modelo, 
@@ -151,13 +161,22 @@ const atualizarVeiculo = async (req, res) => {
             status
         } = req.body;
 
-        // Verificar se placa já existe para outro veículo
-        const [existing] = await db.query(
-            'SELECT id FROM veiculos WHERE placa = ? AND id != ?',
-            [placa, id]
-        );
-        if (existing.length > 0) {
-            return res.status(400).json({ error: 'Placa já cadastrada para outro veículo' });
+        const [veicRows] = await db.query('SELECT * FROM veiculos WHERE id = ?', [id]);
+        if (veicRows.length === 0) {
+            return res.status(404).json({ error: 'Veículo não encontrado' });
+        }
+        const current = veicRows[0];
+
+        // Verificar se placa já existe para outro veículo (apenas se foi alterada)
+        const finalPlaca = placa !== undefined ? placa : current.placa;
+        if (placa && placa !== current.placa) {
+            const [existing] = await db.query(
+                'SELECT id FROM veiculos WHERE placa = ? AND id != ?',
+                [placa, id]
+            );
+            if (existing.length > 0) {
+                return res.status(400).json({ error: 'Placa já cadastrada para outro veículo' });
+            }
         }
 
         await db.query(
@@ -180,22 +199,22 @@ const atualizarVeiculo = async (req, res) => {
                 status = ?
             WHERE id = ?`,
             [
-                placa,
-                renavam || null,
-                modelo,
-                marca || null,
-                ano_fabricacao || null,
-                ano_modelo || null,
-                capacidade_kg || null,
-                capacidade_m3 || null,
-                tipo_carroceria || null,
-                tipo_veiculo || null,
-                eixos || null,
-                possui_rastreador || false,
-                possui_seguro || false,
-                seguro_apolice || null,
-                seguro_validade || null,
-                status || 'ATIVO',
+                finalPlaca,
+                renavam !== undefined ? renavam : current.renavam,
+                modelo !== undefined ? modelo : current.modelo,
+                marca !== undefined ? marca : current.marca,
+                ano_fabricacao !== undefined ? ano_fabricacao : current.ano_fabricacao,
+                ano_modelo !== undefined ? ano_modelo : current.ano_modelo,
+                capacidade_kg !== undefined ? capacidade_kg : current.capacidade_kg,
+                capacidade_m3 !== undefined ? capacidade_m3 : current.capacidade_m3,
+                tipo_carroceria !== undefined ? tipo_carroceria : current.tipo_carroceria,
+                tipo_veiculo !== undefined ? tipo_veiculo : current.tipo_veiculo,
+                eixos !== undefined ? eixos : current.eixos,
+                possui_rastreador !== undefined ? possui_rastreador : current.possui_rastreador,
+                possui_seguro !== undefined ? possui_seguro : current.possui_seguro,
+                seguro_apolice !== undefined ? seguro_apolice : current.seguro_apolice,
+                seguro_validade !== undefined ? seguro_validade : current.seguro_validade,
+                status !== undefined ? status : current.status,
                 id
             ]
         );
