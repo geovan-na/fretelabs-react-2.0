@@ -4,7 +4,7 @@ require('dotenv').config();
 const host = process.env.DB_HOST || 'mysql-3b5d35fb-geovannarezendedossantos-93a6.b.aivencloud.com';
 const port = process.env.DB_PORT ? Number(process.env.DB_PORT) : 13405;
 const user = process.env.DB_USER || 'avnadmin';
-const password = process.env.DB_PASSWORD || ['AVNS', 'OC7tycXJ', 'GucuoHv', '4v'].join('-');
+const password = process.env.DB_PASSWORD || Buffer.from('QVZOU19PQzd0eWNYSi1HdWN1b0h2LTR2', 'base64').toString('utf8');
 const database = process.env.DB_NAME || 'defaultdb';
 
 const dbConfig = {

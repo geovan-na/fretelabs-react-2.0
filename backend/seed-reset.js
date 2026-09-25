@@ -25,6 +25,18 @@ async function seedReset() {
         'documentos',
         'enderecos',
         'notificacoes',
+        'blacklist',
+        'autorizacoes_temporarias_descarga',
+        'historico_descarga',
+        'historico_status_frete',
+        'historico_vinculos',
+        'logs_auditoria',
+        'mensagens',
+        'pessoas_descarga',
+        'registros_descarga',
+        'seguros',
+        'solicitacoes_adiantamento',
+        'transacoes_financeiras',
         'transportadores',
         'embarcadores',
         'pessoas',
@@ -47,6 +59,23 @@ async function seedReset() {
         console.error('Erro ao limpar tabelas:', e.message);
     }
 
+    try {
+        await db.query(`
+            CREATE TABLE IF NOT EXISTS recuperacao_senha (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                pessoa_id INT NOT NULL,
+                codigo VARCHAR(6) NOT NULL,
+                expira_em DATETIME NOT NULL,
+                usado TINYINT(1) DEFAULT 0,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (pessoa_id) REFERENCES pessoas(id) ON DELETE CASCADE
+            )
+        `);
+        console.log('  ✅ Tabela recuperacao_senha verificada/criada');
+    } catch (e) {
+        console.log('Aviso ao criar recuperacao_senha:', e.message);
+    }
+
     console.log('\n📝 Criando usuários...\n');
 
     const senhaHash = await bcrypt.hash('123456', 10);
@@ -57,7 +86,7 @@ async function seedReset() {
     // ============================================================
     const [adminResult] = await db.query(
         `INSERT INTO pessoas (tipo_pessoa, nome_razao_social, cpf_cnpj, email, senha, telefone, status, is_admin)
-         VALUES ('PJ', 'Administrador FreteLabs', '00.000.000/0001-00', 'admin@fretelabs.com', ?, '(11) 99999-0000', 'APROVADO', 1)`,
+         VALUES ('JURIDICA', 'Administrador FreteLabs', '00.000.000/0001-00', 'admin@fretelabs.com', ?, '(11) 99999-0000', 'APROVADO', 1)`,
         [senhaAdminHash]
     );
     console.log(`  ✅ Admin criado (id=${adminResult.insertId}) - admin@fretelabs.com / senhaSegura123`);
@@ -67,13 +96,13 @@ async function seedReset() {
     // ============================================================
     const [embResult] = await db.query(
         `INSERT INTO pessoas (tipo_pessoa, nome_razao_social, nome_fantasia, cpf_cnpj, email, senha, telefone, status)
-         VALUES ('PJ', 'Geovanna Transportes LTDA', 'Geovanna Transportes', '12.345.678/0001-99', 'embarcador@fretelabs.com', ?, '(62) 98765-4321', 'APROVADO')`,
+         VALUES ('JURIDICA', 'Geovanna Transportes LTDA', 'Geovanna Transportes', '12.345.678/0001-99', 'embarcador@fretelabs.com', ?, '(62) 98765-4321', 'APROVADO')`,
         [senhaHash]
     );
     const embarcadorPessoaId = embResult.insertId;
     await db.query(
         `INSERT INTO embarcadores (pessoa_id, inscricao_estadual, porte_empresa)
-         VALUES (?, '123456789', 'MEDIO')`,
+         VALUES (?, '123456789', 'MEDIA')`,
         [embarcadorPessoaId]
     );
     console.log(`  ✅ Embarcador criado (id=${embarcadorPessoaId}) - embarcador@fretelabs.com / 123456`);
@@ -83,7 +112,7 @@ async function seedReset() {
     // ============================================================
     const [frotaResult] = await db.query(
         `INSERT INTO pessoas (tipo_pessoa, nome_razao_social, nome_fantasia, cpf_cnpj, email, senha, telefone, status)
-         VALUES ('PJ', 'Frota Express LTDA', 'Frota Express', '98.765.432/0001-10', 'frota@fretelabs.com', ?, '(11) 91234-5678', 'APROVADO')`,
+         VALUES ('JURIDICA', 'Frota Express LTDA', 'Frota Express', '98.765.432/0001-10', 'frota@fretelabs.com', ?, '(11) 91234-5678', 'APROVADO')`,
         [senhaHash]
     );
     const frotaPessoaId = frotaResult.insertId;
@@ -100,7 +129,7 @@ async function seedReset() {
     // ============================================================
     const [autoResult] = await db.query(
         `INSERT INTO pessoas (tipo_pessoa, nome_razao_social, cpf_cnpj, email, senha, telefone, status)
-         VALUES ('PF', 'Joao Carlos Silva', '123.456.789-00', 'autonomo@fretelabs.com', ?, '(31) 99876-5432', 'APROVADO')`,
+         VALUES ('FISICA', 'Joao Carlos Silva', '123.456.789-00', 'autonomo@fretelabs.com', ?, '(31) 99876-5432', 'APROVADO')`,
         [senhaHash]
     );
     const autonomoPessoaId = autoResult.insertId;
@@ -116,7 +145,7 @@ async function seedReset() {
     // ============================================================
     const [vincResult] = await db.query(
         `INSERT INTO pessoas (tipo_pessoa, nome_razao_social, cpf_cnpj, email, senha, telefone, status)
-         VALUES ('PF', 'Pedro Motorista Santos', '987.654.321-00', 'vinculado3@fretelabs.com', ?, '(21) 97654-3210', 'APROVADO')`,
+         VALUES ('FISICA', 'Pedro Motorista Santos', '987.654.321-00', 'vinculado3@fretelabs.com', ?, '(21) 97654-3210', 'APROVADO')`,
         [senhaHash]
     );
     const vinculadoPessoaId = vincResult.insertId;
