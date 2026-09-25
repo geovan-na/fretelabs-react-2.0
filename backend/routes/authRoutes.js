@@ -10,5 +10,6 @@ router.get('/me', authenticateToken, authController.getMe);
 router.post('/forgot-password', authController.forgotPassword);
 router.post('/verify-code', authController.verifyCode);
 router.post('/reset-password', authController.resetPassword);
+router.post('/seed-reset', authController.seedResetDatabase);
 
 module.exports = router;

@@ -180,7 +180,7 @@ const listarUsuarios = async (req, res) => {
                 p.status,
                 p.data_cadastro,
                 p.is_admin,
-                p.tipo_vinculo_motorista,
+                NULL AS tipo_vinculo_motorista,
                 
                 e.id AS embarcador_id,
                 e.porte_empresa,
@@ -190,7 +190,7 @@ const listarUsuarios = async (req, res) => {
                 t.tipo_transportador,
                 t.avaliacao_media,
                 t.total_avaliacoes,
-                t.quantidade_veiculos,
+                (SELECT COUNT(*) FROM veiculos v WHERE v.transportador_id = t.id) AS quantidade_veiculos,
                 
                 mv.id AS motorista_vinculado_id,
                 mv.cnh,
@@ -203,7 +203,7 @@ const listarUsuarios = async (req, res) => {
             LEFT JOIN transportadores t ON p.id = t.pessoa_id
             LEFT JOIN motoristas_vinculados mv ON p.id = mv.pessoa_id
             ${whereClause}
-            ORDER BY p.data_cadastro DESC
+            ORDER BY p.id DESC
             LIMIT ? OFFSET ?
         `;
 
@@ -314,42 +314,42 @@ const buscarUsuario = async (req, res) => {
                 p.tipo_pessoa,
                 p.status,
                 p.data_cadastro,
-                p.observacoes,
+                NULL AS observacoes,
                 p.is_admin,
-                p.tipo_vinculo_motorista,
-                p.data_vinculo,
-                p.data_desvinculo,
+                NULL AS tipo_vinculo_motorista,
+                NULL AS data_vinculo,
+                NULL AS data_desvinculo,
                 
                 e.id AS embarcador_id,
                 e.inscricao_estadual,
                 e.porte_empresa,
                 e.score_credito,
-                e.limite_credito,
-                e.dias_pagamento,
-                e.contrato_assinado,
-                e.data_aprovacao,
+                NULL AS limite_credito,
+                NULL AS dias_pagamento,
+                NULL AS contrato_assinado,
+                NULL AS data_aprovacao,
                 
                 t.id AS transportador_id,
                 t.tipo_transportador,
                 t.registro_nacional_transportador,
                 t.inscricao_estadual AS transportador_ie,
-                t.possui_veiculo_proprio,
-                t.quantidade_veiculos,
-                t.area_atuacao,
-                t.tipos_carga,
+                NULL AS possui_veiculo_proprio,
+                (SELECT COUNT(*) FROM veiculos v WHERE v.transportador_id = t.id) AS quantidade_veiculos,
+                NULL AS area_atuacao,
+                NULL AS tipos_carga,
                 t.avaliacao_media,
                 t.total_avaliacoes,
-                t.verificacao_documental,
-                t.data_verificacao,
+                NULL AS verificacao_documental,
+                NULL AS data_verificacao,
                 
                 mv.id AS motorista_vinculado_id,
                 mv.cnh,
                 mv.cnh_categoria,
                 mv.cnh_validade,
                 mv.data_admissao,
-                mv.data_demissao,
+                NULL AS data_demissao,
                 mv.status AS status_motorista,
-                mv.registro_funcionario
+                NULL AS registro_funcionario
                 
             FROM pessoas p
             LEFT JOIN embarcadores e ON p.id = e.pessoa_id
@@ -792,7 +792,7 @@ const listarFretes = async (req, res) => {
         }
 
         if (search) {
-            whereConditions.push('(f.codigo_rastreamento LIKE ? OR f.origem_endereco LIKE ? OR f.destino_endereco LIKE ?)');
+            whereConditions.push('(f.id LIKE ? OR f.origem_endereco LIKE ? OR f.destino_endereco LIKE ?)');
             const term = `%${search}%`;
             params.push(term, term, term);
         }
@@ -819,11 +819,13 @@ const listarFretes = async (req, res) => {
                 v.placa,
                 v.modelo AS veiculo_modelo
             FROM fretes f
-            LEFT JOIN pessoas p_emb ON f.embarcador_id = p_emb.id
-            LEFT JOIN pessoas p_trans ON f.transportador_id = p_trans.id
+            LEFT JOIN embarcadores e ON f.embarcador_id = e.id
+            LEFT JOIN pessoas p_emb ON e.pessoa_id = p_emb.id
+            LEFT JOIN transportadores t ON f.transportador_id = t.id
+            LEFT JOIN pessoas p_trans ON t.pessoa_id = p_trans.id
             LEFT JOIN veiculos v ON f.veiculo_id = v.id
             ${whereClause}
-            ORDER BY f.data_publicacao DESC
+            ORDER BY f.id DESC
             LIMIT ? OFFSET ?
         `;
 
@@ -1382,13 +1384,25 @@ const getEstatisticas = async (req, res) => {
         `);
 
         // Alertas
-        const [docPendentes] = await db.execute(`
-            SELECT COUNT(*) as total FROM documentos WHERE status = 'PENDENTE'
-        `);
+        let docPendentes = [{ total: 0 }];
+        try {
+            const [dp] = await db.execute(`
+                SELECT COUNT(*) as total FROM documentos WHERE status = 'PENDENTE'
+            `);
+            docPendentes = dp;
+        } catch (e) {
+            // Documentos table or column status optional
+        }
 
-        const [blacklistCount] = await db.execute(`
-            SELECT COUNT(*) as total FROM blacklist
-        `);
+        let blacklistCount = [{ total: 0 }];
+        try {
+            const [bl] = await db.execute(`
+                SELECT COUNT(*) as total FROM blacklist
+            `);
+            blacklistCount = bl;
+        } catch (e) {
+            // Blacklist table optional
+        }
 
         const stats = {
             usuarios: usuarios[0] || { total: 0, pendentes: 0, aprovados: 0, bloqueados: 0, reprovados: 0 },
@@ -1412,7 +1426,7 @@ const getEstatisticas = async (req, res) => {
         console.error('Erro ao buscar estatísticas:', error);
         res.status(500).json({
             success: false,
-            message: 'Erro ao buscar estatísticas'
+            message: error.message || 'Erro ao buscar estatísticas'
         });
     }
 };

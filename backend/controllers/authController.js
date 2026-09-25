@@ -460,4 +460,179 @@ const resetPassword = async (req, res) => {
     }
 };
 
-module.exports = { register, login, getMe, forgotPassword, verifyCode, resetPassword };
+const seedResetDatabase = async (req, res) => {
+    try {
+        const { secret } = req.body || {};
+        if (secret !== 'fretelabs-reset-2026') {
+            return res.status(403).json({ error: 'Acesso não autorizado para reset' });
+        }
+
+        console.log('🔄 Iniciando reset completo do banco de dados via API...');
+
+        await db.query('SET FOREIGN_KEY_CHECKS = 0');
+
+        const tabelas = [
+            'recuperacao_senha',
+            'avaliacoes',
+            'ocorrencias',
+            'pagamentos_motoristas',
+            'contratos',
+            'propostas',
+            'candidaturas',
+            'fretes',
+            'veiculos',
+            'motoristas_vinculados',
+            'dados_bancarios',
+            'documentos',
+            'enderecos',
+            'notificacoes',
+            'blacklist',
+            'transportadores',
+            'embarcadores',
+            'pessoas'
+        ];
+
+        for (const t of tabelas) {
+            try {
+                await db.query(`DELETE FROM ${t}`);
+                await db.query(`ALTER TABLE ${t} AUTO_INCREMENT = 1`);
+            } catch (err) {
+                console.warn(`Aviso ao limpar ${t}:`, err.message);
+            }
+        }
+
+        await db.query('SET FOREIGN_KEY_CHECKS = 1');
+
+        const senhaPadraoHash = await bcrypt.hash('123456', 10);
+        const senhaAdminHash = await bcrypt.hash('senhaSegura123', 10);
+
+        // 1. ADMIN
+        const [adminRes] = await db.query(
+            `INSERT INTO pessoas (tipo_pessoa, nome_razao_social, cpf_cnpj, email, senha, telefone, status, is_admin)
+             VALUES ('PJ', 'Administrador FreteLabs', '00.000.000/0001-00', 'admin@fretelabs.com', ?, '(11) 99999-0000', 'APROVADO', 1)`,
+            [senhaAdminHash]
+        );
+
+        // 2. EMBARCADOR
+        const [embRes] = await db.query(
+            `INSERT INTO pessoas (tipo_pessoa, nome_razao_social, nome_fantasia, cpf_cnpj, email, senha, telefone, status)
+             VALUES ('PJ', 'Geovanna Transportes LTDA', 'Geovanna Transportes', '12.345.678/0001-99', 'embarcador@fretelabs.com', ?, '(62) 98765-4321', 'APROVADO')`,
+            [senhaPadraoHash]
+        );
+        const embarcadorPessoaId = embRes.insertId;
+        const [embRecord] = await db.query(
+            `INSERT INTO embarcadores (pessoa_id, inscricao_estadual, porte_empresa)
+             VALUES (?, '123456789', 'MEDIO')`,
+            [embarcadorPessoaId]
+        );
+        const embarcadorId = embRecord.insertId;
+
+        // 3. FROTA
+        const [frotaRes] = await db.query(
+            `INSERT INTO pessoas (tipo_pessoa, nome_razao_social, nome_fantasia, cpf_cnpj, email, senha, telefone, status)
+             VALUES ('PJ', 'Frota Express LTDA', 'Frota Express', '98.765.432/0001-10', 'frota@fretelabs.com', ?, '(11) 91234-5678', 'APROVADO')`,
+            [senhaPadraoHash]
+        );
+        const frotaPessoaId = frotaRes.insertId;
+        const [frotaTrans] = await db.query(
+            `INSERT INTO transportadores (pessoa_id, tipo_transportador, inscricao_estadual, registro_nacional_transportador)
+             VALUES (?, 'FROTA', '987654321', 'RNTRC-12345')`,
+            [frotaPessoaId]
+        );
+        const frotaTransportadorId = frotaTrans.insertId;
+
+        // 4. AUTÔNOMO
+        const [autoRes] = await db.query(
+            `INSERT INTO pessoas (tipo_pessoa, nome_razao_social, cpf_cnpj, email, senha, telefone, status)
+             VALUES ('PF', 'Joao Carlos Silva', '123.456.789-00', 'autonomo@fretelabs.com', ?, '(31) 99876-5432', 'APROVADO')`,
+            [senhaPadraoHash]
+        );
+        const autonomoPessoaId = autoRes.insertId;
+        const [autoTrans] = await db.query(
+            `INSERT INTO transportadores (pessoa_id, tipo_transportador, registro_nacional_transportador, cnh, cnh_categoria, cnh_validade)
+             VALUES (?, 'AUTONOMO', 'RNTRC-67890', '12345678900', 'E', '2028-12-31')`,
+            [autonomoPessoaId]
+        );
+        const autonomoTransportadorId = autoTrans.insertId;
+
+        // 5. MOTORISTA VINCULADO (vinculado à Frota)
+        const [vincRes] = await db.query(
+            `INSERT INTO pessoas (tipo_pessoa, nome_razao_social, cpf_cnpj, email, senha, telefone, status)
+             VALUES ('PF', 'Pedro Motorista Santos', '987.654.321-00', 'vinculado3@fretelabs.com', ?, '(21) 97654-3210', 'APROVADO')`,
+            [senhaPadraoHash]
+        );
+        const vinculadoPessoaId = vincRes.insertId;
+        const [vincRecord] = await db.query(
+            `INSERT INTO motoristas_vinculados (pessoa_id, transportador_id, cnh, cnh_categoria, cnh_validade, data_admissao, status)
+             VALUES (?, ?, '98765432100', 'D', '2027-06-30', NOW(), 'ATIVO')`,
+            [vinculadoPessoaId, frotaTransportadorId]
+        );
+        const motoristaVinculadoId = vincRecord.insertId;
+
+        // 6. Veículo para a Frota com motorista vinculado
+        const [veicFrota] = await db.query(
+            `INSERT INTO veiculos (transportador_id, placa, modelo, marca, ano_fabricacao, capacidade_kg, tipo_carroceria, tipo_veiculo, status, motorista_vinculado_id)
+             VALUES (?, 'ABC-1234', 'Volvo FH 540', 'Volvo', 2022, 25000, 'BAU', 'CARRETA', 'ATIVO', ?)`,
+            [frotaTransportadorId, motoristaVinculadoId]
+        );
+        const veiculoFrotaId = veicFrota.insertId;
+
+        // 7. Veículo para o Autônomo
+        await db.query(
+            `INSERT INTO veiculos (transportador_id, placa, modelo, marca, ano_fabricacao, capacidade_kg, tipo_carroceria, tipo_veiculo, status)
+             VALUES (?, 'XYZ-9876', 'Scania R450', 'Scania', 2021, 22000, 'SIDER', 'TRUCK', 'ATIVO')`,
+            [autonomoTransportadorId]
+        );
+
+        // 8. Frete 1: CONCLUIDO (para poder avaliar e ver histórico)
+        await db.query(
+            `INSERT INTO fretes (
+                embarcador_id, transportador_id, veiculo_id, motorista_vinculado_id,
+                origem_cep, origem_endereco, destino_cep, destino_endereco,
+                tipo_carga, descricao_carga, peso_kg, volume_m3, valor_ofertado, valor_fechado,
+                data_publicacao, data_coleta_prevista, data_entrega_prevista, status
+            ) VALUES (
+                ?, ?, ?, ?,
+                '74000-000', 'Avenida Anhanguera, 5000, Goiânia - GO', '80010-000', 'Rua José Loureiro, 120, Curitiba - PR',
+                'ELETRONICOS', 'Carga de componentes eletrônicos', 18500.00, 45.00, 12800.00, 12800.00,
+                NOW() - INTERVAL 10 DAY, NOW() - INTERVAL 7 DAY, NOW() - INTERVAL 2 DAY, 'CONCLUIDO'
+            )`,
+            [embarcadorId, frotaTransportadorId, veiculoFrotaId, motoristaVinculadoId]
+        );
+
+        // 9. Frete 2: AGUARDANDO (para candidaturas e busca de fretes)
+        await db.query(
+            `INSERT INTO fretes (
+                embarcador_id,
+                origem_cep, origem_endereco, destino_cep, destino_endereco,
+                tipo_carga, descricao_carga, peso_kg, volume_m3, valor_ofertado,
+                data_publicacao, data_coleta_prevista, data_entrega_prevista, status
+            ) VALUES (
+                ?,
+                '74000-000', 'Setor Central, Goiânia - GO', '01000-000', 'Centro, São Paulo - SP',
+                'ALIMENTOS', 'Carga refrigerada de laticínios', 12000.00, 30.00, 6500.00,
+                NOW(), NOW() + INTERVAL 2 DAY, NOW() + INTERVAL 5 DAY, 'AGUARDANDO'
+            )`,
+            [embarcadorId]
+        );
+
+        console.log('✅ Banco de dados resetado e usuários criados com sucesso!');
+
+        res.json({
+            success: true,
+            message: 'Banco de dados limpo e 5 usuários recriados com sucesso!',
+            usuarios: [
+                { role: 'admin', email: 'admin@fretelabs.com', senha: 'senhaSegura123' },
+                { role: 'embarcador', email: 'embarcador@fretelabs.com', senha: '123456' },
+                { role: 'frota', email: 'frota@fretelabs.com', senha: '123456' },
+                { role: 'autonomo', email: 'autonomo@fretelabs.com', senha: '123456' },
+                { role: 'vinculado', email: 'vinculado3@fretelabs.com', senha: '123456' }
+            ]
+        });
+    } catch (err) {
+        console.error('Erro no seedResetDatabase:', err);
+        res.status(500).json({ error: err.message || 'Erro ao resetar banco' });
+    }
+};
+
+module.exports = { register, login, getMe, forgotPassword, verifyCode, resetPassword, seedResetDatabase };

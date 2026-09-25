@@ -167,27 +167,6 @@ function Login() {
                     </Button>
                 </form>
 
-                <div className="divider">
-                    <span>ou continue com</span>
-                </div>
-
-                <div className="social-login">
-                    <button 
-                        type="button" 
-                        className="social-btn google"
-                        onClick={() => alert('Login com Google em breve')}
-                    >
-                        Google
-                    </button>
-                    <button 
-                        type="button" 
-                        className="social-btn facebook"
-                        onClick={() => alert('Login com Facebook em breve')}
-                    >
-                        Facebook
-                    </button>
-                </div>
-
                 <div className="register-prompt">
                     Ainda não tem uma conta? 
                     <Link to="/cadastro">Criar conta gratuita</Link>
