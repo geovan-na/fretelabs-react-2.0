@@ -66,7 +66,7 @@ app.get('/api/health', (req, res) => {
 });
 
 app.get('/api/version', (req, res) => {
-    res.json({ version: '2.0.2-build-10d2d56', timestamp: new Date().toISOString() });
+    res.json({ version: '2.0.3-build-ad54085', timestamp: new Date().toISOString() });
 });
 
 app.use((req, res) => {
