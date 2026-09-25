@@ -107,9 +107,6 @@ const EmbarcadorDashboard = () => {
                                     </span>
                                 </div>
                             ))}
-                            <div className="candidaturas-ver-todas">
-                                <a href="/candidaturas">Ver todas →</a>
-                            </div>
                         </div>
                     )}
                 </div>

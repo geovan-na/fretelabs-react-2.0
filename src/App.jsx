@@ -123,6 +123,7 @@ function App() {
                             <Footer />
                         </>
                     } />
+                    <Route path="/candidaturas" element={<Navigate to="/dashboard/embarcador/candidaturas" replace />} />
                     
                     {/* Rotas do Dashboard */}
                     <Route path="/dashboard" element={<LayoutDashboard />}>
