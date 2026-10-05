@@ -2,7 +2,7 @@
 
 **Instituição de Ensino:** SENAC  
 **Curso:** Técnico em Desenvolvimento de Sistemas  
-**Disciplina:** Trabalho de Conclusão de Curso (TCC)  
+**Disciplina:** Projeto Integrador
 **Orientador:** Profº Hudson Neves  
 
 ---
