@@ -1,11 +1,8 @@
-Ran command: `Get-ChildItem -Path "C:\Users\Geovanna\fretelabs-react-2.0" -Depth 2 | Select-Object FullName`
-Ran command: `tree C:\Users\Geovanna\fretelabs-react-2.0 /A`
-
 # FreteLabs
 
 **Instituição de Ensino:** SENAC  
 **Curso:** Técnico em Desenvolvimento de Sistemas  
-**Disciplina:** Trabalho de Conclusão de Curso (TCC)  
+**Disciplina:** Projeto Integrador 
 **Orientador:** Profº Hudson Neves  
 
 ---
