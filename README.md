@@ -2,7 +2,7 @@
 
 **InstituiÃ§Ã£o de Ensino:** SENAC  
 **Curso:** TÃ©cnico em Desenvolvimento de Sistemas  
-**Disciplina:** Projeto Integrador 
+**Disciplina:** Projeto Integrador  
 **Orientador:** ProfÂº Hudson Neves  
 
 ---
@@ -235,4 +235,5 @@ As seguintes features foram mapeadas para o roadmap futuro do sistema:
 **Todos os Direitos Reservados (All Rights Reserved)**
 
 Este Ã© um projeto proprietÃ¡rio. Nenhuma licenÃ§a de uso, cÃ³pia, modificaÃ§Ã£o ou distribuiÃ§Ã£o Ã© concedida a terceiros. O cÃ³digo e a plataforma sÃ£o de propriedade exclusiva da autora e sÃ£o disponibilizados publicamente apenas para fins de avaliaÃ§Ã£o acadÃªmica e demonstraÃ§Ã£o de portfÃ³lio. Nenhuma parte deste projeto pode ser reproduzida ou utilizada para fins comerciais sem autorizaÃ§Ã£o prÃ©via e expressa.
+
 
