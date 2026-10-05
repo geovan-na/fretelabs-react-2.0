@@ -1,8 +1,11 @@
+Ran command: `Get-ChildItem -Path "C:\Users\Geovanna\fretelabs-react-2.0" -Depth 2 | Select-Object FullName`
+Ran command: `tree C:\Users\Geovanna\fretelabs-react-2.0 /A`
+
 # FreteLabs
 
 **Instituição de Ensino:** SENAC  
 **Curso:** Técnico em Desenvolvimento de Sistemas  
-**Disciplina:** Projeto Integrador 
+**Disciplina:** Trabalho de Conclusão de Curso (TCC)  
 **Orientador:** Profº Hudson Neves  
 
 ---
@@ -118,11 +121,12 @@ Siga os passos abaixo para preparar o ambiente de desenvolvimento:
    ```
 
 3. **Configuração do Frontend:**
+   Volte para a raiz do projeto (pasta `fretelabs-react-2.0`) e instale as dependências:
    ```bash
-   cd ../frontend
+   cd ..
    npm install
    ```
-   Crie um arquivo `.env` na raiz da pasta `frontend`:
+   Crie um arquivo `.env` na raiz do projeto frontend:
    ```env
    VITE_API_URL=http://localhost:3000/api
    ```
@@ -134,15 +138,15 @@ Siga os passos abaixo para preparar o ambiente de desenvolvimento:
 Com as dependências instaladas e as variáveis de ambiente configuradas, inicie os servidores:
 
 **Para iniciar a API (Backend):**
+A partir da pasta do backend (`fretelabs-react-2.0/backend`):
 ```bash
-cd backend
 npm run dev
 ```
 *(O servidor iniciará, por padrão, na porta 3000).*
 
 **Para iniciar a Interface (Frontend):**
+A partir da raiz do projeto (`fretelabs-react-2.0`):
 ```bash
-cd frontend
 npm run dev
 ```
 *(O Vite iniciará a aplicação, disponível geralmente em `http://localhost:5173`).*
@@ -151,8 +155,9 @@ npm run dev
 
 ## 11. Estrutura do Projeto
 
-A organização de diretórios do sistema segue o padrão de separação de responsabilidades:
+A organização de diretórios reflete a estrutura exata do repositório, com o frontend na raiz e o backend em uma pasta separada:
 
+```text
 fretelabs-react-2.0/
 |-- backend/              # API e Servidor Node.js
 |   |-- config/           # Configurações do banco de dados (Conexão MySQL)
@@ -172,6 +177,8 @@ fretelabs-react-2.0/
 |   |-- services/         # Configuração do Axios e comunicação com a API
 |   |-- styles/           # Estilos e CSS global
 |   |-- utils/            # Funções de suporte e constantes do frontend
+```
+
 ---
 
 ## 12. Exemplos de Uso
