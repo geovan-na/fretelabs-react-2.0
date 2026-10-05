@@ -153,28 +153,25 @@ npm run dev
 
 A organização de diretórios do sistema segue o padrão de separação de responsabilidades:
 
-```text
-FreteLabs/
-|-- backend/
-|   |-- src/
-|   |   |-- config/       # Configurações do banco de dados (Conexão MySQL)
-|   |   |-- controllers/  # Lógica de negócio e processamento de requisições
-|   |   |-- middlewares/  # Interceptadores (Autenticação JWT, tratamento de erros)
-|   |   |-- routes/       # Definição dos endpoints da API REST
-|   |   |-- server.js     # Arquivo principal de inicialização do Express
-|   |-- .env              # Variáveis de ambiente
-|-- frontend/
-|   |-- src/
-|   |   |-- assets/       # Imagens, ícones e arquivos estáticos
-|   |   |-- components/   # Componentes React reutilizáveis (Botões, Modais, Navbar)
-|   |   |-- context/      # Context API para gerenciamento de estado global (Auth)
-|   |   |-- pages/        # Telas completas da aplicação (Login, Dashboard, Buscar Fretes)
-|   |   |-- services/     # Configuração do Axios e chamadas à API
-|   |   |-- App.jsx       # Rotas do React Router DOM
-|   |   |-- main.jsx      # Ponto de entrada do React
-|   |-- .env              # Variáveis de ambiente do Vite
-```
-
+fretelabs-react-2.0/
+|-- backend/              # API e Servidor Node.js
+|   |-- config/           # Configurações do banco de dados (Conexão MySQL)
+|   |-- controllers/      # Lógica de negócio e processamento de requisições
+|   |-- middleware/       # Interceptadores (Autenticação JWT, tratamento de erros)
+|   |-- models/           # Modelos e interação com o banco de dados
+|   |-- routes/           # Definição dos endpoints da API REST
+|   |-- uploads/          # Diretório para armazenamento de arquivos/imagens
+|   |-- utils/            # Funções utilitárias do servidor
+|-- public/               # Arquivos estáticos e HTML base do React
+|-- src/                  # Código-fonte principal do Frontend (React)
+|   |-- assets/           # Imagens, ícones e recursos visuais
+|   |-- components/       # Componentes React reutilizáveis (Botões, Modais, Cards)
+|   |-- contexts/         # Context API para gerenciamento de estado (ex: AuthContext)
+|   |-- hooks/            # Custom Hooks (useAuth, useFretes, etc.)
+|   |-- pages/            # Telas completas da aplicação (Login, Dashboard, Buscar)
+|   |-- services/         # Configuração do Axios e comunicação com a API
+|   |-- styles/           # Estilos e CSS global
+|   |-- utils/            # Funções de suporte e constantes do frontend
 ---
 
 ## 12. Exemplos de Uso
