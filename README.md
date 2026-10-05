@@ -205,21 +205,13 @@ A API foi construÃ­da em padrÃ£o RESTful, retornando respostas em formato JS
 
 ---
 
-## 14. Capturas de Tela
-
-* [Inserir captura de tela da tela inicial/Dashboard aqui]
-* [Inserir captura de tela da busca de fretes e filtros aqui]
-* [Inserir captura de tela do painel do motorista aqui]
-
----
-
-## 15. Equipe do Projeto
+## 14. Equipe do Projeto
 
 * **Geovanna Rezende dos Santos** - Desenvolvedora Full Stack
 
 ---
 
-## 16. Melhorias Futuras
+## 15. Melhorias Futuras
 
 As seguintes features foram mapeadas para o roadmap futuro do sistema:
 
@@ -230,10 +222,13 @@ As seguintes features foram mapeadas para o roadmap futuro do sistema:
 
 ---
 
-## 17. LicenÃ§a
+## 16. LicenÃ§a
 
 **Todos os Direitos Reservados (All Rights Reserved)**
 
 Este Ã© um projeto proprietÃ¡rio. Nenhuma licenÃ§a de uso, cÃ³pia, modificaÃ§Ã£o ou distribuiÃ§Ã£o Ã© concedida a terceiros. O cÃ³digo e a plataforma sÃ£o de propriedade exclusiva da autora e sÃ£o disponibilizados publicamente apenas para fins de avaliaÃ§Ã£o acadÃªmica e demonstraÃ§Ã£o de portfÃ³lio. Nenhuma parte deste projeto pode ser reproduzida ou utilizada para fins comerciais sem autorizaÃ§Ã£o prÃ©via e expressa.
+
+
+
 
 
