@@ -100,6 +100,7 @@ export default function DetalheFretes() {
         try {
             await api.candidaturas.criar({
                 frete_id: parseInt(id),
+                valor_lance: frete?.valor_ofertado ? parseFloat(frete.valor_ofertado) : undefined,
                 mensagem: candidaturaData.mensagem || ''
             }, token);
             
@@ -317,7 +318,7 @@ export default function DetalheFretes() {
                 </div>
             </div>
 
-            {/* 🔥 BOTÃO DE CANDIDATAR - SÓ APARECE PARA FROTA E AUTONOMO */}
+            {/* BOTÃO DE CANDIDATAR - SÓ APARECE PARA FROTA E AUTÔNOMO QUANDO DISPONÍVEL */}
             {podeCandidatar && (
                 <div className="detalhe-frete-actions">
                     <button 
@@ -326,6 +327,44 @@ export default function DetalheFretes() {
                     >
                         Candidatar-se a este frete
                     </button>
+                </div>
+            )}
+
+            {/* MENSAGEM SE O TRANSPORTADOR JÁ SE CANDIDATOU */}
+            {isTransportador && jaCandidatou && (
+                <div className="detalhe-frete-actions" style={{ marginTop: '12px' }}>
+                    <div style={{
+                        backgroundColor: '#EFF6FF',
+                        border: '1px solid #3B82F6',
+                        color: '#1D4ED8',
+                        padding: '12px 20px',
+                        borderRadius: '8px',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        fontWeight: '600'
+                    }}>
+                        ✓ Você já enviou uma candidatura para este frete
+                    </div>
+                </div>
+            )}
+
+            {/* MENSAGEM SE O FRETE NÃO ESTÁ MAIS DISPONÍVEL PARA CANDIDATURA */}
+            {isTransportador && !jaCandidatou && frete && !['AGUARDANDO', 'NEGOCIACAO'].includes(frete.status) && (
+                <div className="detalhe-frete-actions" style={{ marginTop: '12px' }}>
+                    <div style={{
+                        backgroundColor: '#F3F4F6',
+                        border: '1px solid #9CA3AF',
+                        color: '#4B5563',
+                        padding: '12px 20px',
+                        borderRadius: '8px',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '8px',
+                        fontWeight: '600'
+                    }}>
+                        ℹ Este frete já foi contratado ou não está mais aceitando candidaturas ({frete.status})
+                    </div>
                 </div>
             )}
 
