@@ -127,12 +127,6 @@ const criarCandidatura = async (req, res) => {
         if (!frete_id) {
             return res.status(400).json({ error: 'ID do frete é obrigatório' });
         }
-        if (!valor_lance) {
-            return res.status(400).json({ error: 'Valor do lance é obrigatório' });
-        }
-        if (valor_lance <= 0) {
-            return res.status(400).json({ error: 'Valor do lance deve ser maior que zero' });
-        }
 
         const [transportador] = await db.query(
             'SELECT id FROM transportadores WHERE pessoa_id = ?',
@@ -146,7 +140,7 @@ const criarCandidatura = async (req, res) => {
         const transportadorId = transportador[0].id;
 
         const [freteRows] = await db.query(
-            'SELECT id, status FROM fretes WHERE id = ?',
+            'SELECT id, status, valor_ofertado FROM fretes WHERE id = ?',
             [frete_id]
         );
 
@@ -159,6 +153,15 @@ const criarCandidatura = async (req, res) => {
             return res.status(400).json({ 
                 error: `Não é possível se candidatar a um frete com status "${frete.status}"` 
             });
+        }
+
+        // Se o valor do lance não foi enviado, adota o valor estipulado no frete
+        const valorFinal = valor_lance !== undefined && valor_lance !== null && valor_lance !== '' 
+            ? parseFloat(valor_lance) 
+            : parseFloat(frete.valor_ofertado || 0);
+
+        if (isNaN(valorFinal) || valorFinal <= 0) {
+            return res.status(400).json({ error: 'O frete não possui valor estipulado válido' });
         }
 
         const [existing] = await db.query(
@@ -174,7 +177,7 @@ const criarCandidatura = async (req, res) => {
             `INSERT INTO candidaturas 
              (frete_id, transportador_id, valor_lance, mensagem, status) 
              VALUES (?, ?, ?, ?, 'PENDENTE')`,
-            [frete_id, transportadorId, valor_lance, mensagem || null]
+            [frete_id, transportadorId, valorFinal, mensagem || null]
         );
         
         res.status(201).json({ 

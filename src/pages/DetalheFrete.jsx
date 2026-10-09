@@ -17,7 +17,6 @@ export default function DetalheFretes() {
     const [cancelando, setCancelando] = useState(false);
     const [showCandidatura, setShowCandidatura] = useState(false);
     const [candidaturaData, setCandidaturaData] = useState({
-        valor_lance: '',
         mensagem: ''
     });
     const [enviandoCandidatura, setEnviandoCandidatura] = useState(false);
@@ -97,16 +96,10 @@ export default function DetalheFretes() {
     };
 
     const handleEnviarCandidatura = async () => {
-        if (!candidaturaData.valor_lance || parseFloat(candidaturaData.valor_lance) <= 0) {
-            alert('Informe um valor de lance válido.');
-            return;
-        }
-
         setEnviandoCandidatura(true);
         try {
             await api.candidaturas.criar({
                 frete_id: parseInt(id),
-                valor_lance: parseFloat(candidaturaData.valor_lance),
                 mensagem: candidaturaData.mensagem || ''
             }, token);
             
@@ -398,25 +391,25 @@ export default function DetalheFretes() {
                 <div className="modal-overlay" onClick={() => setShowCandidatura(false)}>
                     <div className="modal-content" onClick={(e) => e.stopPropagation()}>
                         <h3>Candidatar-se ao Frete #{frete.id}</h3>
-                        <p>Informe o valor do seu lance e uma mensagem para o embarcador.</p>
+                        <p>Você está se candidatando para realizar este transporte pelo valor estipulado pelo embarcador:</p>
                         
-                        <div className="form-group">
-                            <label>Valor do Lance <span>*</span></label>
-                            <input
-                                type="number"
-                                step="0.01"
-                                value={candidaturaData.valor_lance}
-                                onChange={(e) => setCandidaturaData(prev => ({
-                                    ...prev,
-                                    valor_lance: e.target.value
-                                }))}
-                                placeholder="2500.00"
-                                className="form-input"
-                            />
+                        <div style={{
+                            backgroundColor: '#F3F4F6',
+                            padding: '12px 16px',
+                            borderRadius: '8px',
+                            marginBottom: '16px',
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            alignItems: 'center'
+                        }}>
+                            <span style={{ fontWeight: '600', color: '#374151' }}>Valor do Frete:</span>
+                            <span style={{ fontSize: '18px', fontWeight: '700', color: '#1E40AF' }}>
+                                {formatarMoeda(frete.valor_ofertado)}
+                            </span>
                         </div>
 
                         <div className="form-group">
-                            <label>Mensagem (opcional)</label>
+                            <label>Mensagem ou Observação (opcional)</label>
                             <textarea
                                 value={candidaturaData.mensagem}
                                 onChange={(e) => setCandidaturaData(prev => ({
