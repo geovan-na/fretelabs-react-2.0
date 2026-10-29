@@ -40,27 +40,27 @@ function Cadastro() {
             <div className="cadastro-card">
                 <div className="cadastro-grid">
                     <div className="cadastro-info">
-                        <div className="cadastro-info-badge">JUNTE-SE A ELITE</div>
-                        <h2 className="cadastro-info-title">Fac parte da revolucao da logistica brasileira</h2>
-                        <p className="cadastro-info-subtitle">Conectamos as melhores cargas aos melhores transportadores do pais.</p>
+                        <div className="cadastro-info-badge">JUNTE-SE À ELITE</div>
+                        <h2 className="cadastro-info-title">Faça parte da revolução da logística brasileira</h2>
+                        <p className="cadastro-info-subtitle">Conectamos as melhores cargas aos melhores transportadores do país.</p>
                         <ul className="cadastro-info-list">
                             <li>Mais de 5.000 transportadores cadastrados</li>
                             <li>Empresas de todos os portes conectadas 24/7</li>
-                            <li>Pagamento garantido em ate 48h</li>
+                            <li>Pagamento garantido em até 48h</li>
                             <li>Seguro de carga incluso</li>
                             <li>Suporte dedicado 24 horas</li>
-                            <li>+10.000 fretes realizados com 98% de satisfacao</li>
+                            <li>+10.000 fretes realizados com 98% de satisfação</li>
                         </ul>
                         <div className="cadastro-info-testimonial">
-                            <p>"A FreteLabs revolucionou nossa operacao. Reduzimos em 40% o tempo de espera por fretes e aumentamos nossa receita em 60% no primeiro mes."</p>
-                            <span>— Carlos Silva, Motorista Autonomo</span>
+                            <p>"A FreteLabs revolucionou nossa operação. Reduzimos em 40% o tempo de espera por fretes e aumentamos nossa receita em 60% no primeiro mês."</p>
+                            <span>— Carlos Silva, Motorista Autônomo</span>
                         </div>
                     </div>
 
                     <div className="cadastro-form">
                         <div className="cadastro-form-header">
                             <h3>Criar conta gratuita</h3>
-                            <p>Preencha os dados para comecar</p>
+                            <p>Preencha os dados para começar</p>
                         </div>
 
                         <div className="user-type">
@@ -69,21 +69,21 @@ function Cadastro() {
                                 onClick={() => setTipo('embarcador')}
                             >
                                 <span>EMBARCADOR</span>
-                                <small>Empresa que CONTRATA fretes</small>
+                                <small>Publica cargas e fretes</small>
                             </div>
                             <div 
                                 className={`user-type-option ${tipo === 'frota' ? 'selected' : ''}`} 
                                 onClick={() => setTipo('frota')}
                             >
                                 <span>FROTA</span>
-                                <small>Empresa com caminhoes proprios</small>
+                                <small>Empresa com caminhões próprios</small>
                             </div>
                             <div 
                                 className={`user-type-option ${tipo === 'autonomo' ? 'selected' : ''}`} 
                                 onClick={() => setTipo('autonomo')}
                             >
                                 <span>AUTONOMO</span>
-                                <small>Motorista com caminhao proprio</small>
+                                <small>Motorista com caminhão próprio</small>
                             </div>
                             <div 
                                 className={`user-type-option ${tipo === 'vinculado' ? 'selected' : ''}`} 
