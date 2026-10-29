@@ -35,12 +35,19 @@ export const DualBarChart = ({ data, title, xLabel = 'Mês' }) => {
     }, [loaded, data]);
 
     const drawChart = () => {
-        if (!chartRef.current || !window.google) return;
+        if (!chartRef.current || !window.google || !window.google.visualization) return;
 
-        const dataTable = window.google.visualization.arrayToDataTable([
-            [xLabel, 'Fretes (Qtde)', 'Faturamento (R$)'],
-            ...data.map(item => [item.mes_label || item.mes, item.total_fretes || 0, item.faturamento || 0])
+        const dataTable = new window.google.visualization.DataTable();
+        dataTable.addColumn('string', xLabel);
+        dataTable.addColumn('number', 'Fretes (Qtde)');
+        dataTable.addColumn('number', 'Faturamento (R$)');
+
+        const rows = data.map(item => [
+            String(item.mes_label || item.mes || ''),
+            parseInt(item.total_fretes ?? 0, 10) || 0,
+            parseFloat(item.faturamento ?? 0) || 0
         ]);
+        dataTable.addRows(rows);
 
         const options = {
             title: title,

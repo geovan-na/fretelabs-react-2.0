@@ -22,7 +22,8 @@ function SidebarMobile({ isOpen, onClose, role }) {
                 { label: 'Candidaturas', icon: 'candidates', path: '/dashboard/frota/candidaturas' },
                 { label: 'Fretes Aceitos', icon: 'accepted', path: '/dashboard/frota/fretes-aceitos' },
                 { label: 'Financeiro', icon: 'finance', path: '/dashboard/frota/financeiro' },
-                { label: 'Avaliacoes', icon: 'reviews', path: '/dashboard/frota/avaliacoes' }
+                { label: 'Avaliacoes', icon: 'reviews', path: '/dashboard/frota/avaliacoes' },
+                { label: 'Perfil', icon: 'profile', path: '/dashboard/frota/perfil' }
             ],
             autonomo: [
                 { label: 'Dashboard', icon: 'dashboard', path: '/dashboard/autonomo' },

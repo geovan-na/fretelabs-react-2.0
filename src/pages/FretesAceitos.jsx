@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../hooks/useAuth';
 import { api } from '../services/api';
+import ModalAvaliacao from '../components/ModalAvaliacao';
 
 export default function FretesAceitos() {
     const navigate = useNavigate();
@@ -13,6 +14,7 @@ export default function FretesAceitos() {
     const [motoristas, setMotoristas] = useState([]);
     const [showDesignar, setShowDesignar] = useState(null);
     const [processando, setProcessando] = useState(null);
+    const [freteAvaliar, setFreteAvaliar] = useState(null);
 
     const token = localStorage.getItem('token');
     const isFrota = user?.tipo?.toLowerCase() === 'frota';
@@ -360,13 +362,18 @@ export default function FretesAceitos() {
 
                                         {frete.status === 'CONCLUIDO' && (
                                             <button 
+                                                type="button"
                                                 className="btn btn-sm"
-                                                onClick={() => navigate(`/dashboard/fretes/${frete.id}`)}
+                                                onClick={() => setFreteAvaliar(frete)}
                                                 style={{
                                                     backgroundColor: '#F59E0B',
                                                     borderColor: '#D97706',
                                                     color: '#FFFFFF',
-                                                    fontWeight: '600'
+                                                    fontWeight: '600',
+                                                    cursor: 'pointer',
+                                                    display: 'inline-flex',
+                                                    alignItems: 'center',
+                                                    gap: '4px'
                                                 }}
                                             >
                                                 ⭐ Avaliar Frete
@@ -379,6 +386,17 @@ export default function FretesAceitos() {
                     })}
                 </div>
             )}
+
+            {/* MODAL DE AVALIAÇÃO INTERATIVO */}
+            <ModalAvaliacao
+                isOpen={!!freteAvaliar}
+                frete={freteAvaliar}
+                onClose={() => setFreteAvaliar(null)}
+                onSuccess={() => {
+                    setFreteAvaliar(null);
+                    carregarFretes();
+                }}
+            />
         </div>
     );
 }

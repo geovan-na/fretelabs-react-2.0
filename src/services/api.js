@@ -1,5 +1,10 @@
-// src/services/api.js
-const API_URL = import.meta.env.VITE_API_URL || 'https://fretelabs-react-2-0.onrender.com/api';
+const LOCAL_API_URL = 'http://localhost:3000/api';
+const RENDER_API_URL = 'https://fretelabs-react-2-0.onrender.com/api';
+
+let currentApiUrl = import.meta.env.VITE_API_URL || 
+    (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')
+        ? LOCAL_API_URL
+        : RENDER_API_URL);
 
 
 export const api = {
@@ -24,7 +29,22 @@ export const api = {
             config.body = JSON.stringify(body);
         }
         
-        const response = await fetch(`${API_URL}${endpoint}`, config);
+        let response;
+        try {
+            response = await fetch(`${currentApiUrl}${endpoint}`, config);
+        } catch (fetchErr) {
+            if (currentApiUrl !== RENDER_API_URL) {
+                console.warn(`[FreteLabs] Backend local (${currentApiUrl}) indisponível. Alternando para o servidor em nuvem (${RENDER_API_URL})...`);
+                currentApiUrl = RENDER_API_URL;
+                try {
+                    response = await fetch(`${currentApiUrl}${endpoint}`, config);
+                } catch (renderErr) {
+                    throw new Error('Servidor em nuvem iniciando... Por favor, aguarde alguns segundos e tente novamente.');
+                }
+            } else {
+                throw new Error('Não foi possível conectar ao servidor. Por favor, tente novamente em instantes.');
+            }
+        }
         const data = await response.json();
         
         if (!response.ok) {
@@ -308,5 +328,6 @@ motoristaVinculado: {
         listarMinhas: (token) => api.request('/avaliacoes/minhas', 'GET', null, token),
         listarRecebidas: (token) => api.request('/avaliacoes/recebidas', 'GET', null, token),
         verificar: (freteId, token) => api.request(`/avaliacoes/verificar/${freteId}`, 'GET', null, token),
+        verificarSeJaAvaliou: (freteId, token) => api.request(`/avaliacoes/verificar/${freteId}`, 'GET', null, token),
     },
 };

@@ -30,7 +30,8 @@ function SidebarDashboard({ userRole, isOpen, onClose }) {
                 { label: 'Candidaturas', path: '/dashboard/frota/candidaturas' },
                 { label: 'Fretes Aceitos', path: '/dashboard/frota/fretes-aceitos' },
                 { label: 'Financeiro', path: '/dashboard/frota/financeiro' },
-                { label: 'Avaliações', path: '/dashboard/frota/avaliacoes' }
+                { label: 'Avaliações', path: '/dashboard/frota/avaliacoes' },
+                { label: 'Perfil', path: '/dashboard/frota/perfil' }
             ],
             autonomo: [
                 { label: 'Dashboard', path: '/dashboard/autonomo' },

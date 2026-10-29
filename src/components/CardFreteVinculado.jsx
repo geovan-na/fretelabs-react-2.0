@@ -1,7 +1,7 @@
 // src/components/vinculado/CardFreteVinculado.jsx
 import React from 'react';
 
-const CardFreteVinculado = ({ frete, onClick }) => {
+const CardFreteVinculado = ({ frete, onClick, onAvaliar }) => {
     const formatarData = (data) => {
         if (!data) return '-';
         return new Date(data).toLocaleDateString('pt-BR', {
@@ -86,8 +86,34 @@ const CardFreteVinculado = ({ frete, onClick }) => {
                 </div>
             </div>
 
-            <div className="card-frete-footer">
+            <div className="card-frete-footer" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span className="card-frete-link">Ver detalhes →</span>
+                {frete.status === 'CONCLUIDO' && (
+                    <button
+                        type="button"
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            if (onAvaliar) {
+                                onAvaliar(frete);
+                            }
+                        }}
+                        style={{
+                            backgroundColor: '#F59E0B',
+                            color: '#FFFFFF',
+                            border: 'none',
+                            padding: '6px 14px',
+                            borderRadius: '6px',
+                            fontSize: '13px',
+                            fontWeight: '600',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px'
+                        }}
+                    >
+                        ⭐ Avaliar
+                    </button>
+                )}
             </div>
         </div>
     );

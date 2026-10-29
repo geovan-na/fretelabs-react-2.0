@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 import CardFreteVinculado from '../components/CardFreteVinculado';
+import ModalAvaliacao from '../components/ModalAvaliacao';
 
 const MeusFretesVinculado = () => {
     const navigate = useNavigate();
@@ -10,6 +11,7 @@ const MeusFretesVinculado = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [filtroStatus, setFiltroStatus] = useState('TODOS');
+    const [freteAvaliar, setFreteAvaliar] = useState(null);
 
     const token = localStorage.getItem('token');
 
@@ -112,11 +114,23 @@ const MeusFretesVinculado = () => {
                                 key={frete.id}
                                 frete={frete}
                                 onClick={handleFreteClick}
+                                onAvaliar={(f) => setFreteAvaliar(f)}
                             />
                         ))
                     )}
                 </div>
             )}
+
+            {/* MODAL DE AVALIAÇÃO INTERATIVO */}
+            <ModalAvaliacao
+                isOpen={!!freteAvaliar}
+                frete={freteAvaliar}
+                onClose={() => setFreteAvaliar(null)}
+                onSuccess={() => {
+                    setFreteAvaliar(null);
+                    carregarFretes(filtroStatus);
+                }}
+            />
         </div>
     );
 };

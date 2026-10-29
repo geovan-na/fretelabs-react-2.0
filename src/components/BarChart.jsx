@@ -35,12 +35,17 @@ export const BarChart = ({ data, title, xLabel = 'Mês', yLabel = 'Total', color
     }, [loaded, data]);
 
     const drawChart = () => {
-        if (!chartRef.current || !window.google) return;
+        if (!chartRef.current || !window.google || !window.google.visualization) return;
 
-        const dataTable = window.google.visualization.arrayToDataTable([
-            [xLabel, yLabel],
-            ...data.map(item => [item.mes_label || item.mes, item.total || item.receita || 0])
+        const dataTable = new window.google.visualization.DataTable();
+        dataTable.addColumn('string', xLabel);
+        dataTable.addColumn('number', yLabel);
+
+        const rows = data.map(item => [
+            String(item.mes_label || item.mes || ''),
+            parseFloat(item.total != null ? item.total : (item.receita || 0)) || 0
         ]);
+        dataTable.addRows(rows);
 
         const options = {
             title: title,

@@ -1,15 +1,18 @@
 // src/pages/dashboards/AutonomoDashboard.jsx
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useDashboard } from '../hooks/useDashboard';
 import { StatsCard } from '../components/StatsCard';
 import { LineChart } from '../components/LineChart';
 import { AlertList } from '../components/AlertList';
 import { VeiculoInfoCard } from '../components/VeiculoInfoCard';
+import { TableCard } from '../components/TableCard';
 import {
     CheckIcon, TruckIcon, FileIcon, MoneyIcon, ChartIcon
 } from '../components/Icons';
 
 const AutonomoDashboard = () => {
+    const navigate = useNavigate();
     const { data, loading, error } = useDashboard('autonomo');
 
     if (loading) {
@@ -68,6 +71,35 @@ const AutonomoDashboard = () => {
                 </div>
                 <AlertList alerts={alertas || []} title="Alertas" />
             </div>
+
+            {proximos_fretes && proximos_fretes.length > 0 && (
+                <div className="dashboard-row dashboard-row-full" style={{ marginTop: '24px' }}>
+                    <TableCard
+                        title="Fretes em Andamento"
+                        columns={[
+                            { key: 'codigo', label: 'Código' },
+                            { key: 'origem', label: 'Origem' },
+                            { key: 'destino', label: 'Destino' },
+                            { 
+                                key: 'valor', 
+                                label: 'Valor', 
+                                render: (r) => `R$ ${Number(r.valor || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` 
+                            },
+                            { 
+                                key: 'status', 
+                                label: 'Status', 
+                                render: (r) => (
+                                    <span className="status-badge status-transito">
+                                        {r.status === 'TRANSITO' ? 'Em Trânsito' : r.status}
+                                    </span>
+                                ) 
+                            }
+                        ]}
+                        data={proximos_fretes}
+                        onRowClick={(row) => navigate(`/dashboard/fretes/${row.id}`)}
+                    />
+                </div>
+            )}
         </div>
     );
 };

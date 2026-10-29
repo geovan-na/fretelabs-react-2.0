@@ -90,12 +90,23 @@ const criarAvaliacao = async (req, res) => {
 
         // Auto-resolver o avaliado_id e tipo_avaliacao se não foram passados
         if (!avaliado_id || !tipo_avaliacao) {
+            let isTransportador = (userId === transportadorPessoaId || userId === frete.transportador_id || userId === frete.motorista_pessoa_id);
+            if (!isTransportador && frete.transportador_id) {
+                const [motVinc] = await db.query(
+                    'SELECT transportador_id FROM motoristas_vinculados WHERE pessoa_id = ?',
+                    [userId]
+                );
+                if (motVinc.length > 0 && motVinc[0].transportador_id === frete.transportador_id) {
+                    isTransportador = true;
+                }
+            }
+
             if (userId === embarcadorPessoaId || userId === frete.embarcador_id) {
                 // Usuário logado é o Embarcador -> avalia o Transportador
                 avaliado_id = transportadorPessoaId;
                 tipo_avaliacao = 'EMPRESA_TRANSPORTADOR';
-            } else if (userId === transportadorPessoaId || userId === frete.transportador_id || userId === frete.motorista_pessoa_id) {
-                // Usuário logado é o Transportador -> avalia o Embarcador
+            } else if (isTransportador) {
+                // Usuário logado é o Transportador/Motorista -> avalia o Embarcador
                 avaliado_id = embarcadorPessoaId;
                 tipo_avaliacao = 'TRANSPORTADOR_EMPRESA';
             } else {

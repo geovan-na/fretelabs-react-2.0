@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '../hooks/useAuth';
 import { api } from '../services/api';
 import CardFrete from '../components/CardFrete';
+import ModalAvaliacao from '../components/ModalAvaliacao';
 
 export default function MeusFretes() {
     const { user } = useAuth();
@@ -9,6 +10,7 @@ export default function MeusFretes() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [filtro, setFiltro] = useState('TODOS');
+    const [freteAvaliar, setFreteAvaliar] = useState(null);
 
     const token = localStorage.getItem('token');
 
@@ -115,10 +117,26 @@ export default function MeusFretes() {
             ) : (
                 <div className="meus-fretes-grid">
                     {fretesFiltrados.map((frete) => (
-                        <CardFrete key={frete.id} frete={frete} />
+                        <CardFrete 
+                            key={frete.id} 
+                            frete={frete} 
+                            onFreteAtualizado={carregarFretes}
+                            onAvaliar={(f) => setFreteAvaliar(f)}
+                        />
                     ))}
                 </div>
             )}
+
+            {/* MODAL DE AVALIAÇÃO INTERATIVO */}
+            <ModalAvaliacao
+                isOpen={!!freteAvaliar}
+                frete={freteAvaliar}
+                onClose={() => setFreteAvaliar(null)}
+                onSuccess={() => {
+                    setFreteAvaliar(null);
+                    carregarFretes();
+                }}
+            />
         </div>
     );
 }

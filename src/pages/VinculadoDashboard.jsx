@@ -109,7 +109,7 @@ const VinculadoDashboard = () => {
 
             <PerformanceCard data={desempenho} />
 
-            <div className="dashboard-row">
+            <div className="dashboard-row dashboard-row-full">
                 <TableCard 
                     title="Próximos Fretes"
                     columns={proximosFretesColumns}
@@ -117,7 +117,7 @@ const VinculadoDashboard = () => {
                 />
             </div>
 
-            <div className="dashboard-row">
+            <div className="dashboard-row dashboard-row-full">
                 <TableCard 
                     title="Histórico de Entregas"
                     columns={historicoColumns}

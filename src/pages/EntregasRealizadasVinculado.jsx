@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { api } from '../services/api';
 import ResumoEntregas from '../components/ResumoEntregas';
+import ModalAvaliacao from '../components/ModalAvaliacao';
 
 const EntregasRealizadasVinculado = () => {
     const [entregas, setEntregas] = useState([]);
@@ -9,6 +10,7 @@ const EntregasRealizadasVinculado = () => {
     const [error, setError] = useState(null);
     const [mesSelecionado, setMesSelecionado] = useState('');
     const [anoSelecionado, setAnoSelecionado] = useState('');
+    const [freteAvaliar, setFreteAvaliar] = useState(null);
 
     const token = localStorage.getItem('token');
 
@@ -122,12 +124,13 @@ const EntregasRealizadasVinculado = () => {
                                 <th>Data Entrega</th>
                                 <th>Valor</th>
                                 <th>Avaliação</th>
+                                <th>Ações</th>
                             </tr>
                         </thead>
                         <tbody>
                             {entregas.length === 0 ? (
                                 <tr>
-                                    <td colSpan="6" className="table-empty">
+                                    <td colSpan="7" className="table-empty">
                                         Nenhuma entrega encontrada
                                     </td>
                                 </tr>
@@ -159,6 +162,32 @@ const EntregasRealizadasVinculado = () => {
                                                 {entrega.avaliacao_media ? `(${entrega.avaliacao_media.toFixed(1)})` : ''}
                                             </span>
                                         </td>
+                                        <td>
+                                            <button
+                                                type="button"
+                                                onClick={() => setFreteAvaliar({
+                                                    id: entrega.id,
+                                                    codigo: entrega.codigo,
+                                                    origem: entrega.origem,
+                                                    destino: entrega.destino
+                                                })}
+                                                style={{
+                                                    backgroundColor: '#F59E0B',
+                                                    color: '#FFFFFF',
+                                                    border: 'none',
+                                                    padding: '6px 12px',
+                                                    borderRadius: '6px',
+                                                    fontSize: '12px',
+                                                    fontWeight: '600',
+                                                    cursor: 'pointer',
+                                                    display: 'inline-flex',
+                                                    alignItems: 'center',
+                                                    gap: '4px'
+                                                }}
+                                            >
+                                                ⭐ Avaliar
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))
                             )}
@@ -166,6 +195,17 @@ const EntregasRealizadasVinculado = () => {
                     </table>
                 </div>
             )}
+
+            {/* MODAL DE AVALIAÇÃO INTERATIVO */}
+            <ModalAvaliacao
+                isOpen={!!freteAvaliar}
+                frete={freteAvaliar}
+                onClose={() => setFreteAvaliar(null)}
+                onSuccess={() => {
+                    setFreteAvaliar(null);
+                    carregarEntregas(mesSelecionado, anoSelecionado);
+                }}
+            />
         </div>
     );
 };

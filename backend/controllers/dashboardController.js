@@ -348,19 +348,42 @@ const getAutonomoDashboard = async (req, res) => {
             WHERE id = ?
         `, [transportadorId]);
         
-        // 3.4 Receita por mês
-        const [receitaPorMes] = await db.execute(`
+        // 3.4 Receita por mês (gera os últimos 6 meses com preenchimento contínuo)
+        const mesesLabelsPt = ['Jan', 'Fev', 'Mar', 'Abr', 'Mai', 'Jun', 'Jul', 'Ago', 'Set', 'Out', 'Nov', 'Dez'];
+        const ultimos6Meses = [];
+        const hoje = new Date();
+        for (let i = 5; i >= 0; i--) {
+            const d = new Date(hoje.getFullYear(), hoje.getMonth() - i, 1);
+            const yyyy = d.getFullYear();
+            const mm = String(d.getMonth() + 1).padStart(2, '0');
+            ultimos6Meses.push({
+                mes: `${yyyy}-${mm}`,
+                mes_label: mesesLabelsPt[d.getMonth()],
+                receita: 0
+            });
+        }
+
+        const [receitaPorMesDb] = await db.execute(`
             SELECT 
                 DATE_FORMAT(data_publicacao, '%Y-%m') as mes,
-                DATE_FORMAT(data_publicacao, '%b') as mes_label,
                 COALESCE(SUM(valor_fechado), 0) as receita
             FROM fretes
             WHERE transportador_id = ?
               AND status = 'CONCLUIDO'
               AND data_publicacao >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH)
-            GROUP BY DATE_FORMAT(data_publicacao, '%Y-%m'), DATE_FORMAT(data_publicacao, '%b')
+            GROUP BY DATE_FORMAT(data_publicacao, '%Y-%m')
             ORDER BY mes ASC
         `, [transportadorId]);
+
+        const mapaReceita = {};
+        receitaPorMesDb.forEach(r => {
+            mapaReceita[r.mes] = parseFloat(r.receita) || 0;
+        });
+
+        const receitaFinal = ultimos6Meses.map(m => ({
+            ...m,
+            receita: mapaReceita[m.mes] !== undefined ? mapaReceita[m.mes] : 0
+        }));
         
         // 3.5 Próximos fretes
         const [proximosFretes] = await db.execute(`
@@ -370,7 +393,7 @@ const getAutonomoDashboard = async (req, res) => {
                 CONCAT(f.origem_cep, ' - ', f.origem_endereco) as origem,
                 CONCAT(f.destino_cep, ' - ', f.destino_endereco) as destino,
                 f.data_coleta_prevista as data,
-                f.valor_fechado as valor,
+                COALESCE(f.valor_fechado, f.valor_ofertado, 0) as valor,
                 f.status
             FROM fretes f
             WHERE f.transportador_id = ?
@@ -380,7 +403,8 @@ const getAutonomoDashboard = async (req, res) => {
         `, [transportadorId]);
         
         // 3.6 Alertas
-        const [alertas] = await db.execute(`
+        const alertas = [];
+        const [cnhAlertas] = await db.execute(`
             SELECT 
                 'cnh' as tipo,
                 'CNH' as titulo,
@@ -391,12 +415,22 @@ const getAutonomoDashboard = async (req, res) => {
               AND cnh_validade IS NOT NULL
               AND DATEDIFF(cnh_validade, CURDATE()) BETWEEN 1 AND 30
         `, [transportadorId]);
+        alertas.push(...cnhAlertas);
+
+        if (!veiculo || veiculo.length === 0) {
+            alertas.push({
+                tipo: 'veiculo',
+                titulo: 'Nenhum veículo cadastrado',
+                descricao: 'Cadastre seu veículo na aba Meu Veículo para receber mais ofertas de fretes.',
+                data: new Date()
+            });
+        }
         
         return res.json({
             resumo: resumo[0] || { fretes_concluidos: 0, em_transito: 0, candidaturas_pendentes: 0, receita_total: 0, taxa_aceite: 0, total_fretes: 0 },
             veiculo: veiculo[0] || null,
             cnh: cnh[0] || null,
-            receita_por_mes: receitaPorMes,
+            receita_por_mes: receitaFinal,
             proximos_fretes: proximosFretes,
             alertas: alertas
         });

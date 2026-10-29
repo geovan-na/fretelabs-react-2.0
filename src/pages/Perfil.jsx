@@ -104,7 +104,7 @@ export default function Perfil() {
         if (!perfil?.especifico) return null;
 
         const especifico = perfil.especifico;
-        const tipo = perfil.tipo_usuario?.toLowerCase() || '';
+        const tipo = (perfil.tipo_usuario || user?.tipo || '').toLowerCase();
 
         switch (tipo) {
             case 'embarcador':
@@ -163,10 +163,14 @@ export default function Perfil() {
                             <span className="perfil-label">Validade CNH</span>
                             <span className="perfil-value">{formatarData(especifico.cnh_validade)}</span>
                         </div>
-                        {especifico.veiculo_placa && (
+                        {(especifico.veiculo_placa || especifico.veiculo?.placa) && (
                             <div className="perfil-field">
                                 <span className="perfil-label">Veículo</span>
-                                <span className="perfil-value">{especifico.veiculo_modelo} - {especifico.veiculo_placa}</span>
+                                <span className="perfil-value">
+                                    {especifico.veiculo
+                                        ? `${especifico.veiculo.modelo || ''} - ${especifico.veiculo.placa || ''}`
+                                        : `${especifico.veiculo_modelo || ''} - ${especifico.veiculo_placa || ''}`}
+                                </span>
                             </div>
                         )}
                     </div>
@@ -201,10 +205,10 @@ export default function Perfil() {
                                 <span className="perfil-value">{especifico.tipo_contrato}</span>
                             </div>
                         )}
-                        {especifico.valor_salario && (
+                        {especifico.valor_salario != null && (
                             <div className="perfil-field">
                                 <span className="perfil-label">Salário</span>
-                                <span className="perfil-value">R$ {especifico.valor_salario.toFixed(2)}</span>
+                                <span className="perfil-value">R$ {Number(especifico.valor_salario).toFixed(2)}</span>
                             </div>
                         )}
                         <div className="perfil-field">

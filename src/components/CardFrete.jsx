@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../services/api';
 
-export default function CardFrete({ frete, onFreteAtualizado }) {
+export default function CardFrete({ frete, onFreteAtualizado, onAvaliar }) {
     const navigate = useNavigate();
     const token = localStorage.getItem('token');
     const [showMenu, setShowMenu] = useState(false);
@@ -169,19 +169,27 @@ export default function CardFrete({ frete, onFreteAtualizado }) {
                 </span>
                 {frete.status === 'CONCLUIDO' && (
                     <button
+                        type="button"
                         onClick={(e) => {
                             e.stopPropagation();
-                            navigate(`/dashboard/embarcador/fretes/${frete.id}`);
+                            if (onAvaliar) {
+                                onAvaliar(frete);
+                            } else {
+                                navigate(`/dashboard/embarcador/fretes/${frete.id}`);
+                            }
                         }}
                         style={{
                             backgroundColor: '#F59E0B',
                             color: '#FFFFFF',
                             border: 'none',
-                            padding: '4px 12px',
+                            padding: '6px 14px',
                             borderRadius: '6px',
-                            fontSize: '12px',
+                            fontSize: '13px',
                             fontWeight: '600',
-                            cursor: 'pointer'
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '4px'
                         }}
                     >
                         ⭐ Avaliar
