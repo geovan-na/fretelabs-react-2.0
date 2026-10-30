@@ -31,8 +31,21 @@ const VinculadoDashboard = () => {
 
     const proximosFretesColumns = [
         { key: 'codigo', label: 'Código' },
-        { key: 'origem', label: 'Origem → Destino' },
-        { key: 'data', label: 'Data de Coleta', render: (row) => new Date(row.data).toLocaleDateString('pt-BR') },
+        { 
+            key: 'origem', 
+            label: 'Origem → Destino',
+            render: (row) => {
+                const extrairCidade = (txt) => {
+                    if (!txt) return '';
+                    const partes = txt.split(' - ');
+                    return partes.length > 1 ? partes[1] : txt;
+                };
+                return row.origem && row.destino 
+                    ? `${extrairCidade(row.origem)} → ${extrairCidade(row.destino)}` 
+                    : (row.origem || '-');
+            }
+        },
+        { key: 'data', label: 'Data de Coleta', render: (row) => row.data ? new Date(row.data).toLocaleDateString('pt-BR') : '-' },
         { key: 'tipo_carga', label: 'Tipo de Carga' },
         { 
             key: 'status', 
@@ -47,11 +60,15 @@ const VinculadoDashboard = () => {
 
     const historicoColumns = [
         { key: 'codigo', label: 'Nº do Frete' },
-        { key: 'rota', label: 'Rota' },
+        { 
+            key: 'rota', 
+            label: 'Rota',
+            render: (row) => row.rota ? row.rota.replace(/[^0-9-\s]/g, '→') : '-' 
+        },
         { 
             key: 'data_entrega', 
             label: 'Data da Entrega',
-            render: (row) => new Date(row.data_entrega).toLocaleDateString('pt-BR')
+            render: (row) => row.data_entrega ? new Date(row.data_entrega).toLocaleDateString('pt-BR') : '-'
         },
         { 
             key: 'status', 
