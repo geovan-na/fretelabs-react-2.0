@@ -426,22 +426,22 @@ const listarEntregasRealizadas = async (req, res) => {
                 CONCAT(f.origem_cep, ' - ', f.origem_endereco) as origem,
                 CONCAT(f.destino_cep, ' - ', f.destino_endereco) as destino,
                 f.tipo_carga,
-                f.valor_fechado as valor,
+                COALESCE(f.valor_fechado, f.valor_ofertado, 0) as valor,
                 f.data_entrega_realizada as data_entrega,
                 f.data_coleta_prevista,
                 f.data_coleta_realizada,
                 p.nome_razao_social as embarcador_nome,
                 v.placa as veiculo_placa,
-                (SELECT AVG(nota_geral) FROM avaliacoes WHERE frete_id = f.id) as avaliacao_media
+                ROUND(COALESCE((SELECT AVG(nota_geral) FROM avaliacoes WHERE frete_id = f.id), 0), 1) as avaliacao_media
             FROM fretes f
-            JOIN veiculos v ON f.veiculo_id = v.id
-            JOIN embarcadores e ON f.embarcador_id = e.id
+            LEFT JOIN veiculos v ON f.veiculo_id = v.id
+            LEFT JOIN embarcadores e ON f.embarcador_id = e.id
             JOIN pessoas p ON e.pessoa_id = p.id
-            WHERE v.motorista_vinculado_id = ?
+            WHERE (f.motorista_vinculado_id = ? OR v.motorista_vinculado_id = ?)
               AND f.status = 'CONCLUIDO'
         `;
 
-        const params = [motoristaId];
+        const params = [motoristaId, motoristaId];
 
         if (mes && ano) {
             query += ` AND MONTH(f.data_entrega_realizada) = ? AND YEAR(f.data_entrega_realizada) = ?`;
@@ -459,10 +459,10 @@ const listarEntregasRealizadas = async (req, res) => {
                 ROUND(COALESCE(AVG(f.valor_fechado), 0), 2) as media_por_entrega,
                 COUNT(DISTINCT DATE_FORMAT(f.data_entrega_realizada, '%Y-%m')) as meses_trabalhados
              FROM fretes f
-             JOIN veiculos v ON f.veiculo_id = v.id
-             WHERE v.motorista_vinculado_id = ?
+             LEFT JOIN veiculos v ON f.veiculo_id = v.id
+             WHERE (f.motorista_vinculado_id = ? OR v.motorista_vinculado_id = ?)
                AND f.status = 'CONCLUIDO'`,
-            [motoristaId]
+            [motoristaId, motoristaId]
         );
 
         return res.json({

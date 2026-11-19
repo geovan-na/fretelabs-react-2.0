@@ -376,7 +376,7 @@ export default function FretesAceitos() {
                                                     gap: '4px'
                                                 }}
                                             >
-                                                ⭐ Avaliar Frete
+                                                Avaliar
                                             </button>
                                         )}
                                     </div>

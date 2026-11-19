@@ -111,7 +111,7 @@ const CardFreteVinculado = ({ frete, onClick, onAvaliar }) => {
                             gap: '4px'
                         }}
                     >
-                        ⭐ Avaliar
+                        Avaliar
                     </button>
                 )}
             </div>

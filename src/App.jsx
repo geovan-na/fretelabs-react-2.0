@@ -32,6 +32,8 @@ import PropostasVinculado from './pages/PropostasVinculado';
 import MeusFretesVinculado from './pages/MeusFretesVinculado';
 import AtualizarStatusVinculado from './pages/AtualizarStatusVinculado';
 import RastreamentoVinculado from './pages/RastreamentoVinculado';
+import RastreamentoEmbarcador from './pages/RastreamentoEmbarcador';
+import RastreamentoFrota from './pages/RastreamentoFrota';
 import EntregasRealizadasVinculado from './pages/EntregasRealizadasVinculado';
 import MinhaFrotaVinculado from './pages/MinhaFrotaVinculado';
 import AdminUsuarios from './pages/AdminUsuarios';
@@ -136,6 +138,7 @@ function App() {
                         <Route path="embarcador/publicar-frete" element={<PublicarFrete />} />
                         <Route path="embarcador/fretes" element={<MeusFretes />} />
                         <Route path="embarcador/fretes/:id" element={<DetalheFrete />} />
+                        <Route path="embarcador/rastreamento" element={<RastreamentoEmbarcador />} />
                         <Route path="embarcador/candidaturas" element={<EmbarcadorCandidaturas />} />
                         <Route path="embarcador/candidaturas/:freteId" element={<EmbarcadorCandidaturas />} />
                         <Route path="embarcador/financeiro" element={<Financeiro />} />
@@ -145,9 +148,10 @@ function App() {
                         {/* FROTA */}
                         <Route path="frota" element={<FrotaDashboard />} />
                         <Route path="frota/veiculos" element={<Veiculos />} />
-                         <Route path="frota/motoristas" element={<Motoristas />} />
+                        <Route path="frota/motoristas" element={<Motoristas />} />
                         <Route path="frota/buscar-fretes" element={<BuscarFretes />} />
                         <Route path="frota/fretes-aceitos" element={<FretesAceitos />} />
+                        <Route path="frota/rastreamento" element={<RastreamentoFrota />} />
                         <Route path="frota/candidaturas" element={<TransportadorCandidaturas />} />
                         <Route path="frota/financeiro" element={<Financeiro />} />
                         <Route path="frota/avaliacoes" element={<Avaliacoes />} />
@@ -178,13 +182,13 @@ function App() {
                         
                         {/* ADMIN */}
                         <Route path="admin" element={<AdminDashboard />} />
-<Route path="admin/usuarios" element={<AdminUsuarios />} />
-<Route path="admin/usuarios/:id" element={<AdminDetalheUsuario />} />
-<Route path="admin/fretes" element={<AdminFretes />} />
-<Route path="admin/fretes/:id" element={<AdminDetalheFrete />} />
-<Route path="admin/blacklist" element={<AdminBlacklist />} />
-<Route path="admin/relatorios" element={<AdminRelatorios />} />
-<Route path="admin/configuracoes" element={<AdminConfiguracoes />} />
+                        <Route path="admin/usuarios" element={<AdminUsuarios />} />
+                        <Route path="admin/usuarios/:id" element={<AdminDetalheUsuario />} />
+                        <Route path="admin/fretes" element={<AdminFretes />} />
+                        <Route path="admin/fretes/:id" element={<AdminDetalheFrete />} />
+                        <Route path="admin/blacklist" element={<AdminBlacklist />} />
+                        <Route path="admin/relatorios" element={<AdminRelatorios />} />
+                        <Route path="admin/configuracoes" element={<AdminConfiguracoes />} />
 
                     </Route>
                 </Routes>

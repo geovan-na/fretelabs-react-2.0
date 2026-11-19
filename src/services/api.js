@@ -76,6 +76,7 @@ export const api = {
         getPerfil: (token) => api.request('/embarcador/perfil', 'GET', null, token),
         atualizarPerfil: (dados, token) => api.request('/embarcador/perfil', 'PUT', dados, token),
         getEstatisticas: (token) => api.request('/embarcador/estatisticas', 'GET', null, token),
+        listarRastreamento: (token) => api.request('/embarcador/rastreamento', 'GET', null, token),
     },
     
         fretes: {
@@ -168,6 +169,7 @@ export const api = {
         buscarPorPessoa: (token) => api.request('/transportador/pessoa', 'GET', null, token),
         getPerfil: (token) => api.request('/transportador/perfil', 'GET', null, token),
         atualizarPerfil: (dados, token) => api.request('/transportador/perfil', 'PUT', dados, token),
+        listarRastreamento: (token) => api.request('/transportador/rastreamento', 'GET', null, token),
     },
     propostas: {
         enviar: (dados, token) => api.request('/propostas', 'POST', dados, token),

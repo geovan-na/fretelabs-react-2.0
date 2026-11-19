@@ -178,7 +178,7 @@ export default function ModalAvaliacao({ isOpen, onClose, frete, onSuccess }) {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '20px', borderBottom: '1px solid #334155', paddingBottom: '16px' }}>
                     <div>
                         <h2 style={{ margin: 0, fontSize: '20px', fontWeight: '700', color: '#F8FAFC', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                            <span style={{ color: '#F59E0B' }}>⭐</span> Avaliar Frete {codigoFormatado}
+                            Avaliar Frete {codigoFormatado}
                         </h2>
                         <p style={{ margin: '6px 0 0', fontSize: '13px', color: '#94A3B8' }}>
                             {rotaFormatada}
@@ -368,7 +368,7 @@ export default function ModalAvaliacao({ isOpen, onClose, frete, onSuccess }) {
                                     boxShadow: '0 4px 6px -1px rgba(249, 115, 22, 0.3)'
                                 }}
                             >
-                                {loading ? 'Enviando Avaliação...' : '⭐ Enviar Avaliação'}
+                                {loading ? 'Enviando...' : 'Avaliar'}
                             </button>
                         </div>
                     </form>

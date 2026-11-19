@@ -94,4 +94,81 @@ const getEmbarcadorPorPessoa = async (req, res) => {
     }
 };
 
-module.exports = { getPerfil, atualizarPerfil, getEmbarcadorPorPessoa, getEstatisticas };
+const listarFretesRastreamento = async (req, res) => {
+    try {
+        const userId = req.userId;
+
+        const [embarcadores] = await db.query(
+            'SELECT id FROM embarcadores WHERE pessoa_id = ?',
+            [userId]
+        );
+
+        if (embarcadores.length === 0) {
+            return res.json({ data: [] });
+        }
+
+        const embarcadorId = embarcadores[0].id;
+
+        const [rows] = await db.query(`
+            SELECT 
+                f.id,
+                CONCAT('FR', LPAD(f.id, 5, '0')) as codigo,
+                f.origem_cep,
+                f.origem_endereco,
+                f.destino_cep,
+                f.destino_endereco,
+                CONCAT(f.origem_cep, ' - ', f.origem_endereco) as origem,
+                CONCAT(f.destino_cep, ' - ', f.destino_endereco) as destino,
+                f.tipo_carga,
+                f.peso_kg as peso,
+                f.status,
+                f.prioridade,
+                f.codigo_rastreamento,
+                f.data_coleta_prevista,
+                f.data_coleta_realizada,
+                f.data_entrega_prevista,
+                f.data_entrega_realizada,
+                COALESCE(f.valor_fechado, f.valor_ofertado) as valor,
+                COALESCE(p_trans.nome_razao_social, p_trans.nome_fantasia, 'Aguardando transportador') as frota_nome,
+                p_trans.telefone as frota_telefone,
+                p_trans.email as frota_email,
+                t.registro_nacional_transportador as frota_rntrc,
+                t.tipo_transportador as frota_tipo,
+                v.placa as veiculo_placa,
+                v.modelo as veiculo_modelo,
+                v.marca as veiculo_marca
+            FROM fretes f
+            LEFT JOIN transportadores t ON f.transportador_id = t.id
+            LEFT JOIN pessoas p_trans ON t.pessoa_id = p_trans.id
+            LEFT JOIN veiculos v ON f.veiculo_id = v.id
+            WHERE f.embarcador_id = ?
+              AND f.status IN ('ACEITO', 'TRANSITO', 'CONCLUIDO')
+            ORDER BY 
+                CASE f.status 
+                    WHEN 'TRANSITO' THEN 1 
+                    WHEN 'ACEITO' THEN 2 
+                    WHEN 'CONCLUIDO' THEN 3 
+                    ELSE 4 
+                END,
+                f.data_coleta_prevista DESC
+        `, [embarcadorId]);
+
+        for (let frete of rows) {
+            const [historico] = await db.query(`
+                SELECT status_anterior, status_novo, observacao, data_mudanca
+                FROM historico_status_frete
+                WHERE frete_id = ?
+                ORDER BY data_mudanca ASC
+            `, [frete.id]);
+
+            frete.historico_status = historico;
+        }
+
+        res.json({ data: rows });
+    } catch (error) {
+        console.error('Erro ao listar fretes para rastreamento (embarcador):', error);
+        res.status(500).json({ error: 'Erro ao carregar rastreamento do embarcador' });
+    }
+};
+
+module.exports = { getPerfil, atualizarPerfil, getEmbarcadorPorPessoa, getEstatisticas, listarFretesRastreamento };

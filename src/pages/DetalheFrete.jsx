@@ -411,7 +411,7 @@ export default function DetalheFretes() {
                                 cursor: 'pointer'
                             }}
                         >
-                            ⭐ Avaliar Frete Concluído
+                            Avaliar
                         </button>
                     )}
                 </div>

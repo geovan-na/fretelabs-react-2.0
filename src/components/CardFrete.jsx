@@ -192,7 +192,7 @@ export default function CardFrete({ frete, onFreteAtualizado, onAvaliar }) {
                             gap: '4px'
                         }}
                     >
-                        ⭐ Avaliar
+                        Avaliar
                     </button>
                 )}
             </div>

@@ -18,7 +18,7 @@ const criarAvaliacao = async (req, res) => {
             return res.status(400).json({ error: 'O ID do frete é obrigatório' });
         }
 
-        // 1. Verificar se o frete existe e buscar os envolvidos
+        // 1. Verificar se o frete existe e buscar todos os envolvidos
         const [freteRows] = await db.query(`
             SELECT 
                 f.id, 
@@ -52,20 +52,18 @@ const criarAvaliacao = async (req, res) => {
         // Resolvendo ID da pessoa do Embarcador
         let embarcadorPessoaId = frete.embarcador_pessoa_id;
         if (!embarcadorPessoaId && frete.embarcador_id) {
-            const [pEmb] = await db.query('SELECT id FROM pessoas WHERE id = ?', [frete.embarcador_id]);
-            if (pEmb.length > 0) embarcadorPessoaId = pEmb[0].id;
+            const [pEmb] = await db.query('SELECT pessoa_id FROM embarcadores WHERE id = ?', [frete.embarcador_id]);
+            if (pEmb.length > 0) embarcadorPessoaId = pEmb[0].pessoa_id;
         }
 
         // Resolvendo ID da pessoa do Transportador com fallbacks
         let transportadorPessoaId = frete.transportador_pessoa_id;
-        
-        // Fallback A: Checar se f.transportador_id já é o id na tabela pessoas
         if (!transportadorPessoaId && frete.transportador_id) {
-            const [pTrans] = await db.query('SELECT id FROM pessoas WHERE id = ?', [frete.transportador_id]);
-            if (pTrans.length > 0) transportadorPessoaId = pTrans[0].id;
+            const [pTrans] = await db.query('SELECT pessoa_id FROM transportadores WHERE id = ?', [frete.transportador_id]);
+            if (pTrans.length > 0) transportadorPessoaId = pTrans[0].pessoa_id;
         }
 
-        // Fallback B: Checar se existe candidatura ACEITA para este frete
+        // Fallback da candidatura aceita
         if (!transportadorPessoaId) {
             const [candRows] = await db.query(`
                 SELECT t.pessoa_id, c.transportador_id
@@ -76,91 +74,125 @@ const criarAvaliacao = async (req, res) => {
             `, [frete_id]);
             if (candRows.length > 0) {
                 transportadorPessoaId = candRows[0].pessoa_id;
-                // Aproveita para atualizar o frete com o transportador_id se estiver nulo
                 if (!frete.transportador_id && candRows[0].transportador_id) {
                     await db.query('UPDATE fretes SET transportador_id = ? WHERE id = ?', [candRows[0].transportador_id, frete_id]);
                 }
             }
         }
 
-        // Fallback C: Checar se o motorista vinculado dá acesso à pessoa do transportador
-        if (!transportadorPessoaId && frete.motorista_pessoa_id) {
-            transportadorPessoaId = frete.motorista_pessoa_id;
+        // Resolvendo ID da pessoa do motorista vinculado
+        let motoristaPessoaId = frete.motorista_pessoa_id;
+        if (!motoristaPessoaId && frete.motorista_vinculado_id) {
+            const [pMot] = await db.query('SELECT pessoa_id FROM motoristas_vinculados WHERE id = ?', [frete.motorista_vinculado_id]);
+            if (pMot.length > 0) motoristaPessoaId = pMot[0].pessoa_id;
         }
 
-        // Auto-resolver o avaliado_id e tipo_avaliacao se não foram passados
-        if (!avaliado_id || !tipo_avaliacao) {
-            let isTransportador = (userId === transportadorPessoaId || userId === frete.transportador_id || userId === frete.motorista_pessoa_id);
-            if (!isTransportador && frete.transportador_id) {
+        // Verificar se avaliado_id fornecido pelo cliente é válido
+        let avaliadoValido = false;
+        if (avaliado_id) {
+            const [pCheck] = await db.query('SELECT id FROM pessoas WHERE id = ?', [avaliado_id]);
+            if (pCheck.length > 0 && Number(avaliado_id) !== Number(userId)) {
+                avaliadoValido = true;
+            }
+        }
+
+        // Se avaliado_id não for válido ou não for enviado, auto-resolver com inteligência
+        if (!avaliadoValido) {
+            // Verificar se o usuário logado é motorista vinculado à frota deste frete
+            let isMotoristaDaFrota = false;
+            if (frete.transportador_id) {
                 const [motVinc] = await db.query(
                     'SELECT transportador_id FROM motoristas_vinculados WHERE pessoa_id = ?',
                     [userId]
                 );
                 if (motVinc.length > 0 && motVinc[0].transportador_id === frete.transportador_id) {
-                    isTransportador = true;
+                    isMotoristaDaFrota = true;
                 }
             }
 
-            if (userId === embarcadorPessoaId || userId === frete.embarcador_id) {
-                // Usuário logado é o Embarcador -> avalia o Transportador
-                avaliado_id = transportadorPessoaId;
+            if (userId === embarcadorPessoaId) {
+                // Usuário é o Embarcador -> avalia a Frota ou o Motorista
+                avaliado_id = transportadorPessoaId || motoristaPessoaId;
                 tipo_avaliacao = 'EMPRESA_TRANSPORTADOR';
-            } else if (isTransportador) {
-                // Usuário logado é o Transportador/Motorista -> avalia o Embarcador
+            } else if (userId === transportadorPessoaId || userId === motoristaPessoaId || isMotoristaDaFrota) {
+                // Usuário é o Transportador / Motorista -> avalia o Embarcador
                 avaliado_id = embarcadorPessoaId;
                 tipo_avaliacao = 'TRANSPORTADOR_EMPRESA';
             } else {
-                // Fallback por eliminação se for uma das 2 partes registradas
-                if (transportadorPessoaId && userId !== transportadorPessoaId) {
-                    avaliado_id = transportadorPessoaId;
-                    tipo_avaliacao = 'EMPRESA_TRANSPORTADOR';
-                } else if (embarcadorPessoaId && userId !== embarcadorPessoaId) {
+                // Fallback por eliminação
+                if (embarcadorPessoaId && userId !== embarcadorPessoaId) {
                     avaliado_id = embarcadorPessoaId;
                     tipo_avaliacao = 'TRANSPORTADOR_EMPRESA';
-                } else {
-                    return res.status(403).json({ error: 'Apenas o embarcador ou o transportador deste frete podem avaliá-lo.' });
+                } else if (transportadorPessoaId && userId !== transportadorPessoaId) {
+                    avaliado_id = transportadorPessoaId;
+                    tipo_avaliacao = 'EMPRESA_TRANSPORTADOR';
+                } else if (motoristaPessoaId && userId !== motoristaPessoaId) {
+                    avaliado_id = motoristaPessoaId;
+                    tipo_avaliacao = 'EMPRESA_TRANSPORTADOR';
                 }
             }
         }
 
         if (!avaliado_id) {
-            return res.status(400).json({ error: 'Não foi possível identificar o participante a ser avaliado.' });
+            return res.status(400).json({ error: 'Não foi possível identificar o usuário a ser avaliado.' });
         }
 
-        // 2. Verificar se o usuário já avaliou este frete
+        if (!tipo_avaliacao) {
+            tipo_avaliacao = (userId === embarcadorPessoaId) ? 'EMPRESA_TRANSPORTADOR' : 'TRANSPORTADOR_EMPRESA';
+        }
+
+        // 2. Normalizar notas de 1 a 5
+        const notaGeralFinal = Math.min(5, Math.max(1, parseInt(nota_geral, 10) || 5));
+        const notaPontualidadeFinal = Math.min(5, Math.max(1, parseInt(nota_pontualidade, 10) || notaGeralFinal));
+        const notaComunicacaoFinal = Math.min(5, Math.max(1, parseInt(nota_comunicacao, 10) || notaGeralFinal));
+        const notaCuidadoCargaFinal = Math.min(5, Math.max(1, parseInt(nota_cuidado_carga, 10) || notaGeralFinal));
+
+        // 3. Verificar se já avaliou este frete (se já avaliou, faz UPDATE; se não, faz INSERT)
         const [existente] = await db.query(
             'SELECT id FROM avaliacoes WHERE frete_id = ? AND avaliador_id = ?',
             [frete_id, userId]
         );
+
+        let avaliacaoId;
         if (existente.length > 0) {
-            return res.status(400).json({ error: 'Você já avaliou este frete.' });
+            avaliacaoId = existente[0].id;
+            await db.query(`
+                UPDATE avaliacoes 
+                SET avaliado_id = ?, tipo_avaliacao = ?, 
+                    nota_geral = ?, nota_pontualidade = ?, nota_comunicacao = ?, nota_cuidado_carga = ?, 
+                    comentario = ?, data_avaliacao = NOW()
+                WHERE id = ?
+            `, [
+                avaliado_id, 
+                tipo_avaliacao, 
+                notaGeralFinal, 
+                notaPontualidadeFinal, 
+                notaComunicacaoFinal, 
+                notaCuidadoCargaFinal, 
+                comentario || null,
+                avaliacaoId
+            ]);
+        } else {
+            const [result] = await db.query(`
+                INSERT INTO avaliacoes 
+                (frete_id, avaliador_id, avaliado_id, tipo_avaliacao, 
+                 nota_geral, nota_pontualidade, nota_comunicacao, nota_cuidado_carga, comentario, data_avaliacao) 
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())
+            `, [
+                frete_id, 
+                userId, 
+                avaliado_id, 
+                tipo_avaliacao, 
+                notaGeralFinal, 
+                notaPontualidadeFinal, 
+                notaComunicacaoFinal, 
+                notaCuidadoCargaFinal, 
+                comentario || null
+            ]);
+            avaliacaoId = result.insertId;
         }
 
-        // 3. Normalizar notas de 1 a 5
-        const notaGeralFinal = Math.min(5, Math.max(1, parseInt(nota_geral) || 5));
-        const notaPontualidadeFinal = Math.min(5, Math.max(1, parseInt(nota_pontualidade) || notaGeralFinal));
-        const notaComunicacaoFinal = Math.min(5, Math.max(1, parseInt(nota_comunicacao) || notaGeralFinal));
-        const notaCuidadoCargaFinal = Math.min(5, Math.max(1, parseInt(nota_cuidado_carga) || notaGeralFinal));
-
-        // 4. Inserir avaliação
-        const [result] = await db.query(`
-            INSERT INTO avaliacoes 
-            (frete_id, avaliador_id, avaliado_id, tipo_avaliacao, 
-             nota_geral, nota_pontualidade, nota_comunicacao, nota_cuidado_carga, comentario) 
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `, [
-            frete_id, 
-            userId, 
-            avaliado_id, 
-            tipo_avaliacao, 
-            notaGeralFinal, 
-            notaPontualidadeFinal, 
-            notaComunicacaoFinal, 
-            notaCuidadoCargaFinal, 
-            comentario || null
-        ]);
-
-        // 5. Recalcular média e total de avaliações do usuário avaliado
+        // 4. Recalcular média e total de avaliações do usuário avaliado
         const [mediaResult] = await db.query(`
             SELECT AVG(nota_geral) as media, COUNT(*) as total 
             FROM avaliacoes WHERE avaliado_id = ?
@@ -181,16 +213,16 @@ const criarAvaliacao = async (req, res) => {
             );
         }
 
-        console.log(`✅ Avaliação criada para o frete #${frete_id} de [${userId}] para [${avaliado_id}] - Nota: ${notaGeralFinal}`);
+        console.log(`✅ Avaliação processada para o frete #${frete_id} de [${userId}] para [${avaliado_id}] - Nota: ${notaGeralFinal}`);
 
-        res.status(201).json({ 
+        return res.status(201).json({ 
             message: 'Avaliação enviada com sucesso!', 
-            id: result.insertId,
+            id: avaliacaoId,
             mediaAtualizada: mediaNota
         });
     } catch (error) {
-        console.error('Erro ao criar avaliação:', error);
-        res.status(500).json({ error: error.message || 'Erro ao criar avaliação' });
+        console.error('Erro ao processar avaliação:', error);
+        return res.status(500).json({ error: error.message || 'Erro ao processar avaliação' });
     }
 };
 

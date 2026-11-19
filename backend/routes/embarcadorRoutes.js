@@ -8,6 +8,7 @@ const db = require('../config/database');
 router.get('/perfil', authenticateToken, embarcadorController.getPerfil);
 router.put('/perfil', authenticateToken, embarcadorController.atualizarPerfil);
 router.get('/estatisticas', authenticateToken, embarcadorController.getEstatisticas);
+router.get('/rastreamento', authenticateToken, embarcadorController.listarFretesRastreamento);
 
 // Nova rota para buscar embarcador por pessoa_id
 router.get('/pessoa/:pessoa_id', authenticateToken, async (req, res) => {

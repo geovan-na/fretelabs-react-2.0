@@ -7,6 +7,6 @@ router.get('/perfil', authenticateToken, transportadorController.getPerfil);
 router.put('/perfil', authenticateToken, transportadorController.atualizarPerfil);
 router.get('/estatisticas', authenticateToken, transportadorController.getEstatisticas);
 router.get('/pessoa', authenticateToken, transportadorController.buscarPorPessoa);
-
+router.get('/rastreamento', authenticateToken, transportadorController.listarFretesRastreamento);
 
 module.exports = router;

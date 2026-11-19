@@ -17,6 +17,7 @@ function SidebarDashboard({ userRole, isOpen, onClose }) {
                 { label: 'Dashboard', path: '/dashboard/embarcador' },
                 { label: 'Publicar Frete', path: '/dashboard/embarcador/publicar-frete' },
                 { label: 'Meus Fretes', path: '/dashboard/embarcador/fretes' },
+                { label: 'Rastreamento', path: '/dashboard/embarcador/rastreamento' },
                 { label: 'Candidaturas', path: '/dashboard/embarcador/candidaturas' },
                 { label: 'Financeiro', path: '/dashboard/embarcador/financeiro' },
                 { label: 'Avaliações', path: '/dashboard/embarcador/avaliacoes' },
@@ -29,6 +30,7 @@ function SidebarDashboard({ userRole, isOpen, onClose }) {
                 { label: 'Buscar Fretes', path: '/dashboard/frota/buscar-fretes' },
                 { label: 'Candidaturas', path: '/dashboard/frota/candidaturas' },
                 { label: 'Fretes Aceitos', path: '/dashboard/frota/fretes-aceitos' },
+                { label: 'Rastreamento', path: '/dashboard/frota/rastreamento' },
                 { label: 'Financeiro', path: '/dashboard/frota/financeiro' },
                 { label: 'Avaliações', path: '/dashboard/frota/avaliacoes' },
                 { label: 'Perfil', path: '/dashboard/frota/perfil' }
