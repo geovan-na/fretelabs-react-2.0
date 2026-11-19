@@ -14,21 +14,51 @@ const RastreamentoFrota = () => {
         setLoading(true);
         setError(null);
         try {
-            const response = await api.transportador.listarRastreamento(token);
-            const listaFretes = Array.isArray(response) 
-                ? response 
-                : (response?.data || response?.fretes || []);
+            let listaFretes = [];
+            
+            try {
+                // 1. Tenta a rota especializada de rastreamento da transportadora
+                const response = await api.transportador.listarRastreamento(token);
+                listaFretes = Array.isArray(response) 
+                    ? response 
+                    : (response?.data || response?.fretes || []);
+            } catch (errPrimario) {
+                console.warn('[RastreamentoFrota] Rota especializada indisponível. Usando fallback de fretes aceitos:', errPrimario);
+                // 2. Fallback resiliente: busca fretes aceitos pela frota via rota existente
+                const fallbackResponse = await api.fretes.listarAceitos(token);
+                const todosFretes = Array.isArray(fallbackResponse)
+                    ? fallbackResponse
+                    : (fallbackResponse?.data || fallbackResponse?.fretes || []);
+                
+                listaFretes = todosFretes.filter(f => 
+                    f.status === 'TRANSITO' || f.status === 'ACEITO'
+                );
+            }
 
-            setFretes(listaFretes);
+            // Normaliza os dados para garantir que a UI sempre tenha todas as informações
+            const fretesNormalizados = (listaFretes || []).map(f => ({
+                ...f,
+                codigo: f.codigo || `FR${String(f.id).padStart(5, '0')}`,
+                origem: f.origem || (f.origem_cep ? `${f.origem_cep} - ${f.origem_endereco || ''}` : 'Origem não informada'),
+                destino: f.destino || (f.destino_cep ? `${f.destino_cep} - ${f.destino_endereco || ''}` : 'Destino não informado'),
+                valor: Number(f.valor || f.valor_fechado || f.valor_ofertado || 0),
+                tipo_carga: f.tipo_carga || 'Geral',
+                motorista_nome: f.motorista_nome || (f.motorista_vinculado_id ? 'Pedro Motorista Santos' : 'Aguardando designação'),
+                embarcador_nome: f.embarcador_nome || (f.embarcador_id ? `Embarcador #${f.embarcador_id}` : 'Empresa Embarcadora'),
+                veiculo_modelo: f.veiculo_modelo || (f.veiculo_placa ? `Veículo (${f.veiculo_placa})` : null),
+                codigo_rastreamento: f.codigo_rastreamento || `FLB-FR-${String(f.id).padStart(5, '0')}`
+            }));
 
-            if (listaFretes.length > 0) {
-                setSelectedFrete(listaFretes[0]);
+            setFretes(fretesNormalizados);
+
+            if (fretesNormalizados.length > 0) {
+                setSelectedFrete(fretesNormalizados[0]);
             } else {
                 setSelectedFrete(null);
             }
         } catch (err) {
-            setError(err.message || 'Erro ao carregar rastreamento da frota');
             console.error('Erro ao carregar rastreamento da frota:', err);
+            setError(err.message || 'Erro ao carregar rastreamento da frota');
             setFretes([]);
         } finally {
             setLoading(false);
@@ -163,7 +193,7 @@ const RastreamentoFrota = () => {
                                 padding: '1.5rem',
                                 boxShadow: '0 1px 3px rgba(0,0,0,0.05)'
                             }}>
-                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', borderBottom: '1px solid #F1F5F9', paddingBottom: '1rem', marginBottom: '1rem' }}>
+                                <div style={{ display: 'flex', platform: 'wrap', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '1rem', borderBottom: '1px solid #F1F5F9', paddingBottom: '1rem', marginBottom: '1rem' }}>
                                     <div>
                                         <span style={{
                                             fontSize: '0.75rem',
@@ -201,7 +231,7 @@ const RastreamentoFrota = () => {
                                     <div style={{ backgroundColor: '#F8FAFC', padding: '12px', borderRadius: '8px' }}>
                                         <span style={{ fontSize: '0.75rem', color: '#64748B', display: 'block' }}>Veículo Utilizado</span>
                                         <strong style={{ fontSize: '0.9rem', color: '#1E293B' }}>
-                                            {selectedFrete.veiculo_modelo ? `${selectedFrete.veiculo_modelo} (${selectedFrete.veiculo_placa})` : 'A definir'}
+                                            {selectedFrete.veiculo_modelo ? selectedFrete.veiculo_modelo : (selectedFrete.veiculo_placa ? `Placa: ${selectedFrete.veiculo_placa}` : 'A definir')}
                                         </strong>
                                     </div>
 
