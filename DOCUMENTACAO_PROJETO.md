@@ -1,5 +1,7 @@
 # 📋 Documentação do Projeto FreteLabs
 
+> 📄 **Documento Oficial em Word (DOCX):** [Clique aqui para baixar o DOCUMENTACAO_PROJETO.docx](./DOCUMENTACAO_PROJETO.docx)
+
 ## 📌 Índice
 1. [Visão Geral](#visão-geral)
 2. [Objetivos do Projeto](#objetivos-do-projeto)
