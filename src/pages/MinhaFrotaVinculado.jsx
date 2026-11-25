@@ -21,7 +21,7 @@ const MinhaFrotaVinculado = () => {
             setDados(data);
         } catch (err) {
             // Verificar se é erro de "não encontrado" (404)
-            if (err.message?.includes('404') || err.message?.includes('não encontrado')) {
+            if (err.message?.includes('404') || err.message?.includes('não encontrad')) {
                 setDados(null);
                 setError(null); // Não mostrar erro, apenas dados vazios
             } else {

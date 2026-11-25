@@ -25,7 +25,7 @@ export default function CardMotoristaVinculado({ motorista, onUpdate }) {
             onUpdate();
         } catch (err) {
             console.error('Erro ao finalizar vínculo:', err);
-            alert(err.response?.data?.error || 'Erro ao finalizar vínculo. Tente novamente.');
+            alert(err.response?.data?.error || err.message || 'Erro ao finalizar vínculo. Tente novamente.');
         } finally {
             setLoading(false);
         }
@@ -41,7 +41,7 @@ export default function CardMotoristaVinculado({ motorista, onUpdate }) {
             onUpdate();
         } catch (err) {
             console.error('Erro ao remover veículo:', err);
-            alert(err.response?.data?.error || 'Erro ao remover veículo. Tente novamente.');
+            alert(err.response?.data?.error || err.message || 'Erro ao remover veículo. Tente novamente.');
         } finally {
             setLoading(false);
         }

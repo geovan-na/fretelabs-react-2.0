@@ -1,9 +1,11 @@
 // components/motoristas/ModalContraProposta.jsx
 import { useState } from 'react';
+import { useAuth } from '../hooks/useAuth';
 import { useMotoristas } from '../hooks/useMotoristas';
 
 export default function ModalContraProposta({ proposta, onClose, onSuccess }) {
     const [loading, setLoading] = useState(false);
+    const { user } = useAuth();
     const [formData, setFormData] = useState({
         tipo_contrato: proposta.tipo_contrato || 'SALARIO',
         valor_salario: proposta.valor_salario || '',
@@ -17,6 +19,11 @@ export default function ModalContraProposta({ proposta, onClose, onSuccess }) {
     const [errors, setErrors] = useState({});
 
     const { enviarContraProposta } = useMotoristas();
+
+    const isFrota = user?.tipo?.toLowerCase() === 'frota';
+    const nomeContraparte = isFrota
+        ? (proposta.motorista_nome || 'Motorista')
+        : (proposta.frota_nome || 'Frota');
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -33,6 +40,9 @@ export default function ModalContraProposta({ proposta, onClose, onSuccess }) {
         }
         if (formData.tipo_contrato === 'COMISSAO' && !formData.valor_comissao) {
             novosErrors.valor_comissao = 'Valor da comissão é obrigatório';
+        }
+        if (formData.tipo_contrato === 'MISTO' && !formData.valor_salario && !formData.valor_comissao) {
+            novosErrors.valor_salario = 'Informe o salário e/ou a comissão para contrato misto';
         }
         setErrors(novosErrors);
         return Object.keys(novosErrors).length === 0;
@@ -56,7 +66,7 @@ export default function ModalContraProposta({ proposta, onClose, onSuccess }) {
             onSuccess();
         } catch (err) {
             console.error('Erro ao enviar contraproposta:', err);
-            alert(err.response?.data?.error || 'Erro ao enviar contraproposta. Tente novamente.');
+            alert(err.response?.data?.error || err.message || 'Erro ao enviar contraproposta. Tente novamente.');
         } finally {
             setLoading(false);
         }
@@ -65,7 +75,7 @@ export default function ModalContraProposta({ proposta, onClose, onSuccess }) {
     return (
         <div className="modal-overlay" onClick={onClose}>
             <div className="modal-content" onClick={(e) => e.stopPropagation()}>
-                <h3>Contraproposta para {proposta.motorista_nome}</h3>
+                <h3>Contraproposta para {nomeContraparte}</h3>
                 <p className="modal-subtitle">Modifique os termos da proposta e reenvie.</p>
 
                 <form onSubmit={handleSubmit}>
@@ -117,6 +127,38 @@ export default function ModalContraProposta({ proposta, onClose, onSuccess }) {
                                 <span className="error-message">{errors.valor_comissao}</span>
                             )}
                         </div>
+                    )}
+
+                    {formData.tipo_contrato === 'MISTO' && (
+                        <>
+                            <div className="form-group">
+                                <label>Valor do Salário (R$)</label>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    name="valor_salario"
+                                    value={formData.valor_salario}
+                                    onChange={handleChange}
+                                    className={`form-input ${errors.valor_salario ? 'error' : ''}`}
+                                    placeholder="2500.00"
+                                />
+                                {errors.valor_salario && (
+                                    <span className="error-message">{errors.valor_salario}</span>
+                                )}
+                            </div>
+                            <div className="form-group">
+                                <label>Comissão (%)</label>
+                                <input
+                                    type="number"
+                                    step="0.01"
+                                    name="valor_comissao"
+                                    value={formData.valor_comissao}
+                                    onChange={handleChange}
+                                    className="form-input"
+                                    placeholder="5.00"
+                                />
+                            </div>
+                        </>
                     )}
 
                     <div className="form-group">

@@ -116,13 +116,18 @@ const listarMotoristasDisponiveis = async (req, res) => {
                 mv.cnh_categoria,
                 mv.cnh_validade,
                 mv.status AS situacao,
-                t.avaliacao_media,
-                t.total_avaliacoes
+                COALESCE(av.avaliacao_media, 0) AS avaliacao_media,
+                COALESCE(av.total_avaliacoes, 0) AS total_avaliacoes
             FROM motoristas_vinculados mv
             JOIN pessoas p ON mv.pessoa_id = p.id
-            LEFT JOIN transportadores t ON mv.transportador_id = t.id
-            WHERE mv.transportador_id IS NULL
-            AND mv.status = 'ATIVO'
+            LEFT JOIN (
+                SELECT avaliado_id,
+                       ROUND(AVG(nota_geral), 1) AS avaliacao_media,
+                       COUNT(*) AS total_avaliacoes
+                FROM avaliacoes
+                GROUP BY avaliado_id
+            ) av ON av.avaliado_id = p.id
+            WHERE (mv.transportador_id IS NULL OR mv.status = 'DESLIGADO')
         `;
 
         const params = [];
@@ -133,7 +138,7 @@ const listarMotoristasDisponiveis = async (req, res) => {
         }
 
         if (avaliacao_min) {
-            query += ` AND t.avaliacao_media >= ?`;
+            query += ` AND COALESCE(av.avaliacao_media, 0) >= ?`;
             params.push(parseFloat(avaliacao_min));
         }
 
@@ -217,84 +222,154 @@ const buscarMotorista = async (req, res) => {
 // 4. FINALIZAR VÍNCULO (DEMISSÃO/DESLIGAMENTO)
 // ============================================
 const finalizarVinculo = async (req, res) => {
+    let conn;
     try {
         const { id } = req.params; // ID do vínculo (motoristas_vinculados.id)
         const userId = req.userId;
-        const { motivo } = req.body;
+        const { motivo } = req.body || {};
 
         const transportadorId = await getTransportadorId(userId);
 
         if (!transportadorId) {
-            return res.status(403).json({ 
-                error: 'Apenas frotas podem finalizar vínculos' 
+            return res.status(403).json({
+                error: 'Apenas frotas podem finalizar vínculos'
             });
         }
 
-        const [motorista] = await db.query(
-            'SELECT * FROM motoristas_vinculados WHERE id = ? AND transportador_id = ?',
+        conn = await db.getConnection();
+        await conn.beginTransaction();
+
+        const [motoristaRows] = await conn.query(
+            'SELECT * FROM motoristas_vinculados WHERE id = ? AND transportador_id = ? FOR UPDATE',
             [id, transportadorId]
         );
 
-        if (motorista.length === 0) {
-            return res.status(404).json({ 
-                error: 'Motorista não encontrado ou não pertence a esta frota' 
+        if (motoristaRows.length === 0) {
+            await conn.rollback();
+            return res.status(404).json({
+                error: 'Motorista não encontrado ou não pertence a esta frota'
             });
         }
 
-        // Validação correta: impede a demissão se houver pagamentos pendentes
-        const [pagamentos] = await db.query(
+        const motorista = motoristaRows[0];
+
+        if (motorista.status === 'DESLIGADO') {
+            await conn.rollback();
+            return res.status(400).json({
+                error: 'Este vínculo já foi finalizado'
+            });
+        }
+
+        // Impede desligamento se houver fretes em andamento com o motorista
+        const [fretesEmAndamento] = await conn.query(
+            `SELECT COUNT(*) as total
+             FROM fretes f
+             JOIN veiculos v ON f.veiculo_id = v.id
+             WHERE v.motorista_vinculado_id = ?
+               AND f.status IN ('ACEITO', 'TRANSITO')`,
+            [id]
+        );
+
+        if (fretesEmAndamento[0].total > 0) {
+            await conn.rollback();
+            return res.status(400).json({
+                error: 'Não é possível finalizar o vínculo enquanto o motorista possuir fretes em andamento.'
+            });
+        }
+
+        // Validação: impede a demissão se houver pagamentos pendentes
+        const [pagamentos] = await conn.query(
             "SELECT COUNT(*) as total FROM pagamentos_motoristas WHERE motorista_vinculado_id = ? AND status = 'PENDENTE'",
             [id]
         );
 
         if (pagamentos[0].total > 0) {
-            return res.status(400).json({ 
-                error: `Existem ${pagamentos[0].total} pagamentos pendentes para este motorista. Regularize o financeiro antes de realizar o desligamento.` 
+            await conn.rollback();
+            return res.status(400).json({
+                error: `Existem ${pagamentos[0].total} pagamentos pendentes para este motorista. Regularize o financeiro antes de realizar o desligamento.`
             });
         }
 
-        // 1. Atualiza o status do vínculo para 'DESLIGADO'
-        await db.query(
-            `UPDATE motoristas_vinculados 
-             SET status = 'DESLIGADO', 
-                 data_demissao = NOW() 
+        // 1. Atualiza o status do vínculo para 'DESLIGADO' e libera transportador_id
+        await conn.query(
+            `UPDATE motoristas_vinculados
+             SET transportador_id = NULL,
+                 status = 'DESLIGADO',
+                 data_demissao = CURDATE()
              WHERE id = ?`,
             [id]
         );
 
-        // 2. ⚡ ADICIONADO: Remove o motorista de qualquer veículo vinculado a ele
-        await db.query(
-            `UPDATE veiculos 
-             SET motorista_vinculado_id = NULL 
+        // 2. Atualiza status de vínculo na tabela pessoas
+        await conn.query(
+            `UPDATE pessoas
+             SET tipo_vinculo_motorista = 'NAO_MOTORISTA',
+                 data_desvinculo = NOW()
+             WHERE id = ?`,
+            [motorista.pessoa_id]
+        );
+
+        // 3. Remove o motorista de qualquer veículo vinculado a ele
+        await conn.query(
+            `UPDATE veiculos
+             SET motorista_vinculado_id = NULL
              WHERE motorista_vinculado_id = ? AND transportador_id = ?`,
             [id, transportadorId]
         );
 
-        // 3. Encerra qualquer contrato ativo associado a esse vínculo
-        const [contrato] = await db.query(
+        // 4. Encerra contratos ativos associados a esse vínculo
+        const [contratosAtivos] = await conn.query(
             "SELECT id FROM contratos WHERE motorista_vinculado_id = ? AND status IN ('ATIVO', 'EM_EXPERIENCIA')",
             [id]
         );
 
-        if (contrato.length > 0) {
-            await db.query(
-                `UPDATE contratos 
-                 SET status = 'ENCERRADO', 
-                     data_fim = NOW(),
-                     motivo_encerramento = ? 
-                 WHERE id = ?`,
-                [motivo || 'Vínculo finalizado pela frota', contrato[0].id]
+        if (contratosAtivos.length > 0) {
+            await conn.query(
+                `UPDATE contratos
+                 SET status = 'ENCERRADO',
+                     data_fim = CURDATE(),
+                     motivo_encerramento = ?
+                 WHERE motorista_vinculado_id = ?
+                   AND status IN ('ATIVO', 'EM_EXPERIENCIA')`,
+                [motivo || 'Vínculo finalizado pela frota', id]
             );
         }
 
+        // 5. Registra no histórico de vínculos
+        await conn.query(
+            `INSERT INTO historico_vinculos
+             (motorista_vinculado_id, transportador_id, contrato_id, acao, dados_anteriores, dados_novos, observacoes, data_acao, criado_por)
+             VALUES (?, ?, ?, 'DESVINCULACAO', ?, ?, ?, NOW(), ?)`,
+            [
+                id,
+                transportadorId,
+                contratosAtivos[0]?.id || null,
+                JSON.stringify({ transportador_id: transportadorId, status: motorista.status }),
+                JSON.stringify({ transportador_id: null, status: 'DESLIGADO' }),
+                motivo || 'Vínculo finalizado pela frota',
+                userId
+            ]
+        );
+
+        await conn.commit();
+
         res.json({
             message: 'Vínculo finalizado e veículo desvinculado com sucesso',
-            motorista_id: parseInt(id)
+            motorista_id: parseInt(id, 10)
         });
 
     } catch (error) {
+        if (conn) {
+            try {
+                await conn.rollback();
+            } catch (rollbackErr) {
+                console.error('Erro no rollback ao finalizar vínculo:', rollbackErr);
+            }
+        }
         console.error('Erro ao finalizar vínculo:', error);
         res.status(500).json({ error: 'Erro ao finalizar vínculo' });
+    } finally {
+        if (conn) conn.release();
     }
 };
 // ============================================
