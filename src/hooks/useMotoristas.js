@@ -164,13 +164,16 @@ export function useMotoristas() {
     const finalizarVinculo = useCallback(async (motoristaId, motivo) => {
         try {
             const response = await api.motoristas.finalizarVinculo(motoristaId, motivo, token);
-            await recarregarVinculados();
+            await Promise.allSettled([
+                recarregarVinculados(),
+                recarregarDisponiveis()
+            ]);
             return response;
         } catch (err) {
             console.error('Erro ao finalizar vínculo:', err);
             throw err;
         }
-    }, [token, recarregarVinculados]);
+    }, [token, recarregarVinculados, recarregarDisponiveis]);
 
     // Enviar proposta
     const enviarProposta = useCallback(async (dados) => {
@@ -184,39 +187,39 @@ export function useMotoristas() {
         }
     }, [token, recarregarPropostasEnviadas]);
 
-    // Aceitar proposta (Ajustado para tratar erros 403 de vinculado)
+    // Aceitar proposta (atualiza propostas, vinculados e disponíveis conforme o perfil)
     const aceitarProposta = useCallback(async (propostaId) => {
         try {
             const response = await api.propostas.aceitar(propostaId, token);
-            
-            // Recarrega as propostas recebidas
-            await recarregarPropostasRecebidas();
 
-            // Tenta recarregar vinculados caso seja um usuário Frota, ignora se for Motorista (403)
-            try {
-                await recarregarVinculados();
-            } catch (vErr) {
-                // Motoristas não possuem permissão para esta rota
-            }
+            await Promise.allSettled([
+                recarregarPropostasRecebidas(),
+                recarregarPropostasEnviadas(),
+                recarregarVinculados(),
+                recarregarDisponiveis()
+            ]);
 
             return response;
         } catch (err) {
             console.error('Erro ao aceitar proposta:', err);
             throw err;
         }
-    }, [token, recarregarPropostasRecebidas, recarregarVinculados]);
+    }, [token, recarregarPropostasRecebidas, recarregarPropostasEnviadas, recarregarVinculados, recarregarDisponiveis]);
 
     // Recusar proposta
     const recusarProposta = useCallback(async (propostaId, motivo) => {
         try {
             const response = await api.propostas.recusar(propostaId, motivo, token);
-            await recarregarPropostasRecebidas();
+            await Promise.allSettled([
+                recarregarPropostasRecebidas(),
+                recarregarPropostasEnviadas()
+            ]);
             return response;
         } catch (err) {
             console.error('Erro ao recusar proposta:', err);
             throw err;
         }
-    }, [token, recarregarPropostasRecebidas]);
+    }, [token, recarregarPropostasRecebidas, recarregarPropostasEnviadas]);
 
     // Enviar contraproposta
     const enviarContraProposta = useCallback(async (propostaId, dados) => {

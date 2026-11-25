@@ -173,7 +173,7 @@ const getPerfil = async (req, res) => {
             LEFT JOIN transportadores t ON mv.transportador_id = t.id
             LEFT JOIN pessoas pf ON t.pessoa_id = pf.id
             LEFT JOIN veiculos v ON mv.id = v.motorista_vinculado_id
-            LEFT JOIN contratos c ON mv.id = c.motorista_vinculado_id AND c.status = 'ATIVO'
+            LEFT JOIN contratos c ON mv.id = c.motorista_vinculado_id AND c.status IN ('ATIVO', 'EM_EXPERIENCIA')
             WHERE p.id = ?`,
             [userId]
         );
@@ -485,11 +485,13 @@ const listarFrotasDisponiveis = async (req, res) => {
 
         // 1. Busca vínculo existente, sem travar caso não exista
         const [motorista] = await db.query(
-            'SELECT id, transportador_id FROM motoristas_vinculados WHERE pessoa_id = ?',
+            'SELECT id, transportador_id, status FROM motoristas_vinculados WHERE pessoa_id = ?',
             [userId]
         );
 
-        const transportadorIdAtual = motorista.length > 0 ? motorista[0].transportador_id : null;
+        const transportadorIdAtual = (motorista.length > 0 && motorista[0].status !== 'DESLIGADO')
+            ? motorista[0].transportador_id
+            : null;
 
         // 2. Monta a consulta de frotas
         let query = `
@@ -568,7 +570,7 @@ const getMinhaFrota = async (req, res) => {
 
         // Buscar motorista vinculado
         const [motoristaRows] = await db.query(
-            `SELECT mv.id, mv.transportador_id, mv.data_admissao, mv.status as situacao,
+            `SELECT mv.id, mv.transportador_id, mv.data_admissao, mv.data_demissao, mv.status as situacao,
                     mv.cnh, mv.cnh_categoria
              FROM motoristas_vinculados mv
              WHERE mv.pessoa_id = ?`,
@@ -580,6 +582,24 @@ const getMinhaFrota = async (req, res) => {
         }
 
         const motorista = motoristaRows[0];
+
+        // Se o motorista não está vinculado a nenhuma frota ou foi desligado, retorna estado sem frota
+        if (!motorista.transportador_id || motorista.situacao === 'DESLIGADO') {
+            return res.json({
+                motorista: {
+                    id: motorista.id,
+                    data_admissao: motorista.data_admissao,
+                    data_demissao: motorista.data_demissao,
+                    situacao: motorista.situacao,
+                    cnh: motorista.cnh,
+                    cnh_categoria: motorista.cnh_categoria
+                },
+                frota: null,
+                veiculo: null,
+                contrato: null,
+                tem_frete_em_andamento: false
+            });
+        }
 
         // Buscar informações da frota
         const [frotaRows] = await db.query(
@@ -696,31 +716,40 @@ const getMinhaFrota = async (req, res) => {
 // 11. FINALIZAR VÍNCULO COM A FROTA
 // ============================================
 const finalizarVinculo = async (req, res) => {
+    let conn;
     try {
         const userId = req.userId;
-        const { motivo } = req.body;
+        const { motivo } = req.body || {};
 
-        // Buscar motorista vinculado
-        const [motoristaRows] = await db.query(
+        conn = await db.getConnection();
+        await conn.beginTransaction();
+
+        // Buscar e bloquear motorista vinculado
+        const [motoristaRows] = await conn.query(
             `SELECT mv.id, mv.transportador_id, mv.status as situacao
              FROM motoristas_vinculados mv
-             WHERE mv.pessoa_id = ?`,
+             WHERE mv.pessoa_id = ?
+             FOR UPDATE`,
             [userId]
         );
 
         if (motoristaRows.length === 0) {
+            await conn.rollback();
             return res.status(404).json({ error: 'Motorista vinculado não encontrado' });
         }
 
         const motorista = motoristaRows[0];
 
-        // Verificar se já está desligado
-        if (motorista.situacao === 'DESLIGADO') {
-            return res.status(400).json({ error: 'Vínculo já foi finalizado' });
+        // Verificar se já está desligado ou sem vínculo ativo
+        if (motorista.situacao === 'DESLIGADO' || !motorista.transportador_id) {
+            await conn.rollback();
+            return res.status(400).json({ error: 'Vínculo já foi finalizado ou não há frota vinculada' });
         }
 
+        const transportadorAnteriorId = motorista.transportador_id;
+
         // Verificar se há fretes em andamento
-        const [fretesEmAndamento] = await db.query(
+        const [fretesEmAndamento] = await conn.query(
             `SELECT COUNT(*) as total
              FROM fretes f
              JOIN veiculos v ON f.veiculo_id = v.id
@@ -730,26 +759,25 @@ const finalizarVinculo = async (req, res) => {
         );
 
         if (fretesEmAndamento[0].total > 0) {
+            await conn.rollback();
             return res.status(400).json({
                 error: 'Não é possível finalizar o vínculo pois você possui fretes em andamento'
             });
         }
 
-        // Iniciar transação
-        await db.query('START TRANSACTION');
-
-        // Atualizar status do motorista vinculado
-        await db.query(
-            `UPDATE motoristas_vinculados 
-             SET status = 'DESLIGADO', 
-                 data_demissao = NOW() 
+        // Atualizar status do motorista vinculado e liberar transportador_id
+        await conn.query(
+            `UPDATE motoristas_vinculados
+             SET transportador_id = NULL,
+                 status = 'DESLIGADO',
+                 data_demissao = CURDATE()
              WHERE id = ?`,
             [motorista.id]
         );
 
-        // Atualizar pessoa para não motorista
-        await db.query(
-            `UPDATE pessoas 
+        // Atualizar pessoa
+        await conn.query(
+            `UPDATE pessoas
              SET tipo_vinculo_motorista = 'NAO_MOTORISTA',
                  data_desvinculo = NOW()
              WHERE id = ?`,
@@ -757,18 +785,18 @@ const finalizarVinculo = async (req, res) => {
         );
 
         // Remover vínculo do veículo (se tiver)
-        await db.query(
-            `UPDATE veiculos 
-             SET motorista_vinculado_id = NULL 
+        await conn.query(
+            `UPDATE veiculos
+             SET motorista_vinculado_id = NULL
              WHERE motorista_vinculado_id = ?`,
             [motorista.id]
         );
 
         // Atualizar contratos ativos para encerrados
-        await db.query(
-            `UPDATE contratos 
+        await conn.query(
+            `UPDATE contratos
              SET status = 'ENCERRADO',
-                 data_fim = NOW(),
+                 data_fim = CURDATE(),
                  motivo_encerramento = ?
              WHERE motorista_vinculado_id = ?
                AND status IN ('ATIVO', 'EM_EXPERIENCIA')`,
@@ -776,14 +804,21 @@ const finalizarVinculo = async (req, res) => {
         );
 
         // Registrar no histórico de vínculos
-        await db.query(
-            `INSERT INTO historico_vinculos 
-             (motorista_vinculado_id, transportador_id, acao, observacoes, data_acao, criado_por)
-             VALUES (?, ?, 'DESVINCULACAO', ?, NOW(), ?)`,
-            [motorista.id, motorista.transportador_id, motivo || 'Finalizado pelo motorista', userId]
+        await conn.query(
+            `INSERT INTO historico_vinculos
+             (motorista_vinculado_id, transportador_id, acao, dados_anteriores, dados_novos, observacoes, data_acao, criado_por)
+             VALUES (?, ?, 'DESVINCULACAO', ?, ?, ?, NOW(), ?)`,
+            [
+                motorista.id,
+                transportadorAnteriorId,
+                JSON.stringify({ transportador_id: transportadorAnteriorId, status: motorista.situacao }),
+                JSON.stringify({ transportador_id: null, status: 'DESLIGADO' }),
+                motivo || 'Finalizado pelo motorista',
+                userId
+            ]
         );
 
-        await db.query('COMMIT');
+        await conn.commit();
 
         return res.json({
             message: 'Vínculo finalizado com sucesso',
@@ -791,9 +826,17 @@ const finalizarVinculo = async (req, res) => {
         });
 
     } catch (error) {
-        await db.query('ROLLBACK');
+        if (conn) {
+            try {
+                await conn.rollback();
+            } catch (rollbackErr) {
+                console.error('Erro no rollback ao finalizar vínculo:', rollbackErr);
+            }
+        }
         console.error('Erro ao finalizar vínculo:', error);
         return res.status(500).json({ error: 'Erro interno do servidor' });
+    } finally {
+        if (conn) conn.release();
     }
 };
 

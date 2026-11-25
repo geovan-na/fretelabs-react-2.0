@@ -1,11 +1,13 @@
 // components/motoristas/CardPropostaRecebida.jsx
 import { useState } from 'react';
+import { useAuth } from '../hooks/useAuth';
 import { useMotoristas } from '../hooks/useMotoristas';
 import ModalContraProposta from './ModalContraProposta';
 
 export default function CardPropostaRecebida({ proposta, onUpdate }) {
     const [loading, setLoading] = useState(false);
     const [showContraProposta, setShowContraProposta] = useState(false);
+    const { user } = useAuth();
     const { aceitarProposta, recusarProposta } = useMotoristas();
 
     const getStatusClasse = (status) => {
@@ -14,7 +16,10 @@ export default function CardPropostaRecebida({ proposta, onUpdate }) {
             'ACEITA': 'aceita',
             'RECUSADA': 'recusada',
             'MODIFICADA': 'modificada',
-            'CONTRATO_ASSINADO': 'contrato_assinado'
+            'EM_NEGOCIACAO': 'modificada',
+            'CONTRATO_ASSINADO': 'contrato_assinado',
+            'CANCELADA': 'recusada',
+            'EXPIRADA': 'recusada'
         };
         return statusMap[status] || 'pendente';
     };
@@ -25,17 +30,36 @@ export default function CardPropostaRecebida({ proposta, onUpdate }) {
             'ACEITA': 'Aceita',
             'RECUSADA': 'Recusada',
             'MODIFICADA': 'Modificada',
-            'CONTRATO_ASSINADO': 'Contrato Assinado'
+            'EM_NEGOCIACAO': 'Em Negociação',
+            'CONTRATO_ASSINADO': 'Contrato Assinado',
+            'CANCELADA': 'Cancelada',
+            'EXPIRADA': 'Expirada'
         };
         return statusMap[status] || status;
     };
 
     const formatarMoeda = (valor) => {
-        if (!valor) return '-';
+        if (valor === null || valor === undefined || valor === '') return '-';
         return new Intl.NumberFormat('pt-BR', {
             style: 'currency',
             currency: 'BRL'
-        }).format(valor);
+        }).format(Number(valor));
+    };
+
+    const formatarValorProposta = () => {
+        if (proposta.tipo_contrato === 'SALARIO') {
+            return formatarMoeda(proposta.valor_salario);
+        }
+        if (proposta.tipo_contrato === 'COMISSAO') {
+            return proposta.valor_comissao ? `${proposta.valor_comissao}%` : '-';
+        }
+        if (proposta.tipo_contrato === 'MISTO') {
+            const partes = [];
+            if (proposta.valor_salario) partes.push(formatarMoeda(proposta.valor_salario));
+            if (proposta.valor_comissao) partes.push(`${proposta.valor_comissao}%`);
+            return partes.length > 0 ? partes.join(' + ') : 'Misto';
+        }
+        return '-';
     };
 
     const formatarData = (data) => {
@@ -57,7 +81,7 @@ export default function CardPropostaRecebida({ proposta, onUpdate }) {
             onUpdate();
         } catch (err) {
             console.error('Erro ao aceitar proposta:', err);
-            alert(err.response?.data?.error || 'Erro ao aceitar proposta. Tente novamente.');
+            alert(err.response?.data?.error || err.message || 'Erro ao aceitar proposta. Tente novamente.');
         } finally {
             setLoading(false);
         }
@@ -74,22 +98,31 @@ export default function CardPropostaRecebida({ proposta, onUpdate }) {
             onUpdate();
         } catch (err) {
             console.error('Erro ao recusar proposta:', err);
-            alert(err.response?.data?.error || 'Erro ao recusar proposta. Tente novamente.');
+            alert(err.response?.data?.error || err.message || 'Erro ao recusar proposta. Tente novamente.');
         } finally {
             setLoading(false);
         }
     };
 
-    const podeAcao = proposta.status === 'PENDENTE' || proposta.status === 'MODIFICADA';
+    const isFrota = user?.tipo?.toLowerCase() === 'frota';
+    const nomeContraparte = proposta.tipo === 'FROTA_PARA_MOTORISTA'
+        ? (proposta.frota_nome || proposta.motorista_nome || 'Frota')
+        : (proposta.motorista_nome || proposta.frota_nome || 'Motorista');
+
+    const statusAtivo = ['PENDENTE', 'MODIFICADA', 'EM_NEGOCIACAO'].includes(proposta.status);
+    const meuTurno = proposta.aguardando_resposta_de
+        ? (proposta.aguardando_resposta_de === 'FROTA' ? isFrota : !isFrota)
+        : proposta.status === 'PENDENTE';
+    const podeAcao = statusAtivo && meuTurno;
 
     return (
         <>
             <div className="card-proposta">
                 <div className="card-proposta-header">
                     <div>
-                        <span className="card-motorista-nome">{proposta.motorista_nome}</span>
+                        <span className="card-motorista-nome">{nomeContraparte}</span>
                         <div className="card-motorista-cnh">
-                            Recebida em {formatarData(proposta.data_envio)}
+                            Recebida em {formatarData(proposta.data_envio || proposta.criado_em)}
                         </div>
                     </div>
                     <span className={`card-proposta-status ${getStatusClasse(proposta.status)}`}>
@@ -105,8 +138,7 @@ export default function CardPropostaRecebida({ proposta, onUpdate }) {
                     <div className="card-motorista-info-item">
                         <span className="card-motorista-info-label">Valor Solicitado</span>
                         <span className="card-motorista-info-value">
-                            {proposta.tipo_contrato === 'SALARIO' ? formatarMoeda(proposta.valor_salario) :
-                             proposta.tipo_contrato === 'COMISSAO' ? `${proposta.valor_comissao}%` : 'Misto'}
+                            {formatarValorProposta()}
                         </span>
                     </div>
                     <div className="card-motorista-info-item">
@@ -122,6 +154,12 @@ export default function CardPropostaRecebida({ proposta, onUpdate }) {
                 {proposta.mensagem && (
                     <div className="card-proposta-mensagem">
                         <p>"{proposta.mensagem}"</p>
+                    </div>
+                )}
+
+                {statusAtivo && !meuTurno && (
+                    <div className="card-proposta-mensagem">
+                        <p>Contraproposta enviada. Aguardando resposta da outra parte.</p>
                     </div>
                 )}
 

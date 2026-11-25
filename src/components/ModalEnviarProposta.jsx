@@ -21,9 +21,9 @@ export default function ModalEnviarProposta({ motorista, onClose, onSuccess, tip
     });
     const [errors, setErrors] = useState({});
 
-    // Determina quem está usando o modal
-    const isFrota = user?.tipo === 'FROTA';
-    const isVinculado = user?.tipo === 'VINCULADO';
+    // Determina quem está usando o modal (normalizado para evitar divergência de maiúsculas/minúsculas)
+    const tipoUsuario = (user?.tipo || '').toLowerCase();
+    const isFrota = tipoUsuario === 'frota';
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -40,6 +40,9 @@ export default function ModalEnviarProposta({ motorista, onClose, onSuccess, tip
         }
         if (formData.tipo_contrato === 'COMISSAO' && !formData.valor_comissao) {
             novosErrors.valor_comissao = 'Valor da comissão é obrigatório';
+        }
+        if (formData.tipo_contrato === 'MISTO' && !formData.valor_salario && !formData.valor_comissao) {
+            novosErrors.valor_salario = 'Informe o salário e/ou a comissão para contrato misto';
         }
         if (!formData.data_validade) {
             novosErrors.data_validade = 'Data de validade é obrigatória';
@@ -59,7 +62,7 @@ const handleSubmit = async (e) => {
         if (isFrota) {
             // CASO 1: FROTA -> MOTORISTA
             payload = {
-                transportador_id: user.transportador_id,
+                transportador_id: user?.perfil_id || user?.transportador_id,
                 motorista_pessoa_id: motorista.pessoa_id || motorista.id,
                 tipo_contrato: formData.tipo_contrato,
                 valor_salario: formData.valor_salario ? parseFloat(formData.valor_salario) : null,
@@ -88,7 +91,6 @@ const handleSubmit = async (e) => {
 
             const token = localStorage.getItem('token');
             
-            // ✅ Usa exatamente a estrutura do seu api.js:
             await api.propostas.enviar(payload, token);
         }
 
@@ -178,9 +180,12 @@ const handleSubmit = async (e) => {
                                     name="valor_salario"
                                     value={formData.valor_salario}
                                     onChange={handleChange}
-                                    className="form-input"
+                                    className={`form-input ${errors.valor_salario ? 'error' : ''}`}
                                     placeholder="2500.00"
                                 />
+                                {errors.valor_salario && (
+                                    <span className="error-message">{errors.valor_salario}</span>
+                                )}
                             </div>
                             <div className="form-group">
                                 <label>Comissão (%)</label>

@@ -37,7 +37,7 @@ const criarContrato = async (req, res) => {
                     mv.transportador_id as frota_id,
                     mv.id as motorista_vinculado_id
              FROM propostas p
-             JOIN motoristas_vinculados mv ON p.motorista_vinculado_id = mv.id
+             JOIN motoristas_vinculados mv ON p.motorista_pessoa_id = mv.pessoa_id
              WHERE p.id = ? AND p.status = 'ACEITA'`,
             [proposta_id]
         );
@@ -451,12 +451,22 @@ const encerrarContrato = async (req, res) => {
             [motivo || 'Encerrado por acordo entre as partes', id]
         );
 
-        // Atualizar motorista_vinculado
+        // Atualizar motorista_vinculado e liberar transportador_id
         await db.query(
-            `UPDATE motoristas_vinculados 
-             SET status = 'DESLIGADO', 
-                 data_demissao = NOW() 
+            `UPDATE motoristas_vinculados
+             SET transportador_id = NULL,
+                 status = 'DESLIGADO',
+                 data_demissao = CURDATE()
              WHERE id = ?`,
+            [contrato.motorista_vinculado_id]
+        );
+
+        await db.query(
+            `UPDATE pessoas p
+             JOIN motoristas_vinculados mv ON mv.pessoa_id = p.id
+             SET p.tipo_vinculo_motorista = 'NAO_MOTORISTA',
+                 p.data_desvinculo = NOW()
+             WHERE mv.id = ?`,
             [contrato.motorista_vinculado_id]
         );
 
