@@ -69,7 +69,7 @@ export default function Avaliacoes() {
                         transition: 'all 0.2s'
                     }}
                 >
-                    📥 Avaliações Recebidas
+                    Avaliações Recebidas
                 </button>
                 <button
                     onClick={() => setTab('minhas')}
@@ -85,7 +85,7 @@ export default function Avaliacoes() {
                         transition: 'all 0.2s'
                     }}
                 >
-                    📤 Avaliações Enviadas
+                    Avaliações Enviadas
                 </button>
             </div>
 
